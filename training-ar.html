@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width,
+          initial-scale=1.0,
+          user-scalable=no">
+
+    <title>FixAR | AR Training</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #07111f;
+            color: white;
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        h1 span {
+            color: #38bdf8;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #e5e7eb;
+        }
+
+        p {
+            color: #9ca3af;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .status-box {
+            padding: 18px;
+
+            background: rgba(255,255,255,0.06);
+
+            border: 1px solid rgba(255,255,255,0.1);
+
+            border-radius: 12px;
+
+            margin-bottom: 25px;
+        }
+
+        #status {
+            font-weight: bold;
+        }
+
+        .back-btn {
+            display: inline-block;
+
+            text-decoration: none;
+
+            padding: 13px 22px;
+
+            border-radius: 10px;
+
+            background: #38bdf8;
+            color: #07111f;
+
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>
+            Fix<span>AR</span>
+        </h1>
+
+        <h2>
+            Interactive AR Equipment Training
+        </h2>
+
+        <p>
+            This mode will allow you to detect a real surface,
+            place equipment in your environment,
+            and complete interactive inspection training.
+        </p>
+
+        <div class="status-box">
+
+            <div id="status">
+                Checking WebXR support...
+            </div>
+
+        </div>
+
+        <a href="index.html"
+           class="back-btn">
+            Back to Home
+        </a>
+
+    </div>
+
+
+    <script>
+
+        const status =
+            document.getElementById("status");
+
+
+        async function checkWebXR() {
+
+            if (!navigator.xr) {
+
+                status.textContent =
+                    "WebXR is not available on this browser/device.";
+
+                return;
+            }
+
+
+            try {
+
+                const supported =
+                    await navigator.xr.isSessionSupported(
+                        "immersive-ar"
+                    );
+
+
+                if (supported) {
+
+                    status.textContent =
+                        "WebXR AR supported - device ready.";
+
+                } else {
+
+                    status.textContent =
+                        "WebXR is available, but immersive AR is not supported on this device.";
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                status.textContent =
+                    "Unable to check WebXR AR support.";
+
+            }
+
+        }
+
+
+        checkWebXR();
+
+    </script>
+
+</body>
+
+</html>
+

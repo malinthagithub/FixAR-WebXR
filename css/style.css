@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: radial-gradient(circle at top, #1e3a5f 0%, #111827 45%, #070b14 100%);
+    color: white;
+    min-height: 100vh;
+}
+
+.hero {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 70px 20px 50px;
+}
+
+.badge {
+    padding: 8px 16px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 30px;
+    color: #7dd3fc;
+    font-size: 14px;
+    margin-bottom: 22px;
+}
+
+h1 {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+}
+
+h1 span {
+    color: #38bdf8;
+}
+
+h2 {
+    max-width: 700px;
+    font-size: 30px;
+    line-height: 1.25;
+    color: #e5e7eb;
+    margin-bottom: 20px;
+}
+
+.description {
+    max-width: 650px;
+    color: #aeb8c7;
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 70px;
+}
+
+button,
+.primary-btn,
+.secondary-btn {
+    border: none;
+    padding: 15px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.primary-btn {
+    background: #38bdf8;
+    color: #07111f;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    background: #7dd3fc;
+}
+
+.secondary-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid #475569;
+}
+
+.secondary-btn:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    color: #7dd3fc;
+}
+
+.how-it-works {
+    width: 100%;
+    max-width: 950px;
+}
+
+.how-it-works h3 {
+    font-size: 26px;
+    margin-bottom: 30px;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.step-card {
+    padding: 28px 22px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    text-align: left;
+}
+
+.number {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #38bdf8;
+    color: #07111f;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+.step-card h4 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.step-card p {
+    color: #9ca3af;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .hero {
+        padding-top: 45px;
+    }
+
+    h1 {
+        font-size: 50px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+    .buttons {
+        width: 100%;
+        margin-bottom: 50px;
+    }
+
+    button {
+        width: 100%;
+        max-width: 330px;
+    }
+
+    .steps {
+        grid-template-columns: 1fr;
+    }
+}

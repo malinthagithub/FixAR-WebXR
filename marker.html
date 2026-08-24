@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FixAR | Equipment Preview</title> <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script> <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .instruction {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 420px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.78);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            z-index: 20;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 20;
+        }
+
+        .controls button {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            border: 1px solid #38bdf8;
+        }
+
+        .controls button.active {
+            background: #38bdf8;
+            color: #07111f;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="instruction" id="instruction"> Point the camera at the Hiro marker </div>
+    <div class="controls"> <button id="conveyorBtn" class="active" type="button"> Conveyor </button> <button
+            id="machineBtn" type="button"> Machine </button> </div> <a-scene embedded
+        arjs="sourceType: webcam; debugUIEnabled: false;"> <a-marker id="hiroMarker" preset="hiro"> <!-- Conveyor -->
+            <a-entity id="conveyorModel" gltf-model="url(models/conveyor.glb)" position="0 0 0" rotation="0 0 0"
+                scale="0.5 0.5 0.5" visible="true"> </a-entity> <!-- Machine --> <a-entity id="machineModel"
+                gltf-model="url(models/machine.glb)" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5"
+                visible="false"> </a-entity> </a-marker> <a-entity camera></a-entity> </a-scene>
+    <script>
+    const conveyorModel = document.getElementById("conveyorModel");
+    const machineModel = document.getElementById("machineModel");
+
+    const conveyorBtn = document.getElementById("conveyorBtn");
+    const machineBtn = document.getElementById("machineBtn");
+
+    const instruction = document.getElementById("instruction");
+    const hiroMarker = document.getElementById("hiroMarker");
+
+    let selectedEquipment = "Conveyor";
+    let markerVisible = false;
+
+
+    function updateStatus() {
+
+        if (markerVisible) {
+            instruction.textContent =
+                "Marker detected - Selected Equipment: " + selectedEquipment;
+        } else {
+            instruction.textContent =
+                "Point the camera at the Hiro marker";
+        }
+
+    }
+
+
+    // Conveyor Button
+    conveyorBtn.addEventListener("click", function () {
+
+        conveyorModel.setAttribute("visible", true);
+        machineModel.setAttribute("visible", false);
+
+        conveyorBtn.classList.add("active");
+        machineBtn.classList.remove("active");
+
+        selectedEquipment = "Conveyor";
+
+        updateStatus();
+    });
+
+
+    // Machine Button
+    machineBtn.addEventListener("click", function () {
+
+        conveyorModel.setAttribute("visible", false);
+        machineModel.setAttribute("visible", true);
+
+        machineBtn.classList.add("active");
+        conveyorBtn.classList.remove("active");
+
+        selectedEquipment = "Machine";
+
+        updateStatus();
+    });
+
+
+    // Marker Detected
+    hiroMarker.addEventListener("markerFound", function () {
+
+        markerVisible = true;
+
+        updateStatus();
+    });
+
+
+    // Marker Lost
+    hiroMarker.addEventListener("markerLost", function () {
+
+        markerVisible = false;
+
+        instruction.textContent =
+            "Marker lost - point the camera at the Hiro marker";
+    });
+
+</script>
+</body>
+
+</html>
