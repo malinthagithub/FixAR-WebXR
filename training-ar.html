@@ -73,6 +73,7 @@
         FixAR AR Training — Press START AR
     </div>
 
+
     <script type="module">
 
         import * as THREE from
@@ -86,15 +87,22 @@
         let scene;
         let renderer;
 
+        let reticle;
+
+        let hitTestSource = null;
+        let hitTestSourceRequested = false;
+
 
         init();
 
 
         function init() {
 
+            // Scene
             scene = new THREE.Scene();
 
 
+            // Camera
             camera = new THREE.PerspectiveCamera(
                 70,
                 window.innerWidth / window.innerHeight,
@@ -103,6 +111,7 @@
             );
 
 
+            // Renderer
             renderer = new THREE.WebGLRenderer({
                 antialias: true,
                 alpha: true
@@ -128,6 +137,7 @@
             );
 
 
+            // Lighting
             const hemisphereLight =
                 new THREE.HemisphereLight(
                     0xffffff,
@@ -141,11 +151,84 @@
             );
 
 
+            const directionalLight =
+                new THREE.DirectionalLight(
+                    0xffffff,
+                    1
+                );
+
+
+            directionalLight.position.set(
+                1,
+                2,
+                1
+            );
+
+
+            scene.add(
+                directionalLight
+            );
+
+
+            // ---------------------------
+            // RETICLE
+            // ---------------------------
+
+            const reticleGeometry =
+                new THREE.RingGeometry(
+                    0.08,
+                    0.11,
+                    32
+                );
+
+
+            // Rotate ring so it lies flat on floor
+            reticleGeometry.rotateX(
+                -Math.PI / 2
+            );
+
+
+            const reticleMaterial =
+                new THREE.MeshBasicMaterial({
+                    color: 0x38bdf8
+                });
+
+
+            reticle =
+                new THREE.Mesh(
+                    reticleGeometry,
+                    reticleMaterial
+                );
+
+
+            reticle.matrixAutoUpdate = false;
+            reticle.visible = false;
+
+
+            scene.add(
+                reticle
+            );
+
+
+            // ---------------------------
+            // AR BUTTON
+            // ---------------------------
+
             const arButton =
                 ARButton.createButton(
                     renderer,
                     {
-                        requiredFeatures: []
+                        requiredFeatures: [
+                            "hit-test"
+                        ],
+
+                        optionalFeatures: [
+                            "dom-overlay"
+                        ],
+
+                        domOverlay: {
+                            root: document.body
+                        }
                     }
                 );
 
@@ -155,22 +238,37 @@
             );
 
 
+            // ---------------------------
+            // SESSION START
+            // ---------------------------
+
             renderer.xr.addEventListener(
                 "sessionstart",
                 function () {
 
-                    document.getElementById("info").textContent =
-                        "AR session started successfully";
+                    document.getElementById("info")
+                        .textContent =
+                        "Move your phone slowly to scan the surface";
 
                 }
             );
 
 
+            // ---------------------------
+            // SESSION END
+            // ---------------------------
+
             renderer.xr.addEventListener(
                 "sessionend",
                 function () {
 
-                    document.getElementById("info").textContent =
+                    hitTestSource = null;
+                    hitTestSourceRequested = false;
+
+                    reticle.visible = false;
+
+                    document.getElementById("info")
+                        .textContent =
                         "AR session ended";
 
                 }
@@ -193,7 +291,8 @@
         function onWindowResize() {
 
             camera.aspect =
-                window.innerWidth / window.innerHeight;
+                window.innerWidth /
+                window.innerHeight;
 
 
             camera.updateProjectionMatrix();
@@ -207,7 +306,115 @@
         }
 
 
-        function render() {
+        function render(timestamp, frame) {
+
+            if (frame) {
+
+                const referenceSpace =
+                    renderer.xr.getReferenceSpace();
+
+
+                const session =
+                    renderer.xr.getSession();
+
+
+                // Request hit-test source once
+                if (
+                    hitTestSourceRequested === false
+                ) {
+
+                    session.requestReferenceSpace(
+                        "viewer"
+                    ).then(
+                        function (viewerSpace) {
+
+                            session.requestHitTestSource({
+                                space: viewerSpace
+                            }).then(
+                                function (source) {
+
+                                    hitTestSource =
+                                        source;
+
+                                }
+                            );
+
+                        }
+                    );
+
+
+                    session.addEventListener(
+                        "end",
+                        function () {
+
+                            hitTestSourceRequested =
+                                false;
+
+                            hitTestSource =
+                                null;
+
+                        }
+                    );
+
+
+                    hitTestSourceRequested =
+                        true;
+
+                }
+
+
+                // Check detected surface
+                if (hitTestSource) {
+
+                    const hitTestResults =
+                        frame.getHitTestResults(
+                            hitTestSource
+                        );
+
+
+                    if (
+                        hitTestResults.length > 0
+                    ) {
+
+                        const hit =
+                            hitTestResults[0];
+
+
+                        const pose =
+                            hit.getPose(
+                                referenceSpace
+                            );
+
+
+                        reticle.visible =
+                            true;
+
+
+                        reticle.matrix.fromArray(
+                            pose.transform.matrix
+                        );
+
+
+                        document.getElementById("info")
+                            .textContent =
+                            "Surface detected — reticle ready";
+
+                    } else {
+
+                        reticle.visible =
+                            false;
+
+
+                        document.getElementById("info")
+                            .textContent =
+                            "Move your phone slowly to scan the surface";
+
+                    }
+
+                }
+
+            }
+
 
             renderer.render(
                 scene,
