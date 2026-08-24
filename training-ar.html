@@ -2,189 +2,222 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
-          content="width=device-width,
-          initial-scale=1.0,
-          user-scalable=no">
+          content="width=device-width, initial-scale=1.0, user-scalable=no">
 
     <title>FixAR | AR Training</title>
 
     <style>
-
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
         body {
+            margin: 0;
+            overflow: hidden;
             font-family: Arial, Helvetica, sans-serif;
             background: #07111f;
             color: white;
-
-            min-height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            text-align: center;
-
-            padding: 20px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
+        #info {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
 
-        h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
+            width: calc(100% - 32px);
+            max-width: 430px;
 
-        h1 span {
-            color: #38bdf8;
-        }
+            padding: 12px 16px;
 
-        h2 {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #e5e7eb;
-        }
-
-        p {
-            color: #9ca3af;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .status-box {
-            padding: 18px;
-
-            background: rgba(255,255,255,0.06);
-
-            border: 1px solid rgba(255,255,255,0.1);
-
+            background: rgba(7, 17, 31, 0.82);
+            border: 1px solid rgba(56, 189, 248, 0.4);
             border-radius: 12px;
 
-            margin-bottom: 25px;
+            text-align: center;
+            font-size: 14px;
         }
 
-        #status {
-            font-weight: bold;
-        }
-
-        .back-btn {
-            display: inline-block;
+        #backButton {
+            position: fixed;
+            top: 18px;
+            left: 15px;
+            z-index: 11;
 
             text-decoration: none;
 
-            padding: 13px 22px;
+            background: rgba(7, 17, 31, 0.9);
+            color: white;
 
-            border-radius: 10px;
+            border: 1px solid #475569;
 
-            background: #38bdf8;
-            color: #07111f;
+            padding: 10px 13px;
+            border-radius: 9px;
 
-            font-weight: bold;
+            font-size: 13px;
         }
-
     </style>
-
 </head>
 
 <body>
 
-    <div class="container">
+    <a id="backButton" href="index.html">
+        ← Home
+    </a>
 
-        <h1>
-            Fix<span>AR</span>
-        </h1>
-
-        <h2>
-            Interactive AR Equipment Training
-        </h2>
-
-        <p>
-            This mode will allow you to detect a real surface,
-            place equipment in your environment,
-            and complete interactive inspection training.
-        </p>
-
-        <div class="status-box">
-
-            <div id="status">
-                Checking WebXR support...
-            </div>
-
-        </div>
-
-        <a href="index.html"
-           class="back-btn">
-            Back to Home
-        </a>
-
+    <div id="info">
+        FixAR AR Training — Press START AR
     </div>
 
+    <script type="module">
 
-    <script>
+        import * as THREE from
+            "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
 
-        const status =
-            document.getElementById("status");
-
-
-        async function checkWebXR() {
-
-            if (!navigator.xr) {
-
-                status.textContent =
-                    "WebXR is not available on this browser/device.";
-
-                return;
-            }
+        import { ARButton } from
+            "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/webxr/ARButton.js";
 
 
-            try {
-
-                const supported =
-                    await navigator.xr.isSessionSupported(
-                        "immersive-ar"
-                    );
+        let camera;
+        let scene;
+        let renderer;
 
 
-                if (supported) {
+        init();
 
-                    status.textContent =
-                        "WebXR AR supported - device ready.";
 
-                } else {
+        function init() {
 
-                    status.textContent =
-                        "WebXR is available, but immersive AR is not supported on this device.";
+            scene = new THREE.Scene();
+
+
+            camera = new THREE.PerspectiveCamera(
+                70,
+                window.innerWidth / window.innerHeight,
+                0.01,
+                20
+            );
+
+
+            renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+
+
+            renderer.setPixelRatio(
+                window.devicePixelRatio
+            );
+
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+
+            renderer.xr.enabled = true;
+
+
+            document.body.appendChild(
+                renderer.domElement
+            );
+
+
+            const hemisphereLight =
+                new THREE.HemisphereLight(
+                    0xffffff,
+                    0xbbbbff,
+                    2
+                );
+
+
+            scene.add(
+                hemisphereLight
+            );
+
+
+            const arButton =
+                ARButton.createButton(
+                    renderer,
+                    {
+                        requiredFeatures: []
+                    }
+                );
+
+
+            document.body.appendChild(
+                arButton
+            );
+
+
+            renderer.xr.addEventListener(
+                "sessionstart",
+                function () {
+
+                    document.getElementById("info").textContent =
+                        "AR session started successfully";
 
                 }
+            );
 
-            } catch (error) {
 
-                console.error(error);
+            renderer.xr.addEventListener(
+                "sessionend",
+                function () {
 
-                status.textContent =
-                    "Unable to check WebXR AR support.";
+                    document.getElementById("info").textContent =
+                        "AR session ended";
 
-            }
+                }
+            );
+
+
+            window.addEventListener(
+                "resize",
+                onWindowResize
+            );
+
+
+            renderer.setAnimationLoop(
+                render
+            );
 
         }
 
 
-        checkWebXR();
+        function onWindowResize() {
+
+            camera.aspect =
+                window.innerWidth / window.innerHeight;
+
+
+            camera.updateProjectionMatrix();
+
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+        }
+
+
+        function render() {
+
+            renderer.render(
+                scene,
+                camera
+            );
+
+        }
 
     </script>
 
 </body>
 
 </html>
-
