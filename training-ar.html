@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=no">
+          content="width=device-width,
+          initial-scale=1.0,
+          user-scalable=no">
 
     <title>FixAR | AR Training</title>
 
@@ -24,53 +26,30 @@
 
         #info {
             position: fixed;
-            top: 18px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10;
 
-            width: calc(100% - 32px);
+            width: calc(100% - 30px);
             max-width: 430px;
 
-            padding: 12px 16px;
+            padding: 12px;
 
-            background: rgba(7, 17, 31, 0.82);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 10px;
 
             text-align: center;
             font-size: 14px;
-        }
 
-        #backButton {
-            position: fixed;
-            top: 18px;
-            left: 15px;
-            z-index: 11;
-
-            text-decoration: none;
-
-            background: rgba(7, 17, 31, 0.9);
-            color: white;
-
-            border: 1px solid #475569;
-
-            padding: 10px 13px;
-            border-radius: 9px;
-
-            font-size: 13px;
+            z-index: 10;
         }
     </style>
 </head>
 
 <body>
 
-    <a id="backButton" href="index.html">
-        ← Home
-    </a>
-
     <div id="info">
-        FixAR AR Training — Press START AR
+        FixAR — Press START AR
     </div>
 
 
@@ -83,8 +62,8 @@
             "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/webxr/ARButton.js";
 
 
-        let camera;
         let scene;
+        let camera;
         let renderer;
 
         let reticle;
@@ -92,17 +71,26 @@
         let hitTestSource = null;
         let hitTestSourceRequested = false;
 
+        const info =
+            document.getElementById("info");
+
 
         init();
 
 
         function init() {
 
-            // Scene
+            // -------------------------
+            // SCENE
+            // -------------------------
+
             scene = new THREE.Scene();
 
 
-            // Camera
+            // -------------------------
+            // CAMERA
+            // -------------------------
+
             camera = new THREE.PerspectiveCamera(
                 70,
                 window.innerWidth / window.innerHeight,
@@ -111,7 +99,10 @@
             );
 
 
-            // Renderer
+            // -------------------------
+            // RENDERER
+            // -------------------------
+
             renderer = new THREE.WebGLRenderer({
                 antialias: true,
                 alpha: true
@@ -137,8 +128,11 @@
             );
 
 
-            // Lighting
-            const hemisphereLight =
+            // -------------------------
+            // LIGHT
+            // -------------------------
+
+            const light =
                 new THREE.HemisphereLight(
                     0xffffff,
                     0xbbbbff,
@@ -146,35 +140,14 @@
                 );
 
 
-            scene.add(
-                hemisphereLight
-            );
+            scene.add(light);
 
 
-            const directionalLight =
-                new THREE.DirectionalLight(
-                    0xffffff,
-                    1
-                );
-
-
-            directionalLight.position.set(
-                1,
-                2,
-                1
-            );
-
-
-            scene.add(
-                directionalLight
-            );
-
-
-            // ---------------------------
+            // -------------------------
             // RETICLE
-            // ---------------------------
+            // -------------------------
 
-            const reticleGeometry =
+            const geometry =
                 new THREE.RingGeometry(
                     0.08,
                     0.11,
@@ -182,22 +155,21 @@
                 );
 
 
-            // Rotate ring so it lies flat on floor
-            reticleGeometry.rotateX(
+            geometry.rotateX(
                 -Math.PI / 2
             );
 
 
-            const reticleMaterial =
+            const material =
                 new THREE.MeshBasicMaterial({
-                    color: 0x38bdf8
+                    color: 0x00ffff
                 });
 
 
             reticle =
                 new THREE.Mesh(
-                    reticleGeometry,
-                    reticleMaterial
+                    geometry,
+                    material
                 );
 
 
@@ -205,58 +177,47 @@
             reticle.visible = false;
 
 
-            scene.add(
-                reticle
-            );
+            scene.add(reticle);
 
 
-            // ---------------------------
+            // -------------------------
             // AR BUTTON
-            // ---------------------------
+            // -------------------------
 
-            const arButton =
+            const button =
                 ARButton.createButton(
                     renderer,
                     {
                         requiredFeatures: [
                             "hit-test"
-                        ],
-
-                        optionalFeatures: [
-                            "dom-overlay"
-                        ],
-
-                        domOverlay: {
-                            root: document.body
-                        }
+                        ]
                     }
                 );
 
 
             document.body.appendChild(
-                arButton
+                button
             );
 
 
-            // ---------------------------
-            // SESSION START
-            // ---------------------------
+            // -------------------------
+            // XR SESSION START
+            // -------------------------
 
             renderer.xr.addEventListener(
                 "sessionstart",
                 function () {
 
-                    document.getElementById("info")
-                        .textContent =
-                        "Move your phone slowly to scan the surface";
+                    info.textContent =
+                        "AR started - move the phone slowly over a table or floor";
 
                 }
             );
 
 
-            // ---------------------------
-            // SESSION END
-            // ---------------------------
+            // -------------------------
+            // XR SESSION END
+            // -------------------------
 
             renderer.xr.addEventListener(
                 "sessionend",
@@ -267,8 +228,7 @@
 
                     reticle.visible = false;
 
-                    document.getElementById("info")
-                        .textContent =
+                    info.textContent =
                         "AR session ended";
 
                 }
@@ -306,56 +266,74 @@
         }
 
 
-        function render(timestamp, frame) {
+        // -------------------------
+        // HIT TEST
+        // -------------------------
 
-            if (frame) {
+        async function requestHitTestSource() {
 
-                const referenceSpace =
-                    renderer.xr.getReferenceSpace();
-
+            try {
 
                 const session =
                     renderer.xr.getSession();
 
 
-                // Request hit-test source once
+                const viewerSpace =
+                    await session.requestReferenceSpace(
+                        "viewer"
+                    );
+
+
+                hitTestSource =
+                    await session.requestHitTestSource({
+                        space: viewerSpace
+                    });
+
+
+                hitTestSourceRequested =
+                    true;
+
+
+                session.addEventListener(
+                    "end",
+                    function () {
+
+                        hitTestSourceRequested = false;
+                        hitTestSource = null;
+
+                    }
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Hit Test Error:",
+                    error
+                );
+
+
+                info.textContent =
+                    "Hit-test could not start";
+
+            }
+
+        }
+
+
+        // -------------------------
+        // RENDER LOOP
+        // -------------------------
+
+        function render(timestamp, frame) {
+
+            if (frame) {
+
                 if (
                     hitTestSourceRequested === false
                 ) {
 
-                    session.requestReferenceSpace(
-                        "viewer"
-                    ).then(
-                        function (viewerSpace) {
-
-                            session.requestHitTestSource({
-                                space: viewerSpace
-                            }).then(
-                                function (source) {
-
-                                    hitTestSource =
-                                        source;
-
-                                }
-                            );
-
-                        }
-                    );
-
-
-                    session.addEventListener(
-                        "end",
-                        function () {
-
-                            hitTestSourceRequested =
-                                false;
-
-                            hitTestSource =
-                                null;
-
-                        }
-                    );
-
+                    requestHitTestSource();
 
                     hitTestSourceRequested =
                         true;
@@ -363,21 +341,22 @@
                 }
 
 
-                // Check detected surface
                 if (hitTestSource) {
 
-                    const hitTestResults =
+                    const referenceSpace =
+                        renderer.xr.getReferenceSpace();
+
+
+                    const results =
                         frame.getHitTestResults(
                             hitTestSource
                         );
 
 
-                    if (
-                        hitTestResults.length > 0
-                    ) {
+                    if (results.length > 0) {
 
                         const hit =
-                            hitTestResults[0];
+                            results[0];
 
 
                         const pose =
@@ -386,28 +365,26 @@
                             );
 
 
-                        reticle.visible =
-                            true;
+                        if (pose) {
+
+                            reticle.visible =
+                                true;
 
 
-                        reticle.matrix.fromArray(
-                            pose.transform.matrix
-                        );
+                            reticle.matrix.fromArray(
+                                pose.transform.matrix
+                            );
 
 
-                        document.getElementById("info")
-                            .textContent =
-                            "Surface detected — reticle ready";
+                            info.textContent =
+                                "Surface detected";
+
+                        }
 
                     } else {
 
                         reticle.visible =
                             false;
-
-
-                        document.getElementById("info")
-                            .textContent =
-                            "Move your phone slowly to scan the surface";
 
                     }
 
