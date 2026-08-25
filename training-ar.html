@@ -33,12 +33,10 @@
             width: calc(100% - 30px);
             max-width: 430px;
 
-            padding: 12px 15px;
+            padding: 11px 14px;
 
             background: rgba(0, 0, 0, 0.78);
-
             border: 1px solid rgba(56, 189, 248, 0.5);
-
             border-radius: 10px;
 
             text-align: center;
@@ -47,8 +45,39 @@
             z-index: 100;
         }
 
+        #equipmentSelector {
+            position: fixed;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            display: flex;
+            gap: 8px;
+
+            z-index: 100;
+        }
+
+        #equipmentSelector button {
+            padding: 10px 16px;
+
+            border-radius: 10px;
+            border: 1px solid #38bdf8;
+
+            background: rgba(7, 17, 31, 0.9);
+            color: white;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        #equipmentSelector button.active {
+            background: #38bdf8;
+            color: #07111f;
+        }
+
         #controls {
             position: fixed;
+
             bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
@@ -58,16 +87,16 @@
             flex-wrap: wrap;
             justify-content: center;
 
-            gap: 10px;
+            gap: 8px;
 
-            width: calc(100% - 25px);
-            max-width: 430px;
+            width: calc(100% - 24px);
+            max-width: 450px;
 
             z-index: 100;
         }
 
         #controls button {
-            padding: 12px 16px;
+            padding: 11px 14px;
 
             border-radius: 10px;
             border: 1px solid #38bdf8;
@@ -75,10 +104,8 @@
             background: rgba(7, 17, 31, 0.92);
             color: white;
 
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-
-            cursor: pointer;
         }
 
         #controls button:active {
@@ -87,7 +114,7 @@
         }
 
         #moveButton {
-            border-color: #f59e0b !important;
+            border-color: #f59e0b;
         }
     </style>
 </head>
@@ -98,6 +125,28 @@
         Starting FixAR...
     </div>
 
+
+    <!-- EQUIPMENT SELECTION -->
+
+    <div id="equipmentSelector">
+
+        <button
+            id="conveyorButton"
+            class="active">
+
+            Conveyor
+        </button>
+
+        <button
+            id="machineButton">
+
+            Machine
+        </button>
+
+    </div>
+
+
+    <!-- OBJECT CONTROLS -->
 
     <div id="controls">
 
@@ -124,7 +173,10 @@
     </div>
 
 
+    <!-- ERROR DISPLAY -->
+
     <script>
+
         window.addEventListener(
             "error",
             function (event) {
@@ -133,6 +185,7 @@
                     document.getElementById("info");
 
                 if (info) {
+
                     info.textContent =
                         "JavaScript Error: " +
                         event.message;
@@ -164,24 +217,31 @@
                 console.error(event.reason);
             }
         );
+
     </script>
 
 
     <script type="module">
 
+        // =====================================
+        // IMPORTS
+        // =====================================
+
         import * as THREE from
             "https://esm.sh/three@0.164.1";
 
+
         import { ARButton } from
             "https://esm.sh/three@0.164.1/examples/jsm/webxr/ARButton.js";
+
 
         import { GLTFLoader } from
             "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
 
 
-        // =================================
+        // =====================================
         // VARIABLES
-        // =================================
+        // =====================================
 
         let scene;
         let camera;
@@ -193,61 +253,123 @@
         let hitTestSource = null;
         let hitTestSourceRequested = false;
 
+
+        // Models
         let conveyorTemplate = null;
-        let placedConveyor = null;
+        let machineTemplate = null;
 
-        let modelReady = false;
-        let objectPlaced = false;
-
-        // Move state
-        let repositionMode = false;
-
-        // Prevent Move button tap
-        // from immediately placing object
-        let ignoreSelectUntil = 0;
+        let placedObject = null;
 
 
-        // Scale settings
-        let currentScale = 0.35;
-
-        const minimumScale = 0.15;
-        const maximumScale = 0.80;
-        const scaleStep = 0.05;
+        // Loading status
+        let conveyorReady = false;
+        let machineReady = false;
 
 
-        // =================================
+        // Selected equipment
+        let selectedEquipment =
+            "conveyor";
+
+
+        // Placement
+        let objectPlaced =
+            false;
+
+
+        // Reposition state
+        let repositionMode =
+            false;
+
+
+        let ignoreSelectUntil =
+            0;
+
+
+        // Scale
+        let currentScale =
+            0.35;
+
+
+        const minimumScale =
+            0.15;
+
+
+        const maximumScale =
+            0.80;
+
+
+        const scaleStep =
+            0.05;
+
+
+        // =====================================
         // HTML ELEMENTS
-        // =================================
+        // =====================================
 
         const info =
             document.getElementById("info");
 
+
         const controls =
             document.getElementById("controls");
 
+
+        const conveyorButton =
+            document.getElementById(
+                "conveyorButton"
+            );
+
+
+        const machineButton =
+            document.getElementById(
+                "machineButton"
+            );
+
+
         const rotateLeft =
-            document.getElementById("rotateLeft");
+            document.getElementById(
+                "rotateLeft"
+            );
+
 
         const rotateRight =
-            document.getElementById("rotateRight");
+            document.getElementById(
+                "rotateRight"
+            );
+
 
         const sizeDown =
-            document.getElementById("sizeDown");
+            document.getElementById(
+                "sizeDown"
+            );
+
 
         const sizeUp =
-            document.getElementById("sizeUp");
+            document.getElementById(
+                "sizeUp"
+            );
+
 
         const moveButton =
-            document.getElementById("moveButton");
+            document.getElementById(
+                "moveButton"
+            );
 
 
-        // =================================
-        // MODEL URL
-        // =================================
+        // =====================================
+        // MODEL URLS
+        // =====================================
 
-        const MODEL_URL =
+        const CONVEYOR_URL =
             new URL(
                 "./models/conveyor.glb",
+                window.location.href
+            ).href;
+
+
+        const MACHINE_URL =
+            new URL(
+                "./models/machine.glb",
                 window.location.href
             ).href;
 
@@ -255,38 +377,49 @@
         init();
 
 
-        // =================================
+        // =====================================
         // INITIALIZE
-        // =================================
+        // =====================================
 
         async function init() {
 
+
             info.textContent =
-                "Loading FixAR...";
+                "Loading equipment models...";
 
 
+            // Scene
             scene =
                 new THREE.Scene();
 
 
+            // Camera
             camera =
                 new THREE.PerspectiveCamera(
+
                     70,
+
                     window.innerWidth /
                     window.innerHeight,
+
                     0.01,
+
                     20
                 );
 
 
+            // Renderer
             renderer =
                 new THREE.WebGLRenderer({
+
                     antialias: true,
+
                     alpha: true
                 });
 
 
             renderer.setPixelRatio(
+
                 Math.min(
                     window.devicePixelRatio,
                     2
@@ -295,12 +428,15 @@
 
 
             renderer.setSize(
+
                 window.innerWidth,
+
                 window.innerHeight
             );
 
 
-            renderer.xr.enabled = true;
+            renderer.xr.enabled =
+                true;
 
 
             renderer.outputColorSpace =
@@ -312,16 +448,20 @@
             );
 
 
-            // =================================
+            // =====================================
             // LIGHTING
-            // =================================
+            // =====================================
 
             const hemisphereLight =
                 new THREE.HemisphereLight(
+
                     0xffffff,
+
                     0x444444,
+
                     2
                 );
+
 
             scene.add(
                 hemisphereLight
@@ -330,29 +470,37 @@
 
             const directionalLight =
                 new THREE.DirectionalLight(
+
                     0xffffff,
+
                     2
                 );
 
+
             directionalLight.position.set(
+
                 2,
                 4,
                 2
             );
+
 
             scene.add(
                 directionalLight
             );
 
 
-            // =================================
+            // =====================================
             // RETICLE
-            // =================================
+            // =====================================
 
             const reticleGeometry =
                 new THREE.RingGeometry(
+
                     0.07,
+
                     0.10,
+
                     32
                 );
 
@@ -364,14 +512,18 @@
 
             const reticleMaterial =
                 new THREE.MeshBasicMaterial({
+
                     color: 0x00ffff,
+
                     side: THREE.DoubleSide
                 });
 
 
             reticle =
                 new THREE.Mesh(
+
                     reticleGeometry,
+
                     reticleMaterial
                 );
 
@@ -389,16 +541,18 @@
             );
 
 
-            // =================================
-            // XR CONTROLLER
-            // =================================
+            // =====================================
+            // CONTROLLER
+            // =====================================
 
             controller =
                 renderer.xr.getController(0);
 
 
             controller.addEventListener(
+
                 "select",
+
                 onSelect
             );
 
@@ -408,25 +562,30 @@
             );
 
 
-            // =================================
-            // LOAD MODEL
-            // =================================
+            // =====================================
+            // LOAD BOTH MODELS
+            // =====================================
 
-            await loadConveyor();
+            await loadModels();
 
 
-            // =================================
+            // =====================================
             // AR BUTTON
-            // =================================
+            // =====================================
 
             const arButton =
                 ARButton.createButton(
+
                     renderer,
+
                     {
+
                         requiredFeatures: [
                             "hit-test"
                         ]
+
                     }
+
                 );
 
 
@@ -435,77 +594,104 @@
             );
 
 
-            // =================================
+            // =====================================
             // SESSION START
-            // =================================
+            // =====================================
 
             renderer.xr.addEventListener(
+
                 "sessionstart",
+
                 function () {
 
-                    objectPlaced = false;
-
-                    repositionMode = false;
-
-                    currentScale = 0.35;
-
-                    controls.style.display =
-                        "none";
-
-                    info.textContent =
-                        "Move your phone slowly to scan the floor";
-                }
-            );
-
-
-            // =================================
-            // SESSION END
-            // =================================
-
-            renderer.xr.addEventListener(
-                "sessionend",
-                function () {
-
-                    hitTestSource = null;
-
-                    hitTestSourceRequested =
-                        false;
-
-                    reticle.visible =
-                        false;
 
                     objectPlaced =
                         false;
 
+
                     repositionMode =
                         false;
 
+
                     currentScale =
                         0.35;
+
 
                     controls.style.display =
                         "none";
 
 
-                    if (placedConveyor) {
+                    info.textContent =
+                        "Move your phone slowly to scan the floor";
+
+                }
+
+            );
+
+
+            // =====================================
+            // SESSION END
+            // =====================================
+
+            renderer.xr.addEventListener(
+
+                "sessionend",
+
+                function () {
+
+
+                    hitTestSource =
+                        null;
+
+
+                    hitTestSourceRequested =
+                        false;
+
+
+                    reticle.visible =
+                        false;
+
+
+                    objectPlaced =
+                        false;
+
+
+                    repositionMode =
+                        false;
+
+
+                    currentScale =
+                        0.35;
+
+
+                    controls.style.display =
+                        "none";
+
+
+                    if (placedObject) {
 
                         scene.remove(
-                            placedConveyor
+                            placedObject
                         );
 
-                        placedConveyor =
+
+                        placedObject =
                             null;
                     }
 
 
                     info.textContent =
                         "AR session ended";
+
                 }
+
             );
 
 
             window.addEventListener(
+
                 "resize",
+
                 onWindowResize
             );
 
@@ -513,176 +699,450 @@
             renderer.setAnimationLoop(
                 render
             );
+
         }
 
 
-        // =================================
-        // LOAD CONVEYOR
-        // =================================
+        // =====================================
+        // LOAD BOTH MODELS
+        // =====================================
 
-        async function loadConveyor() {
-
-            info.textContent =
-                "Checking conveyor model...";
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        MODEL_URL,
-                        {
-                            cache: "no-store"
-                        }
-                    );
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Model file HTTP " +
-                        response.status
-                    );
-                }
-
-            } catch (error) {
-
-                info.textContent =
-                    "Conveyor file not found: " +
-                    error.message;
-
-                throw error;
-            }
-
-
-            info.textContent =
-                "Loading conveyor model...";
+        async function loadModels() {
 
 
             const loader =
                 new GLTFLoader();
 
 
-            return new Promise(
-                function (
-                    resolve,
-                    reject
-                ) {
+            // Conveyor
+            const conveyorPromise =
+                new Promise(
 
-                    loader.load(
-
-                        MODEL_URL,
-
-
-                        // SUCCESS
-                        function (gltf) {
-
-                            conveyorTemplate =
-                                gltf.scene;
+                    function (
+                        resolve,
+                        reject
+                    ) {
 
 
-                            conveyorTemplate.traverse(
-                                function (child) {
+                        loader.load(
 
-                                    if (child.isMesh) {
-
-                                        child.frustumCulled =
-                                            false;
-                                    }
-                                }
-                            );
+                            CONVEYOR_URL,
 
 
-                            modelReady =
-                                true;
+                            function (gltf) {
 
 
-                            info.textContent =
-                                "Conveyor ready - press START AR";
+                                conveyorTemplate =
+                                    gltf.scene;
 
 
-                            resolve();
-                        },
+                                prepareModel(
+                                    conveyorTemplate
+                                );
 
 
-                        // PROGRESS
-                        function (xhr) {
-
-                            if (
-                                xhr.total &&
-                                xhr.total > 0
-                            ) {
-
-                                const percent =
-                                    Math.round(
-                                        (
-                                            xhr.loaded /
-                                            xhr.total
-                                        ) * 100
-                                    );
+                                conveyorReady =
+                                    true;
 
 
-                                info.textContent =
-                                    "Loading conveyor: " +
-                                    percent +
-                                    "%";
+                                resolve();
+
+                            },
+
+
+                            undefined,
+
+
+                            function (error) {
+
+
+                                console.error(
+                                    "Conveyor error:",
+                                    error
+                                );
+
+
+                                reject(error);
+
                             }
-                        },
+
+                        );
+
+                    }
+
+                );
 
 
-                        // ERROR
-                        function (error) {
+            // Machine
+            const machinePromise =
+                new Promise(
 
-                            console.error(
-                                "Model error:",
-                                error
-                            );
-
-
-                            info.textContent =
-                                "Unable to load conveyor GLB";
+                    function (
+                        resolve,
+                        reject
+                    ) {
 
 
-                            reject(error);
-                        }
+                        loader.load(
 
-                    );
-                }
-            );
+                            MACHINE_URL,
+
+
+                            function (gltf) {
+
+
+                                machineTemplate =
+                                    gltf.scene;
+
+
+                                prepareModel(
+                                    machineTemplate
+                                );
+
+
+                                machineReady =
+                                    true;
+
+
+                                resolve();
+
+                            },
+
+
+                            undefined,
+
+
+                            function (error) {
+
+
+                                console.error(
+                                    "Machine error:",
+                                    error
+                                );
+
+
+                                reject(error);
+
+                            }
+
+                        );
+
+                    }
+
+                );
+
+
+            try {
+
+
+                await Promise.all([
+
+                    conveyorPromise,
+
+                    machinePromise
+
+                ]);
+
+
+                info.textContent =
+                    "Equipment ready - press START AR";
+
+
+            } catch (error) {
+
+
+                info.textContent =
+                    "Unable to load equipment models";
+
+
+                console.error(error);
+
+            }
+
         }
 
 
-        // =================================
-        // TAP / SELECT
-        // =================================
+        // =====================================
+        // PREPARE MODEL
+        // =====================================
 
-        function onSelect() {
+        function prepareModel(model) {
 
-            // Ignore the same tap used
-            // to press Move button
+
+            model.traverse(
+
+                function (child) {
+
+
+                    if (child.isMesh) {
+
+
+                        child.frustumCulled =
+                            false;
+
+                    }
+
+                }
+
+            );
+
+        }
+
+
+        // =====================================
+        // CREATE SELECTED MODEL
+        // =====================================
+
+        function createSelectedModel() {
+
+
             if (
-                performance.now() <
-                ignoreSelectUntil
+                selectedEquipment ===
+                "conveyor"
             ) {
+
+
+                if (!conveyorReady) {
+                    return null;
+                }
+
+
+                return conveyorTemplate.clone(
+                    true
+                );
+
+            }
+
+
+            if (
+                selectedEquipment ===
+                "machine"
+            ) {
+
+
+                if (!machineReady) {
+                    return null;
+                }
+
+
+                return machineTemplate.clone(
+                    true
+                );
+
+            }
+
+
+            return null;
+
+        }
+
+
+        // =====================================
+        // SELECT CONVEYOR
+        // =====================================
+
+        conveyorButton.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                selectedEquipment =
+                    "conveyor";
+
+
+                conveyorButton.classList.add(
+                    "active"
+                );
+
+
+                machineButton.classList.remove(
+                    "active"
+                );
+
+
+                if (objectPlaced) {
+
+
+                    switchPlacedModel();
+
+                } else {
+
+
+                    info.textContent =
+                        "Conveyor selected - scan and tap to place";
+
+                }
+
+            }
+
+        );
+
+
+        // =====================================
+        // SELECT MACHINE
+        // =====================================
+
+        machineButton.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                selectedEquipment =
+                    "machine";
+
+
+                machineButton.classList.add(
+                    "active"
+                );
+
+
+                conveyorButton.classList.remove(
+                    "active"
+                );
+
+
+                if (objectPlaced) {
+
+
+                    switchPlacedModel();
+
+                } else {
+
+
+                    info.textContent =
+                        "Machine selected - scan and tap to place";
+
+                }
+
+            }
+
+        );
+
+
+        // =====================================
+        // SWITCH MODEL
+        // SAME TRANSFORM
+        // =====================================
+
+        function switchPlacedModel() {
+
+
+            if (!placedObject) {
                 return;
             }
 
 
-            // ---------------------------------
-            // REPOSITION EXISTING CONVEYOR
-            // ---------------------------------
+            // Save transform
+            const savedPosition =
+                placedObject.position.clone();
+
+
+            const savedQuaternion =
+                placedObject.quaternion.clone();
+
+
+            const savedScale =
+                placedObject.scale.clone();
+
+
+            // Remove old object
+            scene.remove(
+                placedObject
+            );
+
+
+            // Create new model
+            const newObject =
+                createSelectedModel();
+
+
+            if (!newObject) {
+
+
+                info.textContent =
+                    "Selected model is not ready";
+
+
+                return;
+            }
+
+
+            // Restore same transform
+            newObject.position.copy(
+                savedPosition
+            );
+
+
+            newObject.quaternion.copy(
+                savedQuaternion
+            );
+
+
+            newObject.scale.copy(
+                savedScale
+            );
+
+
+            scene.add(
+                newObject
+            );
+
+
+            placedObject =
+                newObject;
+
+
+            info.textContent =
+
+                selectedEquipment ===
+                "conveyor"
+
+                ? "Changed to Conveyor"
+
+                : "Changed to Machine";
+
+        }
+
+
+        // =====================================
+        // TAP / PLACE / MOVE
+        // =====================================
+
+        function onSelect() {
+
+
+            if (
+                performance.now() <
+                ignoreSelectUntil
+            ) {
+
+                return;
+            }
+
+
+            // =================================
+            // MOVE EXISTING OBJECT
+            // =================================
 
             if (
                 repositionMode &&
-                placedConveyor
+                placedObject
             ) {
 
+
                 if (!reticle.visible) {
+
 
                     info.textContent =
                         "Find a surface before moving";
 
+
                     return;
+
                 }
 
 
@@ -695,12 +1155,9 @@
                 );
 
 
-                placedConveyor.position.copy(
+                placedObject.position.copy(
                     newPosition
                 );
-
-
-                // Rotation and scale are NOT changed
 
 
                 repositionMode =
@@ -716,46 +1173,56 @@
 
 
                 info.textContent =
-                    "Conveyor moved successfully";
+                    "Equipment moved successfully";
 
 
                 return;
+
             }
 
 
-            // ---------------------------------
+            // =================================
             // FIRST PLACEMENT
-            // ---------------------------------
-
-            if (!modelReady) {
-
-                info.textContent =
-                    "Please wait - conveyor is loading";
-
-                return;
-            }
-
+            // =================================
 
             if (!reticle.visible) {
+
 
                 info.textContent =
                     "Surface not detected yet";
 
+
                 return;
+
             }
 
 
             if (objectPlaced) {
 
+
                 info.textContent =
-                    "Conveyor already placed";
+                    "Equipment already placed";
+
 
                 return;
+
             }
 
 
-            placedConveyor =
-                conveyorTemplate.clone(true);
+            placedObject =
+                createSelectedModel();
+
+
+            if (!placedObject) {
+
+
+                info.textContent =
+                    "Selected model is not ready";
+
+
+                return;
+
+            }
 
 
             const position =
@@ -767,27 +1234,33 @@
             );
 
 
-            placedConveyor.position.copy(
+            placedObject.position.copy(
                 position
             );
 
 
-            placedConveyor.rotation.set(
+            placedObject.rotation.set(
+
                 0,
+
                 0,
+
                 0
             );
 
 
-            placedConveyor.scale.set(
+            placedObject.scale.set(
+
                 currentScale,
+
                 currentScale,
+
                 currentScale
             );
 
 
             scene.add(
-                placedConveyor
+                placedObject
             );
 
 
@@ -804,83 +1277,107 @@
 
 
             info.textContent =
-                "Conveyor placed - use controls to inspect";
+
+                selectedEquipment ===
+                "conveyor"
+
+                ? "Conveyor placed successfully"
+
+                : "Machine placed successfully";
+
         }
 
 
-        // =================================
+        // =====================================
         // ROTATE LEFT
-        // =================================
+        // =====================================
 
         rotateLeft.addEventListener(
+
             "click",
+
             function () {
 
-                if (!placedConveyor) {
-                    return;
-                }
-
-
-                if (repositionMode) {
-                    return;
-                }
-
-
-                placedConveyor.rotation.y +=
-                    THREE.MathUtils.degToRad(
-                        15
-                    );
-
-
-                info.textContent =
-                    "Conveyor rotated left";
-            }
-        );
-
-
-        // =================================
-        // ROTATE RIGHT
-        // =================================
-
-        rotateRight.addEventListener(
-            "click",
-            function () {
-
-                if (!placedConveyor) {
-                    return;
-                }
-
-
-                if (repositionMode) {
-                    return;
-                }
-
-
-                placedConveyor.rotation.y -=
-                    THREE.MathUtils.degToRad(
-                        15
-                    );
-
-
-                info.textContent =
-                    "Conveyor rotated right";
-            }
-        );
-
-
-        // =================================
-        // SIZE DOWN
-        // =================================
-
-        sizeDown.addEventListener(
-            "click",
-            function () {
 
                 if (
-                    !placedConveyor ||
+                    !placedObject ||
                     repositionMode
                 ) {
+
                     return;
+
+                }
+
+
+                placedObject.rotation.y +=
+
+                    THREE.MathUtils.degToRad(
+                        15
+                    );
+
+
+                info.textContent =
+                    "Equipment rotated left";
+
+            }
+
+        );
+
+
+        // =====================================
+        // ROTATE RIGHT
+        // =====================================
+
+        rotateRight.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                if (
+                    !placedObject ||
+                    repositionMode
+                ) {
+
+                    return;
+
+                }
+
+
+                placedObject.rotation.y -=
+
+                    THREE.MathUtils.degToRad(
+                        15
+                    );
+
+
+                info.textContent =
+                    "Equipment rotated right";
+
+            }
+
+        );
+
+
+        // =====================================
+        // SIZE DOWN
+        // =====================================
+
+        sizeDown.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                if (
+                    !placedObject ||
+                    repositionMode
+                ) {
+
+                    return;
+
                 }
 
 
@@ -893,41 +1390,56 @@
                     minimumScale
                 ) {
 
+
                     currentScale =
                         minimumScale;
+
                 }
 
 
-                placedConveyor.scale.set(
+                placedObject.scale.set(
+
                     currentScale,
+
                     currentScale,
+
                     currentScale
                 );
 
 
                 info.textContent =
+
                     "Model size: " +
+
                     Math.round(
                         currentScale * 100
-                    ) +
-                    "%";
+                    )
+
+                    + "%";
+
             }
+
         );
 
 
-        // =================================
+        // =====================================
         // SIZE UP
-        // =================================
+        // =====================================
 
         sizeUp.addEventListener(
+
             "click",
+
             function () {
 
+
                 if (
-                    !placedConveyor ||
+                    !placedObject ||
                     repositionMode
                 ) {
+
                     return;
+
                 }
 
 
@@ -940,42 +1452,58 @@
                     maximumScale
                 ) {
 
+
                     currentScale =
                         maximumScale;
+
                 }
 
 
-                placedConveyor.scale.set(
+                placedObject.scale.set(
+
                     currentScale,
+
                     currentScale,
+
                     currentScale
                 );
 
 
                 info.textContent =
+
                     "Model size: " +
+
                     Math.round(
                         currentScale * 100
-                    ) +
-                    "%";
+                    )
+
+                    + "%";
+
             }
+
         );
 
 
-        // =================================
-        // MOVE / REPOSITION
-        // =================================
+        // =====================================
+        // MOVE
+        // =====================================
 
         moveButton.addEventListener(
+
             "click",
+
             function () {
 
-                if (!placedConveyor) {
+
+                if (!placedObject) {
+
 
                     info.textContent =
-                        "Place the conveyor first";
+                        "Place equipment first";
+
 
                     return;
+
                 }
 
 
@@ -983,9 +1511,10 @@
                     true;
 
 
-                // Avoid accidental immediate move
                 ignoreSelectUntil =
-                    performance.now() + 500;
+                    performance.now()
+                    +
+                    500;
 
 
                 controls.style.display =
@@ -998,36 +1527,46 @@
 
                 info.textContent =
                     "Move mode - scan and tap a new position";
+
             }
+
         );
 
 
-        // =================================
-        // HIT TEST
-        // =================================
+        // =====================================
+        // HIT TEST SOURCE
+        // =====================================
 
         async function requestHitTestSource() {
 
+
             try {
+
 
                 const session =
                     renderer.xr.getSession();
 
 
                 if (!session) {
+
                     return;
+
                 }
 
 
                 const viewerSpace =
+
                     await session.requestReferenceSpace(
                         "viewer"
                     );
 
 
                 hitTestSource =
+
                     await session.requestHitTestSource({
+
                         space: viewerSpace
+
                     });
 
 
@@ -1036,18 +1575,26 @@
 
 
                 session.addEventListener(
+
                     "end",
+
                     function () {
+
 
                         hitTestSourceRequested =
                             false;
 
+
                         hitTestSource =
                             null;
+
                     }
+
                 );
 
+
             } catch (error) {
+
 
                 console.error(
                     "Hit Test Error:",
@@ -1061,18 +1608,23 @@
 
                 info.textContent =
                     "Hit-test could not start";
+
             }
+
         }
 
 
-        // =================================
+        // =====================================
         // RESIZE
-        // =================================
+        // =====================================
 
         function onWindowResize() {
 
+
             camera.aspect =
+
                 window.innerWidth /
+
                 window.innerHeight;
 
 
@@ -1080,52 +1632,63 @@
 
 
             renderer.setSize(
+
                 window.innerWidth,
+
                 window.innerHeight
             );
+
         }
 
 
-        // =================================
-        // RENDER LOOP
-        // =================================
+        // =====================================
+        // RENDER
+        // =====================================
 
         function render(
             timestamp,
             frame
         ) {
 
+
             if (frame) {
+
 
                 if (
                     hitTestSourceRequested ===
                     false
                 ) {
 
+
                     hitTestSourceRequested =
                         true;
 
+
                     requestHitTestSource();
+
                 }
 
 
-                // Search for a surface:
-                // 1. Before first placement
-                // OR
-                // 2. During Move mode
                 if (
+
                     hitTestSource &&
+
                     (
                         objectPlaced === false ||
+
                         repositionMode === true
                     )
+
                 ) {
 
+
                     const referenceSpace =
+
                         renderer.xr.getReferenceSpace();
 
 
                     const results =
+
                         frame.getHitTestResults(
                             hitTestSource
                         );
@@ -1135,17 +1698,20 @@
                         results.length > 0
                     ) {
 
+
                         const hit =
                             results[0];
 
 
                         const pose =
+
                             hit.getPose(
                                 referenceSpace
                             );
 
 
                         if (pose) {
+
 
                             reticle.visible =
                                 true;
@@ -1158,17 +1724,35 @@
 
                             if (repositionMode) {
 
+
                                 info.textContent =
-                                    "New position detected - tap to move conveyor";
+                                    "New position detected - tap to move";
+
 
                             } else {
 
+
                                 info.textContent =
-                                    "Surface detected - tap to place conveyor";
+
+                                    "Surface detected - tap to place "
+                                    +
+
+                                    (
+                                        selectedEquipment ===
+                                        "conveyor"
+
+                                        ? "Conveyor"
+
+                                        : "Machine"
+                                    );
+
                             }
+
                         }
 
+
                     } else {
+
 
                         reticle.visible =
                             false;
@@ -1176,16 +1760,23 @@
 
                         if (repositionMode) {
 
+
                             info.textContent =
                                 "Move mode - scan for a new surface";
 
+
                         } else {
+
 
                             info.textContent =
                                 "Move your phone slowly to scan the floor";
+
                         }
+
                     }
+
                 }
+
             }
 
 
@@ -1193,6 +1784,7 @@
                 scene,
                 camera
             );
+
         }
 
     </script>
