@@ -36,7 +36,9 @@
             padding: 12px 15px;
 
             background: rgba(0, 0, 0, 0.78);
+
             border: 1px solid rgba(56, 189, 248, 0.5);
+
             border-radius: 10px;
 
             text-align: center;
@@ -55,6 +57,7 @@
 
             flex-wrap: wrap;
             justify-content: center;
+
             gap: 10px;
 
             width: calc(100% - 25px);
@@ -82,6 +85,10 @@
             background: #38bdf8;
             color: #07111f;
         }
+
+        #moveButton {
+            border-color: #f59e0b !important;
+        }
     </style>
 </head>
 
@@ -90,6 +97,7 @@
     <div id="info">
         Starting FixAR...
     </div>
+
 
     <div id="controls">
 
@@ -109,22 +117,30 @@
             + Size
         </button>
 
+        <button id="moveButton">
+            Move
+        </button>
+
     </div>
 
 
-    <!-- Show errors on screen -->
     <script>
-        window.addEventListener("error", function (event) {
+        window.addEventListener(
+            "error",
+            function (event) {
 
-            const info = document.getElementById("info");
+                const info =
+                    document.getElementById("info");
 
-            if (info) {
-                info.textContent =
-                    "JavaScript Error: " + event.message;
+                if (info) {
+                    info.textContent =
+                        "JavaScript Error: " +
+                        event.message;
+                }
+
+                console.error(event.error);
             }
-
-            console.error(event.error);
-        });
+        );
 
 
         window.addEventListener(
@@ -153,10 +169,6 @@
 
     <script type="module">
 
-        // --------------------------------
-        // IMPORTS
-        // --------------------------------
-
         import * as THREE from
             "https://esm.sh/three@0.164.1";
 
@@ -167,9 +179,9 @@
             "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
 
 
-        // --------------------------------
+        // =================================
         // VARIABLES
-        // --------------------------------
+        // =================================
 
         let scene;
         let camera;
@@ -187,8 +199,15 @@
         let modelReady = false;
         let objectPlaced = false;
 
+        // Move state
+        let repositionMode = false;
 
-        // Model size
+        // Prevent Move button tap
+        // from immediately placing object
+        let ignoreSelectUntil = 0;
+
+
+        // Scale settings
         let currentScale = 0.35;
 
         const minimumScale = 0.15;
@@ -196,9 +215,9 @@
         const scaleStep = 0.05;
 
 
-        // --------------------------------
+        // =================================
         // HTML ELEMENTS
-        // --------------------------------
+        // =================================
 
         const info =
             document.getElementById("info");
@@ -218,10 +237,13 @@
         const sizeUp =
             document.getElementById("sizeUp");
 
+        const moveButton =
+            document.getElementById("moveButton");
 
-        // --------------------------------
+
+        // =================================
         // MODEL URL
-        // --------------------------------
+        // =================================
 
         const MODEL_URL =
             new URL(
@@ -243,12 +265,10 @@
                 "Loading FixAR...";
 
 
-            // Scene
             scene =
                 new THREE.Scene();
 
 
-            // Camera
             camera =
                 new THREE.PerspectiveCamera(
                     70,
@@ -259,7 +279,6 @@
                 );
 
 
-            // Renderer
             renderer =
                 new THREE.WebGLRenderer({
                     antialias: true,
@@ -426,6 +445,8 @@
 
                     objectPlaced = false;
 
+                    repositionMode = false;
+
                     currentScale = 0.35;
 
                     controls.style.display =
@@ -456,6 +477,9 @@
                     objectPlaced =
                         false;
 
+                    repositionMode =
+                        false;
+
                     currentScale =
                         0.35;
 
@@ -480,14 +504,12 @@
             );
 
 
-            // Resize
             window.addEventListener(
                 "resize",
                 onWindowResize
             );
 
 
-            // Render loop
             renderer.setAnimationLoop(
                 render
             );
@@ -495,7 +517,7 @@
 
 
         // =================================
-        // LOAD CONVEYOR MODEL
+        // LOAD CONVEYOR
         // =================================
 
         async function loadConveyor() {
@@ -631,10 +653,79 @@
 
 
         // =================================
-        // PLACE CONVEYOR
+        // TAP / SELECT
         // =================================
 
         function onSelect() {
+
+            // Ignore the same tap used
+            // to press Move button
+            if (
+                performance.now() <
+                ignoreSelectUntil
+            ) {
+                return;
+            }
+
+
+            // ---------------------------------
+            // REPOSITION EXISTING CONVEYOR
+            // ---------------------------------
+
+            if (
+                repositionMode &&
+                placedConveyor
+            ) {
+
+                if (!reticle.visible) {
+
+                    info.textContent =
+                        "Find a surface before moving";
+
+                    return;
+                }
+
+
+                const newPosition =
+                    new THREE.Vector3();
+
+
+                newPosition.setFromMatrixPosition(
+                    reticle.matrix
+                );
+
+
+                placedConveyor.position.copy(
+                    newPosition
+                );
+
+
+                // Rotation and scale are NOT changed
+
+
+                repositionMode =
+                    false;
+
+
+                reticle.visible =
+                    false;
+
+
+                controls.style.display =
+                    "flex";
+
+
+                info.textContent =
+                    "Conveyor moved successfully";
+
+
+                return;
+            }
+
+
+            // ---------------------------------
+            // FIRST PLACEMENT
+            // ---------------------------------
 
             if (!modelReady) {
 
@@ -681,7 +772,6 @@
             );
 
 
-            // Keep model upright
             placedConveyor.rotation.set(
                 0,
                 0,
@@ -689,7 +779,6 @@
             );
 
 
-            // Set initial size
             placedConveyor.scale.set(
                 currentScale,
                 currentScale,
@@ -732,6 +821,11 @@
                 }
 
 
+                if (repositionMode) {
+                    return;
+                }
+
+
                 placedConveyor.rotation.y +=
                     THREE.MathUtils.degToRad(
                         15
@@ -757,6 +851,11 @@
                 }
 
 
+                if (repositionMode) {
+                    return;
+                }
+
+
                 placedConveyor.rotation.y -=
                     THREE.MathUtils.degToRad(
                         15
@@ -777,7 +876,10 @@
             "click",
             function () {
 
-                if (!placedConveyor) {
+                if (
+                    !placedConveyor ||
+                    repositionMode
+                ) {
                     return;
                 }
 
@@ -821,7 +923,10 @@
             "click",
             function () {
 
-                if (!placedConveyor) {
+                if (
+                    !placedConveyor ||
+                    repositionMode
+                ) {
                     return;
                 }
 
@@ -853,6 +958,46 @@
                         currentScale * 100
                     ) +
                     "%";
+            }
+        );
+
+
+        // =================================
+        // MOVE / REPOSITION
+        // =================================
+
+        moveButton.addEventListener(
+            "click",
+            function () {
+
+                if (!placedConveyor) {
+
+                    info.textContent =
+                        "Place the conveyor first";
+
+                    return;
+                }
+
+
+                repositionMode =
+                    true;
+
+
+                // Avoid accidental immediate move
+                ignoreSelectUntil =
+                    performance.now() + 500;
+
+
+                controls.style.display =
+                    "none";
+
+
+                reticle.visible =
+                    false;
+
+
+                info.textContent =
+                    "Move mode - scan and tap a new position";
             }
         );
 
@@ -964,9 +1109,16 @@
                 }
 
 
+                // Search for a surface:
+                // 1. Before first placement
+                // OR
+                // 2. During Move mode
                 if (
                     hitTestSource &&
-                    objectPlaced === false
+                    (
+                        objectPlaced === false ||
+                        repositionMode === true
+                    )
                 ) {
 
                     const referenceSpace =
@@ -1004,8 +1156,16 @@
                             );
 
 
-                            info.textContent =
-                                "Surface detected - tap to place conveyor";
+                            if (repositionMode) {
+
+                                info.textContent =
+                                    "New position detected - tap to move conveyor";
+
+                            } else {
+
+                                info.textContent =
+                                    "Surface detected - tap to place conveyor";
+                            }
                         }
 
                     } else {
@@ -1014,8 +1174,16 @@
                             false;
 
 
-                        info.textContent =
-                            "Move your phone slowly to scan the floor";
+                        if (repositionMode) {
+
+                            info.textContent =
+                                "Move mode - scan for a new surface";
+
+                        } else {
+
+                            info.textContent =
+                                "Move your phone slowly to scan the floor";
+                        }
                     }
                 }
             }
