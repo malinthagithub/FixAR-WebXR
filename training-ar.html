@@ -26,12 +26,12 @@
 
         #info {
             position: fixed;
-            top: 15px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
 
-            width: calc(100% - 30px);
-            max-width: 430px;
+            width: calc(100% - 24px);
+            max-width: 450px;
 
             padding: 11px 14px;
 
@@ -47,7 +47,7 @@
 
         #equipmentSelector {
             position: fixed;
-            top: 72px;
+            top: 67px;
             left: 50%;
             transform: translateX(-50%);
 
@@ -63,7 +63,7 @@
             border-radius: 10px;
             border: 1px solid #38bdf8;
 
-            background: rgba(7, 17, 31, 0.9);
+            background: rgba(7, 17, 31, 0.92);
             color: white;
 
             font-size: 13px;
@@ -77,7 +77,6 @@
 
         #controls {
             position: fixed;
-
             bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
@@ -87,10 +86,10 @@
             flex-wrap: wrap;
             justify-content: center;
 
-            gap: 8px;
-
             width: calc(100% - 24px);
             max-width: 450px;
+
+            gap: 8px;
 
             z-index: 100;
         }
@@ -119,7 +118,9 @@
     </style>
 </head>
 
+
 <body>
+
 
     <div id="info">
         Starting FixAR...
@@ -133,20 +134,18 @@
         <button
             id="conveyorButton"
             class="active">
-
             Conveyor
         </button>
 
         <button
             id="machineButton">
-
             Machine
         </button>
 
     </div>
 
 
-    <!-- OBJECT CONTROLS -->
+    <!-- EDIT CONTROLS -->
 
     <div id="controls">
 
@@ -176,7 +175,6 @@
     <!-- ERROR DISPLAY -->
 
     <script>
-
         window.addEventListener(
             "error",
             function (event) {
@@ -185,7 +183,6 @@
                     document.getElementById("info");
 
                 if (info) {
-
                     info.textContent =
                         "JavaScript Error: " +
                         event.message;
@@ -217,7 +214,6 @@
                 console.error(event.reason);
             }
         );
-
     </script>
 
 
@@ -240,7 +236,7 @@
 
 
         // =====================================
-        // VARIABLES
+        // THREE.JS VARIABLES
         // =====================================
 
         let scene;
@@ -254,52 +250,51 @@
         let hitTestSourceRequested = false;
 
 
-        // Models
+        // =====================================
+        // MODEL TEMPLATES
+        // =====================================
+
         let conveyorTemplate = null;
         let machineTemplate = null;
 
-        let placedObject = null;
-
-
-        // Loading status
         let conveyorReady = false;
         let machineReady = false;
 
 
-        // Selected equipment
-        let selectedEquipment =
-            "conveyor";
+        // =====================================
+        // PLACED OBJECTS
+        // =====================================
+
+        let placedConveyor = null;
+        let placedMachine = null;
+
+        let selectedObject = null;
+
+        let selectedEquipment = "conveyor";
 
 
-        // Placement
-        let objectPlaced =
-            false;
+        // =====================================
+        // APPLICATION STATES
+        // =====================================
+
+        let placementMode = true;
+
+        let repositionMode = false;
+
+        let ignoreSelectUntil = 0;
 
 
-        // Reposition state
-        let repositionMode =
-            false;
+        // =====================================
+        // SCALE SETTINGS
+        // =====================================
 
+        const DEFAULT_SCALE = 0.35;
 
-        let ignoreSelectUntil =
-            0;
+        const MIN_SCALE = 0.15;
 
+        const MAX_SCALE = 0.80;
 
-        // Scale
-        let currentScale =
-            0.35;
-
-
-        const minimumScale =
-            0.15;
-
-
-        const maximumScale =
-            0.80;
-
-
-        const scaleStep =
-            0.05;
+        const SCALE_STEP = 0.05;
 
 
         // =====================================
@@ -383,7 +378,6 @@
 
         async function init() {
 
-
             info.textContent =
                 "Loading equipment models...";
 
@@ -396,14 +390,10 @@
             // Camera
             camera =
                 new THREE.PerspectiveCamera(
-
                     70,
-
                     window.innerWidth /
                     window.innerHeight,
-
                     0.01,
-
                     20
                 );
 
@@ -411,15 +401,12 @@
             // Renderer
             renderer =
                 new THREE.WebGLRenderer({
-
                     antialias: true,
-
                     alpha: true
                 });
 
 
             renderer.setPixelRatio(
-
                 Math.min(
                     window.devicePixelRatio,
                     2
@@ -428,9 +415,7 @@
 
 
             renderer.setSize(
-
                 window.innerWidth,
-
                 window.innerHeight
             );
 
@@ -449,16 +434,13 @@
 
 
             // =====================================
-            // LIGHTING
+            // LIGHTS
             // =====================================
 
             const hemisphereLight =
                 new THREE.HemisphereLight(
-
                     0xffffff,
-
                     0x444444,
-
                     2
                 );
 
@@ -470,15 +452,12 @@
 
             const directionalLight =
                 new THREE.DirectionalLight(
-
                     0xffffff,
-
                     2
                 );
 
 
             directionalLight.position.set(
-
                 2,
                 4,
                 2
@@ -496,11 +475,8 @@
 
             const reticleGeometry =
                 new THREE.RingGeometry(
-
                     0.07,
-
                     0.10,
-
                     32
                 );
 
@@ -512,18 +488,14 @@
 
             const reticleMaterial =
                 new THREE.MeshBasicMaterial({
-
                     color: 0x00ffff,
-
                     side: THREE.DoubleSide
                 });
 
 
             reticle =
                 new THREE.Mesh(
-
                     reticleGeometry,
-
                     reticleMaterial
                 );
 
@@ -542,7 +514,7 @@
 
 
             // =====================================
-            // CONTROLLER
+            // XR CONTROLLER
             // =====================================
 
             controller =
@@ -550,9 +522,7 @@
 
 
             controller.addEventListener(
-
                 "select",
-
                 onSelect
             );
 
@@ -570,22 +540,17 @@
 
 
             // =====================================
-            // AR BUTTON
+            // CREATE AR BUTTON
             // =====================================
 
             const arButton =
                 ARButton.createButton(
-
                     renderer,
-
                     {
-
                         requiredFeatures: [
                             "hit-test"
                         ]
-
                     }
-
                 );
 
 
@@ -595,26 +560,31 @@
 
 
             // =====================================
-            // SESSION START
+            // AR SESSION START
             // =====================================
 
             renderer.xr.addEventListener(
-
                 "sessionstart",
-
                 function () {
 
+                    placementMode = true;
 
-                    objectPlaced =
-                        false;
+                    repositionMode = false;
+
+                    selectedEquipment =
+                        "conveyor";
+
+                    selectedObject = null;
 
 
-                    repositionMode =
-                        false;
+                    conveyorButton.classList.add(
+                        "active"
+                    );
 
 
-                    currentScale =
-                        0.35;
+                    machineButton.classList.remove(
+                        "active"
+                    );
 
 
                     controls.style.display =
@@ -622,115 +592,102 @@
 
 
                     info.textContent =
-                        "Move your phone slowly to scan the floor";
-
+                        "Conveyor selected - scan a surface";
                 }
-
             );
 
 
             // =====================================
-            // SESSION END
+            // AR SESSION END
             // =====================================
 
             renderer.xr.addEventListener(
-
                 "sessionend",
-
                 function () {
 
-
-                    hitTestSource =
-                        null;
-
+                    hitTestSource = null;
 
                     hitTestSourceRequested =
                         false;
 
-
                     reticle.visible =
                         false;
 
-
-                    objectPlaced =
-                        false;
-
+                    placementMode =
+                        true;
 
                     repositionMode =
                         false;
 
-
-                    currentScale =
-                        0.35;
-
+                    selectedObject =
+                        null;
 
                     controls.style.display =
                         "none";
 
 
-                    if (placedObject) {
+                    if (placedConveyor) {
 
                         scene.remove(
-                            placedObject
+                            placedConveyor
                         );
 
+                        placedConveyor = null;
+                    }
 
-                        placedObject =
-                            null;
+
+                    if (placedMachine) {
+
+                        scene.remove(
+                            placedMachine
+                        );
+
+                        placedMachine = null;
                     }
 
 
                     info.textContent =
                         "AR session ended";
-
                 }
-
             );
 
 
+            // Resize
             window.addEventListener(
-
                 "resize",
-
                 onWindowResize
             );
 
 
+            // Render
             renderer.setAnimationLoop(
                 render
             );
-
         }
 
 
         // =====================================
-        // LOAD BOTH MODELS
+        // LOAD MODELS
         // =====================================
 
         async function loadModels() {
-
 
             const loader =
                 new GLTFLoader();
 
 
-            // Conveyor
             const conveyorPromise =
                 new Promise(
-
                     function (
                         resolve,
                         reject
                     ) {
 
-
                         loader.load(
 
                             CONVEYOR_URL,
 
-
                             function (gltf) {
-
 
                                 conveyorTemplate =
                                     gltf.scene;
@@ -746,50 +703,37 @@
 
 
                                 resolve();
-
                             },
-
 
                             undefined,
 
-
                             function (error) {
 
-
                                 console.error(
-                                    "Conveyor error:",
+                                    "Conveyor load error:",
                                     error
                                 );
 
 
                                 reject(error);
-
                             }
-
                         );
-
                     }
-
                 );
 
 
-            // Machine
             const machinePromise =
                 new Promise(
-
                     function (
                         resolve,
                         reject
                     ) {
 
-
                         loader.load(
 
                             MACHINE_URL,
 
-
                             function (gltf) {
-
 
                                 machineTemplate =
                                     gltf.scene;
@@ -805,42 +749,30 @@
 
 
                                 resolve();
-
                             },
-
 
                             undefined,
 
-
                             function (error) {
 
-
                                 console.error(
-                                    "Machine error:",
+                                    "Machine load error:",
                                     error
                                 );
 
 
                                 reject(error);
-
                             }
-
                         );
-
                     }
-
                 );
 
 
             try {
 
-
                 await Promise.all([
-
                     conveyorPromise,
-
                     machinePromise
-
                 ]);
 
 
@@ -850,15 +782,12 @@
 
             } catch (error) {
 
+                console.error(error);
+
 
                 info.textContent =
                     "Unable to load equipment models";
-
-
-                console.error(error);
-
             }
-
         }
 
 
@@ -868,84 +797,61 @@
 
         function prepareModel(model) {
 
-
             model.traverse(
-
                 function (child) {
-
 
                     if (child.isMesh) {
 
-
                         child.frustumCulled =
                             false;
-
                     }
-
                 }
-
             );
-
         }
 
 
         // =====================================
-        // CREATE SELECTED MODEL
+        // GET MODEL
         // =====================================
 
-        function createSelectedModel() {
-
+        function createModel(type) {
 
             if (
-                selectedEquipment ===
-                "conveyor"
+                type === "conveyor" &&
+                conveyorReady
             ) {
-
-
-                if (!conveyorReady) {
-                    return null;
-                }
-
 
                 return conveyorTemplate.clone(
                     true
                 );
-
             }
 
 
             if (
-                selectedEquipment ===
-                "machine"
+                type === "machine" &&
+                machineReady
             ) {
-
-
-                if (!machineReady) {
-                    return null;
-                }
-
 
                 return machineTemplate.clone(
                     true
                 );
-
             }
 
 
             return null;
-
         }
 
 
         // =====================================
-        // SELECT CONVEYOR
+        // SELECT CONVEYOR BUTTON
         // =====================================
 
         conveyorButton.addEventListener(
-
             "click",
-
             function () {
+
+                ignoreSelectUntil =
+                    performance.now() + 600;
 
 
                 selectedEquipment =
@@ -962,33 +868,66 @@
                 );
 
 
-                if (objectPlaced) {
+                repositionMode =
+                    false;
 
 
-                    switchPlacedModel();
+                // Conveyor already exists:
+                // select existing Conveyor
+                if (placedConveyor) {
+
+                    placementMode =
+                        false;
+
+
+                    reticle.visible =
+                        false;
+
+
+                    selectedObject =
+                        placedConveyor;
+
+
+                    controls.style.display =
+                        "flex";
+
+
+                    info.textContent =
+                        "Conveyor selected - edit using controls";
+
 
                 } else {
+
+                    // Conveyor not placed yet
+                    placementMode =
+                        true;
+
+
+                    selectedObject =
+                        null;
+
+
+                    controls.style.display =
+                        "none";
 
 
                     info.textContent =
                         "Conveyor selected - scan and tap to place";
-
                 }
-
             }
-
         );
 
 
         // =====================================
-        // SELECT MACHINE
+        // SELECT MACHINE BUTTON
         // =====================================
 
         machineButton.addEventListener(
-
             "click",
-
             function () {
+
+                ignoreSelectUntil =
+                    performance.now() + 600;
 
 
                 selectedEquipment =
@@ -1005,121 +944,68 @@
                 );
 
 
-                if (objectPlaced) {
+                repositionMode =
+                    false;
 
 
-                    switchPlacedModel();
+                // Machine already exists:
+                // select existing Machine
+                if (placedMachine) {
 
-                } else {
+                    placementMode =
+                        false;
+
+
+                    reticle.visible =
+                        false;
+
+
+                    selectedObject =
+                        placedMachine;
+
+
+                    controls.style.display =
+                        "flex";
 
 
                     info.textContent =
-                        "Machine selected - scan and tap to place";
+                        "Machine selected - edit using controls";
 
+
+                } else {
+
+                    // Machine has not been placed yet
+                    placementMode =
+                        true;
+
+
+                    selectedObject =
+                        null;
+
+
+                    controls.style.display =
+                        "none";
+
+
+                    info.textContent =
+                        "Machine selected - scan and tap a new position";
                 }
-
             }
-
         );
 
 
         // =====================================
-        // SWITCH MODEL
-        // SAME TRANSFORM
-        // =====================================
-
-        function switchPlacedModel() {
-
-
-            if (!placedObject) {
-                return;
-            }
-
-
-            // Save transform
-            const savedPosition =
-                placedObject.position.clone();
-
-
-            const savedQuaternion =
-                placedObject.quaternion.clone();
-
-
-            const savedScale =
-                placedObject.scale.clone();
-
-
-            // Remove old object
-            scene.remove(
-                placedObject
-            );
-
-
-            // Create new model
-            const newObject =
-                createSelectedModel();
-
-
-            if (!newObject) {
-
-
-                info.textContent =
-                    "Selected model is not ready";
-
-
-                return;
-            }
-
-
-            // Restore same transform
-            newObject.position.copy(
-                savedPosition
-            );
-
-
-            newObject.quaternion.copy(
-                savedQuaternion
-            );
-
-
-            newObject.scale.copy(
-                savedScale
-            );
-
-
-            scene.add(
-                newObject
-            );
-
-
-            placedObject =
-                newObject;
-
-
-            info.textContent =
-
-                selectedEquipment ===
-                "conveyor"
-
-                ? "Changed to Conveyor"
-
-                : "Changed to Machine";
-
-        }
-
-
-        // =====================================
-        // TAP / PLACE / MOVE
+        // XR TAP
         // =====================================
 
         function onSelect() {
 
-
+            // Prevent UI button tap from
+            // also becoming an AR placement tap
             if (
                 performance.now() <
                 ignoreSelectUntil
             ) {
-
                 return;
             }
 
@@ -1130,19 +1016,15 @@
 
             if (
                 repositionMode &&
-                placedObject
+                selectedObject
             ) {
 
-
                 if (!reticle.visible) {
-
 
                     info.textContent =
                         "Find a surface before moving";
 
-
                     return;
-
                 }
 
 
@@ -1155,9 +1037,14 @@
                 );
 
 
-                placedObject.position.copy(
+                // Only change position
+                selectedObject.position.copy(
                     newPosition
                 );
+
+
+                // Rotation stays same
+                // Scale stays same
 
 
                 repositionMode =
@@ -1173,55 +1060,49 @@
 
 
                 info.textContent =
-                    "Equipment moved successfully";
+                    selectedEquipment ===
+                    "conveyor"
+
+                    ? "Conveyor moved successfully"
+
+                    : "Machine moved successfully";
 
 
                 return;
-
             }
 
 
             // =================================
-            // FIRST PLACEMENT
+            // PLACE NEW EQUIPMENT
             // =================================
 
-            if (!reticle.visible) {
+            if (!placementMode) {
 
+                return;
+            }
+
+
+            if (!reticle.visible) {
 
                 info.textContent =
                     "Surface not detected yet";
 
-
                 return;
-
             }
 
 
-            if (objectPlaced) {
+            const newObject =
+                createModel(
+                    selectedEquipment
+                );
 
 
-                info.textContent =
-                    "Equipment already placed";
-
-
-                return;
-
-            }
-
-
-            placedObject =
-                createSelectedModel();
-
-
-            if (!placedObject) {
-
+            if (!newObject) {
 
                 info.textContent =
                     "Selected model is not ready";
 
-
                 return;
-
             }
 
 
@@ -1234,38 +1115,60 @@
             );
 
 
-            placedObject.position.copy(
+            newObject.position.copy(
                 position
             );
 
 
-            placedObject.rotation.set(
-
+            newObject.rotation.set(
                 0,
-
                 0,
-
                 0
             );
 
 
-            placedObject.scale.set(
-
-                currentScale,
-
-                currentScale,
-
-                currentScale
+            newObject.scale.set(
+                DEFAULT_SCALE,
+                DEFAULT_SCALE,
+                DEFAULT_SCALE
             );
+
+
+            newObject.userData.currentScale =
+                DEFAULT_SCALE;
+
+
+            newObject.userData.type =
+                selectedEquipment;
 
 
             scene.add(
-                placedObject
+                newObject
             );
 
 
-            objectPlaced =
-                true;
+            // Save independently
+            if (
+                selectedEquipment ===
+                "conveyor"
+            ) {
+
+                placedConveyor =
+                    newObject;
+
+            } else {
+
+                placedMachine =
+                    newObject;
+            }
+
+
+            selectedObject =
+                newObject;
+
+
+            placementMode =
+                false;
 
 
             reticle.visible =
@@ -1277,14 +1180,12 @@
 
 
             info.textContent =
-
                 selectedEquipment ===
                 "conveyor"
 
                 ? "Conveyor placed successfully"
 
                 : "Machine placed successfully";
-
         }
 
 
@@ -1293,34 +1194,30 @@
         // =====================================
 
         rotateLeft.addEventListener(
-
             "click",
-
             function () {
+
+                ignoreSelectUntil =
+                    performance.now() + 500;
 
 
                 if (
-                    !placedObject ||
+                    !selectedObject ||
                     repositionMode
                 ) {
-
                     return;
-
                 }
 
 
-                placedObject.rotation.y +=
-
+                selectedObject.rotation.y +=
                     THREE.MathUtils.degToRad(
                         15
                     );
 
 
                 info.textContent =
-                    "Equipment rotated left";
-
+                    "Selected equipment rotated left";
             }
-
         );
 
 
@@ -1329,34 +1226,30 @@
         // =====================================
 
         rotateRight.addEventListener(
-
             "click",
-
             function () {
+
+                ignoreSelectUntil =
+                    performance.now() + 500;
 
 
                 if (
-                    !placedObject ||
+                    !selectedObject ||
                     repositionMode
                 ) {
-
                     return;
-
                 }
 
 
-                placedObject.rotation.y -=
-
+                selectedObject.rotation.y -=
                     THREE.MathUtils.degToRad(
                         15
                     );
 
 
                 info.textContent =
-                    "Equipment rotated right";
-
+                    "Selected equipment rotated right";
             }
-
         );
 
 
@@ -1365,60 +1258,53 @@
         // =====================================
 
         sizeDown.addEventListener(
-
             "click",
-
             function () {
 
+                ignoreSelectUntil =
+                    performance.now() + 500;
+
 
                 if (
-                    !placedObject ||
+                    !selectedObject ||
                     repositionMode
                 ) {
-
                     return;
-
                 }
 
 
-                currentScale -=
-                    scaleStep;
+                let scale =
+                    selectedObject.userData.currentScale;
 
 
-                if (
-                    currentScale <
-                    minimumScale
-                ) {
+                scale -= SCALE_STEP;
 
 
-                    currentScale =
-                        minimumScale;
+                if (scale < MIN_SCALE) {
 
+                    scale =
+                        MIN_SCALE;
                 }
 
 
-                placedObject.scale.set(
+                selectedObject.userData.currentScale =
+                    scale;
 
-                    currentScale,
 
-                    currentScale,
-
-                    currentScale
+                selectedObject.scale.set(
+                    scale,
+                    scale,
+                    scale
                 );
 
 
                 info.textContent =
-
-                    "Model size: " +
-
+                    "Selected model size: " +
                     Math.round(
-                        currentScale * 100
-                    )
-
-                    + "%";
-
+                        scale * 100
+                    ) +
+                    "%";
             }
-
         );
 
 
@@ -1427,94 +1313,83 @@
         // =====================================
 
         sizeUp.addEventListener(
-
             "click",
-
             function () {
 
+                ignoreSelectUntil =
+                    performance.now() + 500;
+
 
                 if (
-                    !placedObject ||
+                    !selectedObject ||
                     repositionMode
                 ) {
-
                     return;
-
                 }
 
 
-                currentScale +=
-                    scaleStep;
+                let scale =
+                    selectedObject.userData.currentScale;
 
 
-                if (
-                    currentScale >
-                    maximumScale
-                ) {
+                scale += SCALE_STEP;
 
 
-                    currentScale =
-                        maximumScale;
+                if (scale > MAX_SCALE) {
 
+                    scale =
+                        MAX_SCALE;
                 }
 
 
-                placedObject.scale.set(
+                selectedObject.userData.currentScale =
+                    scale;
 
-                    currentScale,
 
-                    currentScale,
-
-                    currentScale
+                selectedObject.scale.set(
+                    scale,
+                    scale,
+                    scale
                 );
 
 
                 info.textContent =
-
-                    "Model size: " +
-
+                    "Selected model size: " +
                     Math.round(
-                        currentScale * 100
-                    )
-
-                    + "%";
-
+                        scale * 100
+                    ) +
+                    "%";
             }
-
         );
 
 
         // =====================================
-        // MOVE
+        // MOVE SELECTED OBJECT
         // =====================================
 
         moveButton.addEventListener(
-
             "click",
-
             function () {
 
+                ignoreSelectUntil =
+                    performance.now() + 600;
 
-                if (!placedObject) {
 
+                if (!selectedObject) {
 
                     info.textContent =
-                        "Place equipment first";
-
+                        "Select equipment first";
 
                     return;
-
                 }
+
+
+                placementMode =
+                    false;
 
 
                 repositionMode =
                     true;
-
-
-                ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
 
 
                 controls.style.display =
@@ -1527,46 +1402,36 @@
 
                 info.textContent =
                     "Move mode - scan and tap a new position";
-
             }
-
         );
 
 
         // =====================================
-        // HIT TEST SOURCE
+        // HIT TEST
         // =====================================
 
         async function requestHitTestSource() {
 
-
             try {
-
 
                 const session =
                     renderer.xr.getSession();
 
 
                 if (!session) {
-
                     return;
-
                 }
 
 
                 const viewerSpace =
-
                     await session.requestReferenceSpace(
                         "viewer"
                     );
 
 
                 hitTestSource =
-
                     await session.requestHitTestSource({
-
                         space: viewerSpace
-
                     });
 
 
@@ -1575,11 +1440,8 @@
 
 
                 session.addEventListener(
-
                     "end",
-
                     function () {
-
 
                         hitTestSourceRequested =
                             false;
@@ -1587,14 +1449,10 @@
 
                         hitTestSource =
                             null;
-
                     }
-
                 );
 
-
             } catch (error) {
-
 
                 console.error(
                     "Hit Test Error:",
@@ -1608,23 +1466,18 @@
 
                 info.textContent =
                     "Hit-test could not start";
-
             }
-
         }
 
 
         // =====================================
-        // RESIZE
+        // WINDOW RESIZE
         // =====================================
 
         function onWindowResize() {
 
-
             camera.aspect =
-
                 window.innerWidth /
-
                 window.innerHeight;
 
 
@@ -1632,17 +1485,14 @@
 
 
             renderer.setSize(
-
                 window.innerWidth,
-
                 window.innerHeight
             );
-
         }
 
 
         // =====================================
-        // RENDER
+        // RENDER LOOP
         // =====================================
 
         function render(
@@ -1650,45 +1500,38 @@
             frame
         ) {
 
-
             if (frame) {
-
 
                 if (
                     hitTestSourceRequested ===
                     false
                 ) {
 
-
                     hitTestSourceRequested =
                         true;
 
 
                     requestHitTestSource();
-
                 }
 
 
+                // Hit testing only needed when:
+                // placing NEW equipment
+                // or moving selected equipment
+
                 if (
-
                     hitTestSource &&
-
                     (
-                        objectPlaced === false ||
-
-                        repositionMode === true
+                        placementMode ||
+                        repositionMode
                     )
-
                 ) {
 
-
                     const referenceSpace =
-
                         renderer.xr.getReferenceSpace();
 
 
                     const results =
-
                         frame.getHitTestResults(
                             hitTestSource
                         );
@@ -1698,20 +1541,17 @@
                         results.length > 0
                     ) {
 
-
                         const hit =
                             results[0];
 
 
                         const pose =
-
                             hit.getPose(
                                 referenceSpace
                             );
 
 
                         if (pose) {
-
 
                             reticle.visible =
                                 true;
@@ -1724,35 +1564,23 @@
 
                             if (repositionMode) {
 
-
                                 info.textContent =
                                     "New position detected - tap to move";
 
 
                             } else {
 
-
                                 info.textContent =
+                                    selectedEquipment ===
+                                    "conveyor"
 
-                                    "Surface detected - tap to place "
-                                    +
+                                    ? "Surface detected - tap to place Conveyor"
 
-                                    (
-                                        selectedEquipment ===
-                                        "conveyor"
-
-                                        ? "Conveyor"
-
-                                        : "Machine"
-                                    );
-
+                                    : "Surface detected - tap to place Machine";
                             }
-
                         }
 
-
                     } else {
-
 
                         reticle.visible =
                             false;
@@ -1760,23 +1588,17 @@
 
                         if (repositionMode) {
 
-
                             info.textContent =
                                 "Move mode - scan for a new surface";
 
 
                         } else {
 
-
                             info.textContent =
-                                "Move your phone slowly to scan the floor";
-
+                                "Move your phone slowly to scan the surface";
                         }
-
                     }
-
                 }
-
             }
 
 
@@ -1784,7 +1606,6 @@
                 scene,
                 camera
             );
-
         }
 
     </script>
