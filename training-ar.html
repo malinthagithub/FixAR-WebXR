@@ -3,10 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>FixAR | AR Training</title> <!-- Three.js Import Map -->
-    <script
-        type="importmap"> { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/" } } </script>
+
+    <meta name="viewport"
+          content="width=device-width,
+          initial-scale=1.0,
+          user-scalable=no">
+
+    <title>FixAR | AR Training</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -25,23 +29,795 @@
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
+
             width: calc(100% - 30px);
             max-width: 430px;
+
             padding: 12px 15px;
+
             background: rgba(0, 0, 0, 0.78);
             border: 1px solid rgba(56, 189, 248, 0.5);
             border-radius: 10px;
+
             text-align: center;
             font-size: 14px;
-            z-index: 10;
+
+            z-index: 100;
         }
     </style>
 </head>
 
 <body>
-    <div id="info"> Loading conveyor model... </div>
-    <script
-        type="module"> import * as THREE from "three"; import { ARButton } from "three/addons/webxr/ARButton.js"; import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; // --------------------------------- // VARIABLES // --------------------------------- let scene; let camera; let renderer; let reticle; let controller; let hitTestSource = null; let hitTestSourceRequested = false; let conveyorTemplate = null; let placedConveyor = null; let modelReady = false; let objectPlaced = false; const info = document.getElementById("info"); init(); // --------------------------------- // INITIAL SETUP // --------------------------------- function init() { // Scene scene = new THREE.Scene(); // Camera camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 ); // Renderer renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); renderer.setPixelRatio( window.devicePixelRatio ); renderer.setSize( window.innerWidth, window.innerHeight ); renderer.xr.enabled = true; renderer.outputColorSpace = THREE.SRGBColorSpace; document.body.appendChild( renderer.domElement ); // --------------------------------- // LIGHTING // --------------------------------- const hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x444444, 2 ); scene.add( hemisphereLight ); const directionalLight = new THREE.DirectionalLight( 0xffffff, 2 ); directionalLight.position.set( 2, 4, 2 ); scene.add( directionalLight ); // --------------------------------- // LOAD CONVEYOR MODEL // --------------------------------- const loader = new GLTFLoader(); loader.load( "./models/conveyor.glb", function (gltf) { conveyorTemplate = gltf.scene; // Initial viewing scale conveyorTemplate.scale.set( 0.35, 0.35, 0.35 ); modelReady = true; info.textContent = "Conveyor ready - press START AR"; }, function (xhr) { if (xhr.total > 0) { const percent = Math.round( (xhr.loaded / xhr.total) * 100 ); info.textContent = "Loading conveyor: " + percent + "%"; } }, function (error) { console.error( "Model loading error:", error ); info.textContent = "Unable to load conveyor model"; } ); // --------------------------------- // RETICLE // --------------------------------- const reticleGeometry = new THREE.RingGeometry( 0.08, 0.11, 32 ); reticleGeometry.rotateX( -Math.PI / 2 ); const reticleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff }); reticle = new THREE.Mesh( reticleGeometry, reticleMaterial ); reticle.matrixAutoUpdate = false; reticle.visible = false; scene.add( reticle ); // --------------------------------- // XR CONTROLLER // --------------------------------- controller = renderer.xr.getController(0); controller.addEventListener( "select", onSelect ); scene.add( controller ); // --------------------------------- // AR BUTTON // --------------------------------- const arButton = ARButton.createButton( renderer, { requiredFeatures: [ "hit-test" ] } ); document.body.appendChild( arButton ); // --------------------------------- // SESSION START // --------------------------------- renderer.xr.addEventListener( "sessionstart", function () { objectPlaced = false; info.textContent = "Move your phone slowly to scan the floor"; } ); // --------------------------------- // SESSION END // --------------------------------- renderer.xr.addEventListener( "sessionend", function () { hitTestSource = null; hitTestSourceRequested = false; reticle.visible = false; objectPlaced = false; // Remove old placed model if (placedConveyor) { scene.remove( placedConveyor ); placedConveyor = null; } info.textContent = "AR session ended"; } ); // Resize window.addEventListener( "resize", onWindowResize ); // Render loop renderer.setAnimationLoop( render ); } // --------------------------------- // PLACE CONVEYOR // --------------------------------- function onSelect() { // Model still loading if (!modelReady) { info.textContent = "Please wait - model is still loading"; return; } // No surface detected if (!reticle.visible) { info.textContent = "Surface not detected yet"; return; } // Prevent multiple conveyors if (objectPlaced) { info.textContent = "Conveyor already placed"; return; } // Clone loaded model placedConveyor = conveyorTemplate.clone(true); // Get reticle position const position = new THREE.Vector3(); position.setFromMatrixPosition( reticle.matrix ); placedConveyor.position.copy( position ); // Keep equipment upright placedConveyor.rotation.set( 0, 0, 0 ); // Add model scene.add( placedConveyor ); objectPlaced = true; reticle.visible = false; info.textContent = "Conveyor placed successfully"; } // --------------------------------- // HIT TEST SOURCE // --------------------------------- async function requestHitTestSource() { try { const session = renderer.xr.getSession(); const viewerSpace = await session.requestReferenceSpace( "viewer" ); hitTestSource = await session.requestHitTestSource({ space: viewerSpace }); hitTestSourceRequested = true; session.addEventListener( "end", function () { hitTestSourceRequested = false; hitTestSource = null; } ); } catch (error) { console.error( "Hit Test Error:", error ); info.textContent = "Hit-test could not start"; } } // --------------------------------- // RESIZE // --------------------------------- function onWindowResize() { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize( window.innerWidth, window.innerHeight ); } // --------------------------------- // RENDER LOOP // --------------------------------- function render( timestamp, frame ) { if (frame) { if ( hitTestSourceRequested === false ) { requestHitTestSource(); hitTestSourceRequested = true; } // Only search for position // before equipment is placed if ( hitTestSource && objectPlaced === false ) { const referenceSpace = renderer.xr.getReferenceSpace(); const results = frame.getHitTestResults( hitTestSource ); if ( results.length > 0 ) { const hit = results[0]; const pose = hit.getPose( referenceSpace ); if (pose) { reticle.visible = true; reticle.matrix.fromArray( pose.transform.matrix ); info.textContent = "Surface detected - tap to place conveyor"; } } else { reticle.visible = false; info.textContent = "Move your phone slowly to scan the floor"; } } } renderer.render( scene, camera ); } </script>
+
+    <div id="info">
+        Starting FixAR...
+    </div>
+
+
+    <!-- Show JavaScript errors directly on screen -->
+    <script>
+        window.addEventListener("error", function (event) {
+
+            const info = document.getElementById("info");
+
+            if (info) {
+                info.textContent =
+                    "JavaScript Error: " + event.message;
+            }
+
+            console.error(event.error);
+        });
+
+
+        window.addEventListener(
+            "unhandledrejection",
+            function (event) {
+
+                const info =
+                    document.getElementById("info");
+
+                if (info) {
+                    info.textContent =
+                        "Error: " +
+                        (
+                            event.reason?.message ||
+                            event.reason ||
+                            "Unknown error"
+                        );
+                }
+
+                console.error(event.reason);
+            }
+        );
+    </script>
+
+
+    <script type="module">
+
+        // ----------------------------------
+        // IMPORTS
+        // ----------------------------------
+
+        import * as THREE from
+            "https://esm.sh/three@0.164.1";
+
+        import { ARButton } from
+            "https://esm.sh/three@0.164.1/examples/jsm/webxr/ARButton.js";
+
+        import { GLTFLoader } from
+            "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
+
+
+        // ----------------------------------
+        // VARIABLES
+        // ----------------------------------
+
+        let scene;
+        let camera;
+        let renderer;
+
+        let reticle;
+        let controller;
+
+        let hitTestSource = null;
+        let hitTestSourceRequested = false;
+
+        let conveyorTemplate = null;
+        let placedConveyor = null;
+
+        let modelReady = false;
+        let objectPlaced = false;
+
+
+        const info =
+            document.getElementById("info");
+
+
+        const MODEL_URL =
+            new URL(
+                "./models/conveyor.glb",
+                window.location.href
+            ).href;
+
+
+        init();
+
+
+        // ----------------------------------
+        // INITIALIZE
+        // ----------------------------------
+
+        async function init() {
+
+            info.textContent =
+                "Loading FixAR...";
+
+
+            // Scene
+            scene = new THREE.Scene();
+
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                70,
+                window.innerWidth /
+                window.innerHeight,
+                0.01,
+                20
+            );
+
+
+            // Renderer
+            renderer =
+                new THREE.WebGLRenderer({
+                    antialias: true,
+                    alpha: true
+                });
+
+
+            renderer.setPixelRatio(
+                Math.min(
+                    window.devicePixelRatio,
+                    2
+                )
+            );
+
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+
+            renderer.xr.enabled = true;
+
+
+            renderer.outputColorSpace =
+                THREE.SRGBColorSpace;
+
+
+            document.body.appendChild(
+                renderer.domElement
+            );
+
+
+            // ----------------------------------
+            // LIGHTING
+            // ----------------------------------
+
+            const hemisphereLight =
+                new THREE.HemisphereLight(
+                    0xffffff,
+                    0x444444,
+                    2
+                );
+
+
+            scene.add(
+                hemisphereLight
+            );
+
+
+            const directionalLight =
+                new THREE.DirectionalLight(
+                    0xffffff,
+                    2
+                );
+
+
+            directionalLight.position.set(
+                2,
+                4,
+                2
+            );
+
+
+            scene.add(
+                directionalLight
+            );
+
+
+            // ----------------------------------
+            // RETICLE
+            // ----------------------------------
+
+            const reticleGeometry =
+                new THREE.RingGeometry(
+                    0.07,
+                    0.10,
+                    32
+                );
+
+
+            reticleGeometry.rotateX(
+                -Math.PI / 2
+            );
+
+
+            const reticleMaterial =
+                new THREE.MeshBasicMaterial({
+                    color: 0x00ffff,
+                    side: THREE.DoubleSide
+                });
+
+
+            reticle =
+                new THREE.Mesh(
+                    reticleGeometry,
+                    reticleMaterial
+                );
+
+
+            reticle.matrixAutoUpdate =
+                false;
+
+
+            reticle.visible =
+                false;
+
+
+            scene.add(
+                reticle
+            );
+
+
+            // ----------------------------------
+            // XR CONTROLLER
+            // ----------------------------------
+
+            controller =
+                renderer.xr.getController(0);
+
+
+            controller.addEventListener(
+                "select",
+                onSelect
+            );
+
+
+            scene.add(
+                controller
+            );
+
+
+            // ----------------------------------
+            // LOAD MODEL
+            // ----------------------------------
+
+            await loadConveyor();
+
+
+            // ----------------------------------
+            // AR BUTTON
+            // ----------------------------------
+
+            const arButton =
+                ARButton.createButton(
+                    renderer,
+                    {
+                        requiredFeatures: [
+                            "hit-test"
+                        ]
+                    }
+                );
+
+
+            document.body.appendChild(
+                arButton
+            );
+
+
+            // ----------------------------------
+            // SESSION START
+            // ----------------------------------
+
+            renderer.xr.addEventListener(
+                "sessionstart",
+                function () {
+
+                    objectPlaced = false;
+
+                    info.textContent =
+                        "Move your phone slowly to scan the floor";
+
+                }
+            );
+
+
+            // ----------------------------------
+            // SESSION END
+            // ----------------------------------
+
+            renderer.xr.addEventListener(
+                "sessionend",
+                function () {
+
+                    hitTestSource = null;
+                    hitTestSourceRequested = false;
+
+                    reticle.visible = false;
+                    objectPlaced = false;
+
+
+                    if (placedConveyor) {
+
+                        scene.remove(
+                            placedConveyor
+                        );
+
+                        placedConveyor = null;
+                    }
+
+
+                    info.textContent =
+                        "AR session ended";
+
+                }
+            );
+
+
+            // Resize
+            window.addEventListener(
+                "resize",
+                onWindowResize
+            );
+
+
+            // Render
+            renderer.setAnimationLoop(
+                render
+            );
+
+        }
+
+
+        // ----------------------------------
+        // LOAD CONVEYOR
+        // ----------------------------------
+
+        async function loadConveyor() {
+
+            info.textContent =
+                "Checking conveyor model...";
+
+
+            // First confirm model file exists
+            try {
+
+                const response =
+                    await fetch(
+                        MODEL_URL,
+                        {
+                            cache: "no-store"
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Model file HTTP " +
+                        response.status
+                    );
+                }
+
+
+                console.log(
+                    "Model file found:",
+                    MODEL_URL
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                info.textContent =
+                    "Conveyor file not found: " +
+                    error.message;
+
+                throw error;
+            }
+
+
+            info.textContent =
+                "Loading conveyor model...";
+
+
+            const loader =
+                new GLTFLoader();
+
+
+            return new Promise(
+                function (
+                    resolve,
+                    reject
+                ) {
+
+
+                    loader.load(
+
+                        MODEL_URL,
+
+
+                        // SUCCESS
+                        function (gltf) {
+
+                            conveyorTemplate =
+                                gltf.scene;
+
+
+                            conveyorTemplate.scale.set(
+                                0.35,
+                                0.35,
+                                0.35
+                            );
+
+
+                            // Make sure meshes render
+                            conveyorTemplate.traverse(
+                                function (child) {
+
+                                    if (child.isMesh) {
+
+                                        child.frustumCulled =
+                                            false;
+
+                                    }
+
+                                }
+                            );
+
+
+                            modelReady = true;
+
+
+                            info.textContent =
+                                "Conveyor ready - press START AR";
+
+
+                            console.log(
+                                "Conveyor loaded successfully"
+                            );
+
+
+                            resolve();
+
+                        },
+
+
+                        // PROGRESS
+                        function (xhr) {
+
+                            if (
+                                xhr.total &&
+                                xhr.total > 0
+                            ) {
+
+                                const percent =
+                                    Math.round(
+                                        (
+                                            xhr.loaded /
+                                            xhr.total
+                                        ) * 100
+                                    );
+
+
+                                info.textContent =
+                                    "Loading conveyor: " +
+                                    percent +
+                                    "%";
+                            }
+
+                        },
+
+
+                        // ERROR
+                        function (error) {
+
+                            console.error(
+                                "GLTF Error:",
+                                error
+                            );
+
+
+                            info.textContent =
+                                "Unable to load conveyor GLB";
+
+
+                            reject(error);
+
+                        }
+
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ----------------------------------
+        // PLACE MODEL
+        // ----------------------------------
+
+        function onSelect() {
+
+            if (!modelReady) {
+
+                info.textContent =
+                    "Please wait - conveyor is loading";
+
+                return;
+            }
+
+
+            if (!reticle.visible) {
+
+                info.textContent =
+                    "Surface not detected yet";
+
+                return;
+            }
+
+
+            if (objectPlaced) {
+
+                info.textContent =
+                    "Conveyor already placed";
+
+                return;
+            }
+
+
+            placedConveyor =
+                conveyorTemplate.clone(true);
+
+
+            const position =
+                new THREE.Vector3();
+
+
+            position.setFromMatrixPosition(
+                reticle.matrix
+            );
+
+
+            placedConveyor.position.copy(
+                position
+            );
+
+
+            // Keep equipment upright
+            placedConveyor.rotation.set(
+                0,
+                0,
+                0
+            );
+
+
+            scene.add(
+                placedConveyor
+            );
+
+
+            objectPlaced =
+                true;
+
+
+            reticle.visible =
+                false;
+
+
+            info.textContent =
+                "Conveyor placed successfully";
+
+        }
+
+
+        // ----------------------------------
+        // REQUEST HIT TEST
+        // ----------------------------------
+
+        async function requestHitTestSource() {
+
+            try {
+
+                const session =
+                    renderer.xr.getSession();
+
+
+                if (!session) {
+                    return;
+                }
+
+
+                const viewerSpace =
+                    await session.requestReferenceSpace(
+                        "viewer"
+                    );
+
+
+                hitTestSource =
+                    await session.requestHitTestSource({
+                        space: viewerSpace
+                    });
+
+
+                hitTestSourceRequested =
+                    true;
+
+
+                session.addEventListener(
+                    "end",
+                    function () {
+
+                        hitTestSourceRequested =
+                            false;
+
+                        hitTestSource =
+                            null;
+
+                    }
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Hit Test Error:",
+                    error
+                );
+
+
+                hitTestSourceRequested =
+                    false;
+
+
+                info.textContent =
+                    "Hit-test could not start";
+
+            }
+
+        }
+
+
+        // ----------------------------------
+        // RESIZE
+        // ----------------------------------
+
+        function onWindowResize() {
+
+            camera.aspect =
+                window.innerWidth /
+                window.innerHeight;
+
+
+            camera.updateProjectionMatrix();
+
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+        }
+
+
+        // ----------------------------------
+        // RENDER LOOP
+        // ----------------------------------
+
+        function render(
+            timestamp,
+            frame
+        ) {
+
+            if (frame) {
+
+                if (
+                    hitTestSourceRequested === false
+                ) {
+
+                    hitTestSourceRequested =
+                        true;
+
+
+                    requestHitTestSource();
+
+                }
+
+
+                if (
+                    hitTestSource &&
+                    objectPlaced === false
+                ) {
+
+                    const referenceSpace =
+                        renderer.xr.getReferenceSpace();
+
+
+                    const results =
+                        frame.getHitTestResults(
+                            hitTestSource
+                        );
+
+
+                    if (
+                        results.length > 0
+                    ) {
+
+                        const hit =
+                            results[0];
+
+
+                        const pose =
+                            hit.getPose(
+                                referenceSpace
+                            );
+
+
+                        if (pose) {
+
+                            reticle.visible =
+                                true;
+
+
+                            reticle.matrix.fromArray(
+                                pose.transform.matrix
+                            );
+
+
+                            info.textContent =
+                                "Surface detected - tap to place conveyor";
+
+                        }
+
+                    } else {
+
+                        reticle.visible =
+                            false;
+
+
+                        info.textContent =
+                            "Move your phone slowly to scan the floor";
+
+                    }
+
+                }
+
+            }
+
+
+            renderer.render(
+                scene,
+                camera
+            );
+
+        }
+
+    </script>
+
 </body>
 
 </html>
