@@ -27,8 +27,9 @@
             color: white;
         }
 
+
         /* =========================
-           TOP INFORMATION
+           TOP STATUS
         ========================= */
 
         #info {
@@ -61,7 +62,7 @@
 
 
         /* =========================
-           AR CONTROL PANEL
+           AR PANEL
         ========================= */
 
         #arPanel {
@@ -70,7 +71,7 @@
             left: 50%;
 
             bottom: max(
-                20px,
+                18px,
                 env(safe-area-inset-bottom)
             );
 
@@ -79,14 +80,11 @@
             width: calc(100% - 24px);
             max-width: 450px;
 
-            /* IMPORTANT:
-               Hidden before START AR
-            */
             display: none;
 
             flex-direction: column;
 
-            gap: 10px;
+            gap: 9px;
 
             z-index: 9999;
         }
@@ -99,18 +97,16 @@
         #equipmentSelector {
             display: flex;
 
-            justify-content: center;
-
-            gap: 10px;
+            gap: 8px;
         }
 
 
         #equipmentSelector button {
             flex: 1;
 
-            padding: 13px 16px;
+            padding: 12px;
 
-            border-radius: 12px;
+            border-radius: 11px;
 
             border: 2px solid #38bdf8;
 
@@ -125,20 +121,17 @@
 
             font-size: 14px;
             font-weight: bold;
-
-            cursor: pointer;
         }
 
 
         #equipmentSelector button.active {
             background: #38bdf8;
-
             color: #07111f;
         }
 
 
         /* =========================
-           EDIT CONTROLS
+           OBJECT CONTROLS
         ========================= */
 
         #controls {
@@ -148,14 +141,14 @@
 
             justify-content: center;
 
-            gap: 8px;
+            gap: 7px;
         }
 
 
         #controls button {
-            padding: 11px 14px;
+            padding: 10px 13px;
 
-            border-radius: 10px;
+            border-radius: 9px;
 
             border: 1px solid #38bdf8;
 
@@ -170,13 +163,101 @@
 
             font-size: 13px;
             font-weight: bold;
-
-            cursor: pointer;
         }
 
 
         #moveButton {
-            border-color: #f59e0b !important;
+            border-color: #f59e0b;
+        }
+
+
+        #inspectionButton {
+            border-color: #22c55e !important;
+        }
+
+
+        /* =========================
+           INSPECTION PANEL
+        ========================= */
+
+        #inspectionPanel {
+            display: none;
+
+            background: rgba(
+                7,
+                17,
+                31,
+                0.96
+            );
+
+            border: 1px solid #22c55e;
+
+            border-radius: 14px;
+
+            padding: 15px;
+        }
+
+
+        #inspectionTitle {
+            margin: 0 0 6px;
+
+            font-size: 17px;
+
+            color: #86efac;
+        }
+
+
+        #inspectionProgress {
+            font-size: 12px;
+
+            color: #94a3b8;
+
+            margin-bottom: 8px;
+        }
+
+
+        #inspectionInstruction {
+            margin: 0 0 13px;
+
+            line-height: 1.45;
+
+            font-size: 14px;
+        }
+
+
+        #inspectionActions {
+            display: flex;
+
+            gap: 8px;
+        }
+
+
+        #inspectionActions button {
+            flex: 1;
+
+            padding: 11px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        #checkedButton {
+            background: #22c55e;
+
+            color: #052e16;
+        }
+
+
+        #cancelInspection {
+            background: #334155;
+
+            color: white;
         }
 
 
@@ -185,16 +266,11 @@
         }
 
     </style>
-
 </head>
 
 
 <body>
 
-
-    <!-- =========================
-         STATUS
-    ========================== -->
 
     <div id="info">
         Loading FixAR...
@@ -209,7 +285,7 @@
     <div id="arPanel">
 
 
-        <!-- Equipment Selector -->
+        <!-- EQUIPMENT SELECTOR -->
 
         <div id="equipmentSelector">
 
@@ -233,7 +309,7 @@
 
 
 
-        <!-- Editing Controls -->
+        <!-- OBJECT CONTROLS -->
 
         <div id="controls">
 
@@ -256,6 +332,48 @@
             <button id="moveButton">
                 Move
             </button>
+
+            <button id="inspectionButton">
+                Start Inspection
+            </button>
+
+        </div>
+
+
+
+        <!-- =========================
+             INSPECTION PANEL
+        ========================== -->
+
+        <div id="inspectionPanel">
+
+            <h3 id="inspectionTitle">
+                Equipment Inspection
+            </h3>
+
+
+            <div id="inspectionProgress">
+                Step 1 of 4
+            </div>
+
+
+            <p id="inspectionInstruction">
+                Inspection instruction
+            </p>
+
+
+            <div id="inspectionActions">
+
+                <button id="checkedButton">
+                    ✓ Mark Checked
+                </button>
+
+
+                <button id="cancelInspection">
+                    Cancel
+                </button>
+
+            </div>
 
         </div>
 
@@ -287,14 +405,8 @@
 
                 }
 
-
-                console.error(
-                    event.error
-                );
-
             }
         );
-
 
 
         window.addEventListener(
@@ -319,11 +431,6 @@
 
                 }
 
-
-                console.error(
-                    event.reason
-                );
-
             }
         );
 
@@ -332,15 +439,11 @@
 
 
     <!-- =========================
-         MAIN AR JAVASCRIPT
+         MAIN AR CODE
     ========================== -->
 
     <script type="module">
 
-
-        /* =========================
-           IMPORTS
-        ========================= */
 
         import * as THREE from
             "https://esm.sh/three@0.164.1";
@@ -356,7 +459,7 @@
 
 
         /* =========================
-           THREE.JS VARIABLES
+           THREE VARIABLES
         ========================= */
 
         let scene;
@@ -368,7 +471,6 @@
         let controller;
 
         let reticle;
-
 
 
         let hitTestSource =
@@ -402,7 +504,7 @@
 
 
         /* =========================
-           PLACED OBJECTS
+           PLACED EQUIPMENT
         ========================= */
 
         let placedConveyor =
@@ -423,7 +525,7 @@
 
 
         /* =========================
-           APPLICATION STATES
+           APP STATE
         ========================= */
 
         let placementMode =
@@ -434,8 +536,49 @@
             false;
 
 
+        let inspectionMode =
+            false;
+
+
         let ignoreSelectUntil =
             0;
+
+
+
+        /* =========================
+           INSPECTION STATE
+        ========================= */
+
+        let inspectionStep =
+            0;
+
+
+
+        const conveyorInspectionSteps = [
+
+            "Visually inspect the conveyor frame and confirm that the structure appears complete.",
+
+            "Inspect the belt or moving surface area and identify any visible obstruction or abnormal condition.",
+
+            "Inspect the conveyor support and drive area for visible damage or loose components.",
+
+            "Complete a final visual check of the equipment before simulated operation."
+
+        ];
+
+
+
+        const machineInspectionSteps = [
+
+            "Visually inspect the outer machine body for obvious damage or missing components.",
+
+            "Inspect the moving or operating area and identify possible obstruction points.",
+
+            "Check the support and connection areas for visible abnormalities.",
+
+            "Complete a final visual inspection before simulated operation."
+
+        ];
 
 
 
@@ -524,6 +667,48 @@
             );
 
 
+        const inspectionButton =
+            document.getElementById(
+                "inspectionButton"
+            );
+
+
+        const inspectionPanel =
+            document.getElementById(
+                "inspectionPanel"
+            );
+
+
+        const inspectionTitle =
+            document.getElementById(
+                "inspectionTitle"
+            );
+
+
+        const inspectionProgress =
+            document.getElementById(
+                "inspectionProgress"
+            );
+
+
+        const inspectionInstruction =
+            document.getElementById(
+                "inspectionInstruction"
+            );
+
+
+        const checkedButton =
+            document.getElementById(
+                "checkedButton"
+            );
+
+
+        const cancelInspection =
+            document.getElementById(
+                "cancelInspection"
+            );
+
+
 
         /* =========================
            MODEL URLS
@@ -567,14 +752,10 @@
 
 
 
-            /* Scene */
-
             scene =
                 new THREE.Scene();
 
 
-
-            /* Camera */
 
             camera =
                 new THREE.PerspectiveCamera(
@@ -591,8 +772,6 @@
                 );
 
 
-
-            /* Renderer */
 
             renderer =
                 new THREE.WebGLRenderer({
@@ -703,7 +882,7 @@
                RETICLE
             ========================= */
 
-            const reticleGeometry =
+            const geometry =
                 new THREE.RingGeometry(
 
                     0.07,
@@ -716,15 +895,13 @@
 
 
 
-            reticleGeometry.rotateX(
-
+            geometry.rotateX(
                 -Math.PI / 2
-
             );
 
 
 
-            const reticleMaterial =
+            const material =
                 new THREE.MeshBasicMaterial({
 
                     color: 0x00ffff,
@@ -738,9 +915,9 @@
             reticle =
                 new THREE.Mesh(
 
-                    reticleGeometry,
+                    geometry,
 
-                    reticleMaterial
+                    material
 
                 );
 
@@ -763,7 +940,7 @@
 
 
             /* =========================
-               XR CONTROLLER
+               CONTROLLER
             ========================= */
 
             controller =
@@ -790,7 +967,7 @@
 
 
             /* =========================
-               LOAD BOTH MODELS
+               LOAD MODELS
             ========================= */
 
             await loadModels();
@@ -798,7 +975,7 @@
 
 
             /* =========================
-               START AR BUTTON
+               AR BUTTON
             ========================= */
 
             const arButton =
@@ -850,13 +1027,8 @@
                 function () {
 
 
-                    /* Show our controls
-                       ONLY after AR starts
-                    */
-
                     arPanel.style.display =
                         "flex";
-
 
 
                     selectedEquipment =
@@ -875,6 +1047,10 @@
                         false;
 
 
+                    inspectionMode =
+                        false;
+
+
 
                     conveyorButton.classList.add(
                         "active"
@@ -890,6 +1066,9 @@
                     controls.style.display =
                         "none";
 
+
+                    inspectionPanel.style.display =
+                        "none";
 
 
                     info.textContent =
@@ -913,11 +1092,8 @@
                 function () {
 
 
-                    /* Hide our panel again */
-
                     arPanel.style.display =
                         "none";
-
 
 
                     hitTestSource =
@@ -932,11 +1108,6 @@
                         false;
 
 
-
-                    selectedObject =
-                        null;
-
-
                     placementMode =
                         true;
 
@@ -945,42 +1116,43 @@
                         false;
 
 
+                    inspectionMode =
+                        false;
+
+
+                    selectedObject =
+                        null;
+
+
+                    inspectionPanel.style.display =
+                        "none";
+
 
                     controls.style.display =
                         "none";
 
 
 
-                    if (
-                        placedConveyor
-                    ) {
-
+                    if (placedConveyor) {
 
                         scene.remove(
                             placedConveyor
                         );
 
-
                         placedConveyor =
                             null;
-
                     }
 
 
 
-                    if (
-                        placedMachine
-                    ) {
-
+                    if (placedMachine) {
 
                         scene.remove(
                             placedMachine
                         );
 
-
                         placedMachine =
                             null;
-
                     }
 
 
@@ -994,8 +1166,6 @@
 
 
 
-            /* Resize */
-
             window.addEventListener(
 
                 "resize",
@@ -1005,8 +1175,6 @@
             );
 
 
-
-            /* Render loop */
 
             renderer.setAnimationLoop(
 
@@ -1019,7 +1187,7 @@
 
 
         /* =========================
-           LOAD BOTH MODELS
+           LOAD MODELS
         ========================= */
 
         async function loadModels() {
@@ -1068,23 +1236,7 @@
                             undefined,
 
 
-                            function (error) {
-
-
-                                console.error(
-
-                                    "Conveyor load error:",
-
-                                    error
-
-                                );
-
-
-                                reject(
-                                    error
-                                );
-
-                            }
+                            reject
 
                         );
 
@@ -1132,23 +1284,7 @@
                             undefined,
 
 
-                            function (error) {
-
-
-                                console.error(
-
-                                    "Machine load error:",
-
-                                    error
-
-                                );
-
-
-                                reject(
-                                    error
-                                );
-
-                            }
+                            reject
 
                         );
 
@@ -1195,10 +1331,6 @@
 
 
 
-        /* =========================
-           PREPARE MODEL
-        ========================= */
-
         function prepareModel(
             model
         ) {
@@ -1228,10 +1360,6 @@
         }
 
 
-
-        /* =========================
-           CREATE MODEL
-        ========================= */
 
         function createModel(
             type
@@ -1285,7 +1413,7 @@
 
 
         /* =========================
-           CONVEYOR BUTTON
+           CONVEYOR SELECT
         ========================= */
 
         conveyorButton.addEventListener(
@@ -1295,16 +1423,17 @@
             function () {
 
 
-                ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                if (inspectionMode) {
+                    return;
+                }
 
+
+                ignoreSelectUntil =
+                    performance.now() + 600;
 
 
                 selectedEquipment =
                     "conveyor";
-
 
 
                 conveyorButton.classList.add(
@@ -1317,20 +1446,12 @@
                 );
 
 
-
                 repositionMode =
                     false;
 
 
 
-                /*
-                    Conveyor already exists:
-                    select it for editing
-                */
-
-                if (
-                    placedConveyor
-                ) {
+                if (placedConveyor) {
 
 
                     selectedObject =
@@ -1351,17 +1472,12 @@
 
                     info.textContent =
 
-                        "Conveyor selected - edit using controls";
+                        "Conveyor selected - edit or start inspection";
 
 
 
                 } else {
 
-
-                    /*
-                        Conveyor not yet placed:
-                        enter placement mode
-                    */
 
                     selectedObject =
                         null;
@@ -1388,7 +1504,7 @@
 
 
         /* =========================
-           MACHINE BUTTON
+           MACHINE SELECT
         ========================= */
 
         machineButton.addEventListener(
@@ -1398,16 +1514,17 @@
             function () {
 
 
-                ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                if (inspectionMode) {
+                    return;
+                }
 
+
+                ignoreSelectUntil =
+                    performance.now() + 600;
 
 
                 selectedEquipment =
                     "machine";
-
 
 
                 machineButton.classList.add(
@@ -1420,20 +1537,12 @@
                 );
 
 
-
                 repositionMode =
                     false;
 
 
 
-                /*
-                    Machine already exists:
-                    select it
-                */
-
-                if (
-                    placedMachine
-                ) {
+                if (placedMachine) {
 
 
                     selectedObject =
@@ -1454,17 +1563,12 @@
 
                     info.textContent =
 
-                        "Machine selected - edit using controls";
+                        "Machine selected - edit or start inspection";
 
 
 
                 } else {
 
-
-                    /*
-                        Machine does not exist:
-                        prepare second placement
-                    */
 
                     selectedObject =
                         null;
@@ -1480,7 +1584,7 @@
 
                     info.textContent =
 
-                        "Machine selected - scan and tap a new position";
+                        "Machine selected - scan and tap to place";
 
                 }
 
@@ -1491,25 +1595,23 @@
 
 
         /* =========================
-           XR TAP
+           AR TAP
         ========================= */
 
         function onSelect() {
 
 
-            /*
-                Prevent button press from also
-                becoming an AR tap
-            */
+            if (inspectionMode) {
+                return;
+            }
+
 
             if (
 
-                performance.now()
-                <
+                performance.now() <
                 ignoreSelectUntil
 
             ) {
-
 
                 return;
 
@@ -1517,9 +1619,7 @@
 
 
 
-            /* =========================
-               MOVE EXISTING MODEL
-            ========================= */
+            /* MOVE */
 
             if (
 
@@ -1532,9 +1632,7 @@
             ) {
 
 
-                if (
-                    !reticle.visible
-                ) {
+                if (!reticle.visible) {
 
 
                     info.textContent =
@@ -1561,11 +1659,6 @@
 
 
 
-                /*
-                    ONLY position changes.
-                    Rotation and scale remain.
-                */
-
                 selectedObject.position.copy(
 
                     newPosition
@@ -1591,12 +1684,7 @@
 
                 info.textContent =
 
-                    selectedEquipment ===
-                    "conveyor"
-
-                    ? "Conveyor moved successfully"
-
-                    : "Machine moved successfully";
+                    "Equipment moved successfully";
 
 
 
@@ -1606,14 +1694,9 @@
 
 
 
-            /* =========================
-               PLACE NEW MODEL
-            ========================= */
+            /* PLACE */
 
-            if (
-                !placementMode
-            ) {
-
+            if (!placementMode) {
 
                 return;
 
@@ -1621,9 +1704,7 @@
 
 
 
-            if (
-                !reticle.visible
-            ) {
+            if (!reticle.visible) {
 
 
                 info.textContent =
@@ -1639,16 +1720,12 @@
 
             const newObject =
                 createModel(
-
                     selectedEquipment
-
                 );
 
 
 
-            if (
-                !newObject
-            ) {
+            if (!newObject) {
 
 
                 info.textContent =
@@ -1676,21 +1753,15 @@
 
 
             newObject.position.copy(
-
                 position
-
             );
 
 
 
             newObject.rotation.set(
-
                 0,
-
                 0,
-
                 0
-
             );
 
 
@@ -1708,26 +1779,15 @@
 
 
             newObject.userData.currentScale =
-
                 DEFAULT_SCALE;
 
 
 
-            newObject.userData.type =
-
-                selectedEquipment;
-
-
-
             scene.add(
-
                 newObject
-
             );
 
 
-
-            /* Save independently */
 
             if (
 
@@ -1739,7 +1799,6 @@
 
                 placedConveyor =
                     newObject;
-
 
 
             } else {
@@ -1772,35 +1831,21 @@
 
 
 
-            if (
+            info.textContent =
 
                 selectedEquipment ===
                 "conveyor"
 
-            ) {
+                ? "Conveyor placed - ready for inspection"
 
-
-                info.textContent =
-
-                    "Conveyor placed - select Machine to add second equipment";
-
-
-
-            } else {
-
-
-                info.textContent =
-
-                    "Machine placed successfully";
-
-            }
+                : "Machine placed - ready for inspection";
 
         }
 
 
 
         /* =========================
-           ROTATE LEFT
+           ROTATION
         ========================= */
 
         rotateLeft.addEventListener(
@@ -1811,10 +1856,7 @@
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
-
+                    performance.now() + 500;
 
 
                 if (
@@ -1825,8 +1867,11 @@
 
                     repositionMode
 
-                ) {
+                    ||
 
+                    inspectionMode
+
+                ) {
 
                     return;
 
@@ -1840,21 +1885,11 @@
                         15
                     );
 
-
-
-                info.textContent =
-
-                    "Selected equipment rotated left";
-
             }
 
         );
 
 
-
-        /* =========================
-           ROTATE RIGHT
-        ========================= */
 
         rotateRight.addEventListener(
 
@@ -1864,10 +1899,7 @@
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
-
+                    performance.now() + 500;
 
 
                 if (
@@ -1878,8 +1910,11 @@
 
                     repositionMode
 
-                ) {
+                    ||
 
+                    inspectionMode
+
+                ) {
 
                     return;
 
@@ -1893,12 +1928,6 @@
                         15
                     );
 
-
-
-                info.textContent =
-
-                    "Selected equipment rotated right";
-
             }
 
         );
@@ -1906,7 +1935,7 @@
 
 
         /* =========================
-           SIZE DOWN
+           SIZE
         ========================= */
 
         sizeDown.addEventListener(
@@ -1917,10 +1946,7 @@
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
-
+                    performance.now() + 500;
 
 
                 if (
@@ -1931,8 +1957,11 @@
 
                     repositionMode
 
-                ) {
+                    ||
 
+                    inspectionMode
+
+                ) {
 
                     return;
 
@@ -1943,8 +1972,8 @@
                 let scale =
 
                     selectedObject
-                    .userData
-                    .currentScale;
+                        .userData
+                        .currentScale;
 
 
 
@@ -1983,27 +2012,11 @@
 
                 );
 
-
-
-                info.textContent =
-
-                    "Size: "
-                    +
-                    Math.round(
-                        scale * 100
-                    )
-                    +
-                    "%";
-
             }
 
         );
 
 
-
-        /* =========================
-           SIZE UP
-        ========================= */
 
         sizeUp.addEventListener(
 
@@ -2013,10 +2026,7 @@
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
-
+                    performance.now() + 500;
 
 
                 if (
@@ -2027,8 +2037,11 @@
 
                     repositionMode
 
-                ) {
+                    ||
 
+                    inspectionMode
+
+                ) {
 
                     return;
 
@@ -2039,8 +2052,8 @@
                 let scale =
 
                     selectedObject
-                    .userData
-                    .currentScale;
+                        .userData
+                        .currentScale;
 
 
 
@@ -2079,18 +2092,6 @@
 
                 );
 
-
-
-                info.textContent =
-
-                    "Size: "
-                    +
-                    Math.round(
-                        scale * 100
-                    )
-                    +
-                    "%";
-
             }
 
         );
@@ -2109,10 +2110,7 @@
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
-
+                    performance.now() + 600;
 
 
                 if (
@@ -2146,11 +2144,6 @@
 
 
 
-                reticle.visible =
-                    false;
-
-
-
                 info.textContent =
 
                     "Move mode - scan and tap a new position";
@@ -2162,7 +2155,254 @@
 
 
         /* =========================
-           HIT TEST SOURCE
+           START INSPECTION
+        ========================= */
+
+        inspectionButton.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+                    performance.now() + 600;
+
+
+
+                if (
+                    !selectedObject
+                ) {
+
+
+                    info.textContent =
+
+                        "Place and select equipment first";
+
+
+                    return;
+
+                }
+
+
+
+                inspectionMode =
+                    true;
+
+
+
+                placementMode =
+                    false;
+
+
+
+                repositionMode =
+                    false;
+
+
+
+                inspectionStep =
+                    0;
+
+
+
+                controls.style.display =
+                    "none";
+
+
+
+                inspectionPanel.style.display =
+                    "block";
+
+
+
+                updateInspectionStep();
+
+            }
+
+        );
+
+
+
+        /* =========================
+           UPDATE INSPECTION STEP
+        ========================= */
+
+        function updateInspectionStep() {
+
+
+            const steps =
+
+                selectedEquipment ===
+                "conveyor"
+
+                ? conveyorInspectionSteps
+
+                : machineInspectionSteps;
+
+
+
+            inspectionTitle.textContent =
+
+                selectedEquipment ===
+                "conveyor"
+
+                ? "Conveyor Inspection"
+
+                : "Machine Inspection";
+
+
+
+            inspectionProgress.textContent =
+
+                "Step "
+                +
+                (inspectionStep + 1)
+                +
+                " of "
+                +
+                steps.length;
+
+
+
+            inspectionInstruction.textContent =
+
+                steps[
+                    inspectionStep
+                ];
+
+
+
+            info.textContent =
+
+                "Inspect the selected equipment and mark the step when completed";
+
+        }
+
+
+
+        /* =========================
+           MARK CHECKED
+        ========================= */
+
+        checkedButton.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+                    performance.now() + 500;
+
+
+
+                const steps =
+
+                    selectedEquipment ===
+                    "conveyor"
+
+                    ? conveyorInspectionSteps
+
+                    : machineInspectionSteps;
+
+
+
+                inspectionStep++;
+
+
+
+                if (
+
+                    inspectionStep >=
+                    steps.length
+
+                ) {
+
+
+                    inspectionMode =
+                        false;
+
+
+
+                    inspectionPanel.style.display =
+                        "none";
+
+
+
+                    controls.style.display =
+                        "flex";
+
+
+
+                    info.textContent =
+
+                        "✓ Inspection training completed successfully";
+
+
+
+                    return;
+
+                }
+
+
+
+                updateInspectionStep();
+
+            }
+
+        );
+
+
+
+        /* =========================
+           CANCEL INSPECTION
+        ========================= */
+
+        cancelInspection.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+                    performance.now() + 500;
+
+
+
+                inspectionMode =
+                    false;
+
+
+
+                inspectionStep =
+                    0;
+
+
+
+                inspectionPanel.style.display =
+                    "none";
+
+
+
+                controls.style.display =
+                    "flex";
+
+
+
+                info.textContent =
+
+                    "Inspection cancelled";
+
+            }
+
+        );
+
+
+
+        /* =========================
+           HIT TEST
         ========================= */
 
         async function requestHitTestSource() {
@@ -2176,10 +2416,7 @@
 
 
 
-                if (
-                    !session
-                ) {
-
+                if (!session) {
 
                     return;
 
@@ -2224,7 +2461,6 @@
                             false;
 
 
-
                         hitTestSource =
                             null;
 
@@ -2238,13 +2474,8 @@
 
 
                 console.error(
-
-                    "Hit Test Error:",
-
                     error
-
                 );
-
 
 
                 hitTestSourceRequested =
@@ -2261,10 +2492,6 @@
         }
 
 
-
-        /* =========================
-           WINDOW RESIZE
-        ========================= */
 
         function onResize() {
 
@@ -2294,7 +2521,7 @@
 
 
         /* =========================
-           RENDER LOOP
+           RENDER
         ========================= */
 
         function render(
@@ -2303,19 +2530,12 @@
         ) {
 
 
-            if (
-                frame
-            ) {
+            if (frame) {
 
-
-                /*
-                    Request hit test once
-                */
 
                 if (
 
-                    hitTestSourceRequested
-                    ===
+                    hitTestSourceRequested ===
                     false
 
                 ) {
@@ -2332,19 +2552,13 @@
 
 
 
-                /*
-                    Hit testing is active when:
-
-                    1. placing new equipment
-
-                    OR
-
-                    2. moving existing equipment
-                */
-
                 if (
 
                     hitTestSource
+
+                    &&
+
+                    !inspectionMode
 
                     &&
 
@@ -2378,9 +2592,7 @@
 
                     if (
 
-                        results.length
-                        >
-                        0
+                        results.length > 0
 
                     ) {
 
@@ -2393,16 +2605,12 @@
                         const pose =
 
                             hit.getPose(
-
                                 referenceSpace
-
                             );
 
 
 
-                        if (
-                            pose
-                        ) {
+                        if (pose) {
 
 
                             reticle.visible =
@@ -2426,7 +2634,6 @@
                                 info.textContent =
 
                                     "New position detected - tap to move";
-
 
 
                             } else {
@@ -2465,7 +2672,6 @@
                                 "Move mode - scan for a new surface";
 
 
-
                         } else {
 
 
@@ -2495,7 +2701,6 @@
 
 
     </script>
-
 
 </body>
 
