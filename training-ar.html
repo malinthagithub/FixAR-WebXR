@@ -12,6 +12,7 @@
     <title>FixAR | AR Training</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -36,7 +37,9 @@
             padding: 12px 15px;
 
             background: rgba(0, 0, 0, 0.78);
+
             border: 1px solid rgba(56, 189, 248, 0.5);
+
             border-radius: 10px;
 
             text-align: center;
@@ -44,29 +47,77 @@
 
             z-index: 100;
         }
+
+        #controls {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            display: none;
+            gap: 10px;
+
+            z-index: 100;
+        }
+
+        #controls button {
+            padding: 12px 18px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: rgba(7, 17, 31, 0.9);
+            color: white;
+
+            border: 1px solid #38bdf8;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 
 <body>
+
 
     <div id="info">
         Starting FixAR...
     </div>
 
 
-    <!-- Show JavaScript errors directly on screen -->
+    <div id="controls">
+
+        <button id="rotateLeft">
+            ↶ Rotate Left
+        </button>
+
+        <button id="rotateRight">
+            Rotate Right ↷
+        </button>
+
+    </div>
+
+
     <script>
-        window.addEventListener("error", function (event) {
 
-            const info = document.getElementById("info");
+        window.addEventListener(
+            "error",
+            function (event) {
 
-            if (info) {
-                info.textContent =
-                    "JavaScript Error: " + event.message;
+                const info =
+                    document.getElementById("info");
+
+                if (info) {
+
+                    info.textContent =
+                        "JavaScript Error: "
+                        + event.message;
+
+                }
+
             }
-
-            console.error(event.error);
-        });
+        );
 
 
         window.addEventListener(
@@ -77,26 +128,26 @@
                     document.getElementById("info");
 
                 if (info) {
+
                     info.textContent =
-                        "Error: " +
-                        (
-                            event.reason?.message ||
-                            event.reason ||
+                        "Error: "
+                        + (
+                            event.reason?.message
+                            ||
+                            event.reason
+                            ||
                             "Unknown error"
                         );
+
                 }
 
-                console.error(event.reason);
             }
         );
+
     </script>
 
 
     <script type="module">
-
-        // ----------------------------------
-        // IMPORTS
-        // ----------------------------------
 
         import * as THREE from
             "https://esm.sh/three@0.164.1";
@@ -108,9 +159,9 @@
             "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
 
 
-        // ----------------------------------
+        // ----------------------------
         // VARIABLES
-        // ----------------------------------
+        // ----------------------------
 
         let scene;
         let camera;
@@ -132,6 +183,15 @@
         const info =
             document.getElementById("info");
 
+        const controls =
+            document.getElementById("controls");
+
+        const rotateLeft =
+            document.getElementById("rotateLeft");
+
+        const rotateRight =
+            document.getElementById("rotateRight");
+
 
         const MODEL_URL =
             new URL(
@@ -143,28 +203,31 @@
         init();
 
 
-        // ----------------------------------
-        // INITIALIZE
-        // ----------------------------------
+        // ----------------------------
+        // INITIAL SETUP
+        // ----------------------------
 
         async function init() {
+
 
             info.textContent =
                 "Loading FixAR...";
 
 
             // Scene
-            scene = new THREE.Scene();
+            scene =
+                new THREE.Scene();
 
 
             // Camera
-            camera = new THREE.PerspectiveCamera(
-                70,
-                window.innerWidth /
-                window.innerHeight,
-                0.01,
-                20
-            );
+            camera =
+                new THREE.PerspectiveCamera(
+                    70,
+                    window.innerWidth /
+                    window.innerHeight,
+                    0.01,
+                    20
+                );
 
 
             // Renderer
@@ -189,7 +252,8 @@
             );
 
 
-            renderer.xr.enabled = true;
+            renderer.xr.enabled =
+                true;
 
 
             renderer.outputColorSpace =
@@ -201,9 +265,9 @@
             );
 
 
-            // ----------------------------------
+            // ----------------------------
             // LIGHTING
-            // ----------------------------------
+            // ----------------------------
 
             const hemisphereLight =
                 new THREE.HemisphereLight(
@@ -237,9 +301,9 @@
             );
 
 
-            // ----------------------------------
+            // ----------------------------
             // RETICLE
-            // ----------------------------------
+            // ----------------------------
 
             const reticleGeometry =
                 new THREE.RingGeometry(
@@ -256,8 +320,10 @@
 
             const reticleMaterial =
                 new THREE.MeshBasicMaterial({
+
                     color: 0x00ffff,
                     side: THREE.DoubleSide
+
                 });
 
 
@@ -281,9 +347,9 @@
             );
 
 
-            // ----------------------------------
+            // ----------------------------
             // XR CONTROLLER
-            // ----------------------------------
+            // ----------------------------
 
             controller =
                 renderer.xr.getController(0);
@@ -300,25 +366,30 @@
             );
 
 
-            // ----------------------------------
-            // LOAD MODEL
-            // ----------------------------------
+            // ----------------------------
+            // LOAD CONVEYOR
+            // ----------------------------
 
             await loadConveyor();
 
 
-            // ----------------------------------
+            // ----------------------------
             // AR BUTTON
-            // ----------------------------------
+            // ----------------------------
 
             const arButton =
                 ARButton.createButton(
+
                     renderer,
+
                     {
+
                         requiredFeatures: [
                             "hit-test"
                         ]
+
                     }
+
                 );
 
 
@@ -327,45 +398,73 @@
             );
 
 
-            // ----------------------------------
+            // ----------------------------
             // SESSION START
-            // ----------------------------------
+            // ----------------------------
 
             renderer.xr.addEventListener(
+
                 "sessionstart",
+
                 function () {
 
-                    objectPlaced = false;
+
+                    objectPlaced =
+                        false;
+
 
                     info.textContent =
                         "Move your phone slowly to scan the floor";
 
                 }
+
             );
 
 
-            // ----------------------------------
+            // ----------------------------
             // SESSION END
-            // ----------------------------------
+            // ----------------------------
 
             renderer.xr.addEventListener(
+
                 "sessionend",
+
                 function () {
 
-                    hitTestSource = null;
-                    hitTestSourceRequested = false;
 
-                    reticle.visible = false;
-                    objectPlaced = false;
+                    hitTestSource =
+                        null;
 
 
-                    if (placedConveyor) {
+                    hitTestSourceRequested =
+                        false;
+
+
+                    reticle.visible =
+                        false;
+
+
+                    objectPlaced =
+                        false;
+
+
+                    controls.style.display =
+                        "none";
+
+
+                    if (
+                        placedConveyor
+                    ) {
+
 
                         scene.remove(
                             placedConveyor
                         );
 
-                        placedConveyor = null;
+
+                        placedConveyor =
+                            null;
+
                     }
 
 
@@ -373,17 +472,21 @@
                         "AR session ended";
 
                 }
+
             );
 
 
             // Resize
             window.addEventListener(
+
                 "resize",
+
                 onWindowResize
+
             );
 
 
-            // Render
+            // Render loop
             renderer.setAnimationLoop(
                 render
             );
@@ -391,18 +494,19 @@
         }
 
 
-        // ----------------------------------
-        // LOAD CONVEYOR
-        // ----------------------------------
+        // ----------------------------
+        // LOAD MODEL
+        // ----------------------------
 
         async function loadConveyor() {
+
 
             info.textContent =
                 "Checking conveyor model...";
 
 
-            // First confirm model file exists
             try {
+
 
                 const response =
                     await fetch(
@@ -413,30 +517,34 @@
                     );
 
 
-                if (!response.ok) {
+                if (
+                    !response.ok
+                ) {
+
 
                     throw new Error(
-                        "Model file HTTP " +
-                        response.status
+
+                        "Model file HTTP "
+                        + response.status
+
                     );
+
                 }
 
 
-                console.log(
-                    "Model file found:",
-                    MODEL_URL
-                );
+            } catch (
+                error
+            ) {
 
-
-            } catch (error) {
-
-                console.error(error);
 
                 info.textContent =
-                    "Conveyor file not found: " +
-                    error.message;
+
+                    "Conveyor file not found: "
+                    + error.message;
+
 
                 throw error;
+
             }
 
 
@@ -449,6 +557,7 @@
 
 
             return new Promise(
+
                 function (
                     resolve,
                     reject
@@ -461,7 +570,10 @@
 
 
                         // SUCCESS
-                        function (gltf) {
+                        function (
+                            gltf
+                        ) {
+
 
                             conveyorTemplate =
                                 gltf.scene;
@@ -474,11 +586,17 @@
                             );
 
 
-                            // Make sure meshes render
                             conveyorTemplate.traverse(
-                                function (child) {
 
-                                    if (child.isMesh) {
+                                function (
+                                    child
+                                ) {
+
+
+                                    if (
+                                        child.isMesh
+                                    ) {
+
 
                                         child.frustumCulled =
                                             false;
@@ -486,19 +604,16 @@
                                     }
 
                                 }
+
                             );
 
 
-                            modelReady = true;
+                            modelReady =
+                                true;
 
 
                             info.textContent =
                                 "Conveyor ready - press START AR";
-
-
-                            console.log(
-                                "Conveyor loaded successfully"
-                            );
 
 
                             resolve();
@@ -507,36 +622,50 @@
 
 
                         // PROGRESS
-                        function (xhr) {
+                        function (
+                            xhr
+                        ) {
+
 
                             if (
-                                xhr.total &&
+                                xhr.total
+                                &&
                                 xhr.total > 0
                             ) {
 
+
                                 const percent =
                                     Math.round(
+
                                         (
-                                            xhr.loaded /
+                                            xhr.loaded
+                                            /
                                             xhr.total
-                                        ) * 100
+                                        )
+                                        *
+                                        100
+
                                     );
 
 
                                 info.textContent =
-                                    "Loading conveyor: " +
-                                    percent +
-                                    "%";
+
+                                    "Loading conveyor: "
+                                    + percent
+                                    + "%";
+
                             }
 
                         },
 
 
                         // ERROR
-                        function (error) {
+                        function (
+                            error
+                        ) {
+
 
                             console.error(
-                                "GLTF Error:",
                                 error
                             );
 
@@ -545,53 +674,74 @@
                                 "Unable to load conveyor GLB";
 
 
-                            reject(error);
+                            reject(
+                                error
+                            );
 
                         }
 
                     );
 
                 }
+
             );
 
         }
 
 
-        // ----------------------------------
-        // PLACE MODEL
-        // ----------------------------------
+        // ----------------------------
+        // PLACE CONVEYOR
+        // ----------------------------
 
         function onSelect() {
 
-            if (!modelReady) {
+
+            if (
+                !modelReady
+            ) {
+
 
                 info.textContent =
                     "Please wait - conveyor is loading";
 
+
                 return;
+
             }
 
 
-            if (!reticle.visible) {
+            if (
+                !reticle.visible
+            ) {
+
 
                 info.textContent =
                     "Surface not detected yet";
 
+
                 return;
+
             }
 
 
-            if (objectPlaced) {
+            if (
+                objectPlaced
+            ) {
+
 
                 info.textContent =
                     "Conveyor already placed";
 
+
                 return;
+
             }
 
 
             placedConveyor =
-                conveyorTemplate.clone(true);
+                conveyorTemplate.clone(
+                    true
+                );
 
 
             const position =
@@ -608,7 +758,6 @@
             );
 
 
-            // Keep equipment upright
             placedConveyor.rotation.set(
                 0,
                 0,
@@ -629,38 +778,122 @@
                 false;
 
 
+            controls.style.display =
+                "flex";
+
+
             info.textContent =
-                "Conveyor placed successfully";
+                "Conveyor placed - use controls to inspect";
 
         }
 
 
-        // ----------------------------------
-        // REQUEST HIT TEST
-        // ----------------------------------
+        // ----------------------------
+        // ROTATE LEFT
+        // ----------------------------
+
+        rotateLeft.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                if (
+                    !placedConveyor
+                ) {
+
+                    return;
+
+                }
+
+
+                placedConveyor.rotation.y +=
+
+                    THREE.MathUtils.degToRad(
+                        15
+                    );
+
+
+                info.textContent =
+                    "Conveyor rotated left";
+
+            }
+
+        );
+
+
+        // ----------------------------
+        // ROTATE RIGHT
+        // ----------------------------
+
+        rotateRight.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                if (
+                    !placedConveyor
+                ) {
+
+                    return;
+
+                }
+
+
+                placedConveyor.rotation.y -=
+
+                    THREE.MathUtils.degToRad(
+                        15
+                    );
+
+
+                info.textContent =
+                    "Conveyor rotated right";
+
+            }
+
+        );
+
+
+        // ----------------------------
+        // HIT TEST
+        // ----------------------------
 
         async function requestHitTestSource() {
 
+
             try {
+
 
                 const session =
                     renderer.xr.getSession();
 
 
-                if (!session) {
+                if (
+                    !session
+                ) {
+
                     return;
+
                 }
 
 
                 const viewerSpace =
+
                     await session.requestReferenceSpace(
                         "viewer"
                     );
 
 
                 hitTestSource =
+
                     await session.requestHitTestSource({
+
                         space: viewerSpace
+
                     });
 
 
@@ -669,20 +902,28 @@
 
 
                 session.addEventListener(
+
                     "end",
+
                     function () {
+
 
                         hitTestSourceRequested =
                             false;
+
 
                         hitTestSource =
                             null;
 
                     }
+
                 );
 
 
-            } catch (error) {
+            } catch (
+                error
+            ) {
+
 
                 console.error(
                     "Hit Test Error:",
@@ -702,14 +943,17 @@
         }
 
 
-        // ----------------------------------
+        // ----------------------------
         // RESIZE
-        // ----------------------------------
+        // ----------------------------
 
         function onWindowResize() {
 
+
             camera.aspect =
-                window.innerWidth /
+
+                window.innerWidth
+                /
                 window.innerHeight;
 
 
@@ -717,27 +961,36 @@
 
 
             renderer.setSize(
+
                 window.innerWidth,
                 window.innerHeight
+
             );
 
         }
 
 
-        // ----------------------------------
+        // ----------------------------
         // RENDER LOOP
-        // ----------------------------------
+        // ----------------------------
 
         function render(
             timestamp,
             frame
         ) {
 
-            if (frame) {
+
+            if (
+                frame
+            ) {
+
 
                 if (
-                    hitTestSourceRequested === false
+                    hitTestSourceRequested
+                    ===
+                    false
                 ) {
+
 
                     hitTestSourceRequested =
                         true;
@@ -749,35 +1002,48 @@
 
 
                 if (
-                    hitTestSource &&
-                    objectPlaced === false
+                    hitTestSource
+                    &&
+                    objectPlaced
+                    ===
+                    false
                 ) {
 
+
                     const referenceSpace =
+
                         renderer.xr.getReferenceSpace();
 
 
                     const results =
+
                         frame.getHitTestResults(
                             hitTestSource
                         );
 
 
                     if (
-                        results.length > 0
+                        results.length
+                        >
+                        0
                     ) {
+
 
                         const hit =
                             results[0];
 
 
                         const pose =
+
                             hit.getPose(
                                 referenceSpace
                             );
 
 
-                        if (pose) {
+                        if (
+                            pose
+                        ) {
+
 
                             reticle.visible =
                                 true;
@@ -789,17 +1055,21 @@
 
 
                             info.textContent =
+
                                 "Surface detected - tap to place conveyor";
 
                         }
 
+
                     } else {
+
 
                         reticle.visible =
                             false;
 
 
                         info.textContent =
+
                             "Move your phone slowly to scan the floor";
 
                     }
@@ -817,6 +1087,7 @@
         }
 
     </script>
+
 
 </body>
 
