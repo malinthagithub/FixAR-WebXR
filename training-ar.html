@@ -10,13 +10,15 @@
           initial-scale=1.0,
           user-scalable=no">
 
-    <title>FixAR | AR Training</title>
+    <title>FixAR | Guided AR Equipment Training</title>
+
 
     <style>
 
         * {
             box-sizing: border-box;
         }
+
 
         body {
             margin: 0;
@@ -28,11 +30,13 @@
             color: white;
         }
 
+
         /* =====================================
            TOP STATUS
         ===================================== */
 
         #info {
+
             position: fixed;
 
             top: 10px;
@@ -41,11 +45,11 @@
             transform: translateX(-50%);
 
             width: calc(100% - 20px);
-            max-width: 450px;
+            max-width: 460px;
 
             padding: 9px 12px;
 
-            background: rgba(0, 0, 0, 0.80);
+            background: rgba(0, 0, 0, 0.82);
 
             border: 1px solid #38bdf8;
 
@@ -60,20 +64,28 @@
             pointer-events: none;
         }
 
+
+
         /* =====================================
            MAIN AR PANEL
         ===================================== */
 
         #arPanel {
+
             position: fixed;
 
             left: 50%;
+
+            /*
+                Space reserved for STOP AR
+            */
+
             bottom: 70px;
 
             transform: translateX(-50%);
 
             width: calc(100% - 16px);
-            max-width: 460px;
+            max-width: 470px;
 
             display: none;
 
@@ -84,11 +96,14 @@
             z-index: 9999;
         }
 
+
+
         /* =====================================
            EQUIPMENT SELECTOR
         ===================================== */
 
         #equipmentSelector {
+
             display: grid;
 
             grid-template-columns:
@@ -97,12 +112,14 @@
             gap: 7px;
         }
 
+
         #equipmentSelector button {
-            min-height: 40px;
+
+            min-height: 42px;
 
             padding: 8px 10px;
 
-            border-radius: 9px;
+            border-radius: 10px;
 
             border: 2px solid #38bdf8;
 
@@ -110,7 +127,7 @@
                 7,
                 17,
                 31,
-                0.95
+                0.96
             );
 
             color: white;
@@ -119,17 +136,22 @@
             font-weight: bold;
         }
 
+
         #equipmentSelector button.active {
+
             background: #38bdf8;
 
             color: #07111f;
         }
 
+
+
         /* =====================================
-           COMPACT CONTROL GRID
+           NORMAL EQUIPMENT CONTROLS
         ===================================== */
 
         #controls {
+
             display: none;
 
             grid-template-columns:
@@ -138,10 +160,12 @@
             gap: 6px;
         }
 
+
         #controls button {
+
             min-width: 0;
 
-            min-height: 39px;
+            min-height: 40px;
 
             padding: 7px 4px;
 
@@ -161,45 +185,95 @@
             font-size: 11px;
             font-weight: bold;
 
-            white-space: normal;
-
             line-height: 1.15;
         }
 
+
         #moveButton {
+
             border-color: #f59e0b;
         }
 
+
         #removeButton {
+
             border-color: #ef4444;
 
             color: #fecaca;
         }
 
+
         #inspectionButton {
+
             border-color: #22c55e;
 
             color: #bbf7d0;
         }
 
+
         #resetButton {
+
             border-color: #a78bfa;
 
             color: #ddd6fe;
         }
 
-        button:active {
-            transform: scale(0.96);
+
+
+        /* =====================================
+           INSPECTION MANIPULATION CONTROLS
+
+           User can still rotate and resize
+           while inspecting.
+        ===================================== */
+
+        #inspectionControls {
+
+            display: none;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 6px;
         }
+
+
+        #inspectionControls button {
+
+            min-width: 0;
+
+            min-height: 38px;
+
+            padding: 7px 4px;
+
+            border-radius: 9px;
+
+            border: 1px solid #f59e0b;
+
+            background: rgba(
+                7,
+                17,
+                31,
+                0.97
+            );
+
+            color: white;
+
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+
 
         /* =====================================
            INSPECTION PANEL
         ===================================== */
 
         #inspectionPanel {
+
             display: none;
 
-            padding: 12px;
+            padding: 13px;
 
             background: rgba(
                 7,
@@ -210,81 +284,222 @@
 
             border: 1px solid #22c55e;
 
-            border-radius: 12px;
+            border-radius: 13px;
 
-            max-height: 35vh;
+            max-height: 42vh;
 
             overflow-y: auto;
         }
 
+
+        #inspectionHeader {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 5px;
+        }
+
+
         #inspectionTitle {
-            margin: 0 0 4px;
+
+            margin: 0;
 
             color: #86efac;
 
             font-size: 16px;
         }
 
-        #inspectionProgress {
-            margin-bottom: 6px;
 
-            color: #94a3b8;
+        #inspectionProgress {
+
+            color: #cbd5e1;
 
             font-size: 11px;
+
+            white-space: nowrap;
         }
 
+
+
+        /* Progress bar */
+
+        #progressTrack {
+
+            width: 100%;
+            height: 5px;
+
+            background: #334155;
+
+            border-radius: 5px;
+
+            overflow: hidden;
+
+            margin: 7px 0 10px;
+        }
+
+
+        #progressBar {
+
+            width: 25%;
+            height: 100%;
+
+            background: #22c55e;
+
+            transition: width 0.25s ease;
+        }
+
+
+
+        #inspectionStepTitle {
+
+            margin: 0 0 5px;
+
+            color: #fbbf24;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+
         #inspectionInstruction {
+
             margin: 0 0 8px;
+
+            line-height: 1.4;
+
+            font-size: 13px;
+
+            color: #f8fafc;
+        }
+
+
+        #inspectionHint {
+
+            margin: 0 0 10px;
+
+            font-size: 11px;
 
             line-height: 1.35;
 
-            font-size: 13px;
+            color: #94a3b8;
         }
 
-        #inspectionFeedback {
-            min-height: 18px;
 
-            margin-bottom: 8px;
+        #trainingNotice {
 
-            color: #7dd3fc;
+            margin: 0 0 10px;
+
+            padding: 7px 9px;
+
+            background: rgba(
+                245,
+                158,
+                11,
+                0.10
+            );
+
+            border-left: 3px solid #f59e0b;
+
+            border-radius: 5px;
+
+            color: #fde68a;
+
+            font-size: 10px;
+
+            line-height: 1.35;
+        }
+
+
+
+        /* =====================================
+           INSPECTION ACTIONS
+        ===================================== */
+
+        #inspectionActions {
+
+            display: grid;
+
+            grid-template-columns:
+                2fr 1fr;
+
+            gap: 7px;
+        }
+
+
+        #checkedNextButton {
+
+            min-height: 42px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #22c55e;
+
+            color: #052e16;
 
             font-size: 12px;
 
             font-weight: bold;
         }
 
-        #cancelInspection {
-            width: 100%;
 
-            padding: 9px;
+        #cancelInspection {
+
+            min-height: 42px;
 
             border: none;
 
-            border-radius: 8px;
+            border-radius: 9px;
 
             background: #475569;
 
             color: white;
 
-            font-size: 12px;
+            font-size: 11px;
 
             font-weight: bold;
         }
 
+
+
+        button:active {
+
+            transform: scale(0.96);
+        }
+
+
+
         /* =====================================
-           EXTRA SMALL PHONES
+           SMALL PHONES
         ===================================== */
 
         @media (max-width: 360px) {
 
-            #controls button {
+            #controls button,
+            #inspectionControls button {
+
                 font-size: 10px;
 
                 padding: 6px 2px;
             }
 
+
             #arPanel {
+
                 bottom: 65px;
+            }
+
+
+            #inspectionInstruction {
+
+                font-size: 12px;
             }
 
         }
@@ -298,12 +513,15 @@
 
 
     <!-- =====================================
-         STATUS
+         TOP STATUS
     ====================================== -->
 
     <div id="info">
+
         Loading FixAR...
+
     </div>
+
 
 
     <!-- =====================================
@@ -313,9 +531,12 @@
     <div id="arPanel">
 
 
-        <!-- EQUIPMENT SELECTION -->
+        <!-- ================================
+             EQUIPMENT SELECTION
+        ================================= -->
 
         <div id="equipmentSelector">
+
 
             <button
                 id="conveyorButton"
@@ -332,89 +553,208 @@
 
             </button>
 
+
         </div>
 
 
-        <!-- =================================
-             COMPACT CONTROLS
-        ================================== -->
+
+        <!-- ================================
+             NORMAL CONTROLS
+        ================================= -->
 
         <div id="controls">
 
+
             <button id="rotateLeft">
+
                 ↶ Rotate
+
             </button>
 
 
             <button id="rotateRight">
+
                 Rotate ↷
+
             </button>
 
 
             <button id="sizeDown">
+
                 Size −
+
             </button>
 
 
             <button id="sizeUp">
+
                 Size +
+
             </button>
 
 
             <button id="moveButton">
+
                 Move
+
             </button>
 
 
             <button id="removeButton">
+
                 Remove
+
             </button>
 
 
             <button id="inspectionButton">
+
                 Inspect
+
             </button>
 
 
             <button id="resetButton">
+
                 Restart
+
             </button>
+
 
         </div>
 
 
-        <!-- =================================
-             INSPECTION UI
-        ================================== -->
+
+        <!-- ================================
+             INSPECTION MANIPULATION
+        ================================= -->
+
+        <div id="inspectionControls">
+
+
+            <button id="inspectRotateLeft">
+
+                ↶ Rotate
+
+            </button>
+
+
+            <button id="inspectRotateRight">
+
+                Rotate ↷
+
+            </button>
+
+
+            <button id="inspectSizeDown">
+
+                Size −
+
+            </button>
+
+
+            <button id="inspectSizeUp">
+
+                Size +
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- ================================
+             PROFESSIONAL INSPECTION PANEL
+        ================================= -->
 
         <div id="inspectionPanel">
 
-            <h3 id="inspectionTitle">
-                Equipment Inspection
-            </h3>
+
+            <div id="inspectionHeader">
+
+                <h3 id="inspectionTitle">
+
+                    Equipment Inspection
+
+                </h3>
 
 
-            <div id="inspectionProgress">
-                Step 1 of 4
+                <div id="inspectionProgress">
+
+                    Step 1 of 4
+
+                </div>
+
             </div>
+
+
+
+            <div id="progressTrack">
+
+                <div id="progressBar"></div>
+
+            </div>
+
+
+
+            <div id="inspectionStepTitle">
+
+                Inspection Area
+
+            </div>
+
 
 
             <p id="inspectionInstruction">
-                Select the requested inspection point.
+
+                Review the highlighted area.
+
             </p>
 
 
-            <div id="inspectionFeedback">
+
+            <p id="inspectionHint">
+
+                Use Rotate and Size controls to examine the highlighted area from a suitable view.
+
+            </p>
+
+
+
+            <div id="trainingNotice">
+
+                Training aid only — this guided visual familiarisation does not replace workplace SOPs, qualified supervision, or formal equipment inspection.
+
             </div>
 
 
-            <button id="cancelInspection">
-                Cancel Inspection
-            </button>
+
+            <div id="inspectionActions">
+
+
+                <button id="checkedNextButton">
+
+                    ✓ Checked — Next
+
+                </button>
+
+
+                <button id="cancelInspection">
+
+                    Cancel
+
+                </button>
+
+
+            </div>
+
 
         </div>
 
+
     </div>
+
 
 
     <!-- =====================================
@@ -429,6 +769,7 @@
 
             function (event) {
 
+
                 const info =
                     document.getElementById(
                         "info"
@@ -437,7 +778,9 @@
 
                 if (info) {
 
+
                     info.textContent =
+
                         "JavaScript Error: "
                         +
                         event.message;
@@ -454,11 +797,13 @@
         );
 
 
+
         window.addEventListener(
 
             "unhandledrejection",
 
             function (event) {
+
 
                 const info =
                     document.getElementById(
@@ -468,7 +813,9 @@
 
                 if (info) {
 
+
                     info.textContent =
+
                         "Error: "
                         +
                         (
@@ -493,6 +840,7 @@
     </script>
 
 
+
     <!-- =====================================
          MAIN AR SCRIPT
     ====================================== -->
@@ -505,19 +853,23 @@
         ===================================== */
 
         import * as THREE from
+
             "https://esm.sh/three@0.164.1";
 
 
         import { ARButton } from
+
             "https://esm.sh/three@0.164.1/examples/jsm/webxr/ARButton.js";
 
 
         import { GLTFLoader } from
+
             "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
 
 
+
         /* =====================================
-           THREE.JS
+           THREE.JS VARIABLES
         ===================================== */
 
         let scene;
@@ -531,12 +883,14 @@
         let reticle;
 
 
+
         let hitTestSource =
             null;
 
 
         let hitTestSourceRequested =
             false;
+
 
 
         /* =====================================
@@ -559,6 +913,7 @@
             false;
 
 
+
         /* =====================================
            PLACED EQUIPMENT
         ===================================== */
@@ -575,8 +930,16 @@
             null;
 
 
+        /*
+            Internal value remains "machine"
+            to preserve the working code.
+
+            User-facing name = Water Pump
+        */
+
         let selectedEquipment =
             "conveyor";
+
 
 
         /* =====================================
@@ -595,8 +958,13 @@
             false;
 
 
+        let inspectionTransitioning =
+            false;
+
+
         let ignoreSelectUntil =
             0;
+
 
 
         /* =====================================
@@ -607,86 +975,179 @@
             0;
 
 
-        let inspectionMistakes =
-            0;
+        let currentHotspot =
+            null;
 
 
-        let hotspotObjects =
-            [];
+        let hotspotBaseScale =
+            0.1;
+
 
 
         const TOTAL_INSPECTION_STEPS =
             4;
 
 
+
         /* =====================================
-           INSPECTION CONTENT
+           PROFESSIONAL TRAINING CONTENT
         ===================================== */
-
-        const conveyorInspectionSteps = [
-
-            {
-                instruction:
-                    "Select the left-side conveyor frame inspection checkpoint."
-            },
-
-            {
-                instruction:
-                    "Select the upper belt and operating-area inspection checkpoint."
-            },
-
-            {
-                instruction:
-                    "Select the right-side drive-area inspection checkpoint."
-            },
-
-            {
-                instruction:
-                    "Select the conveyor base and support inspection checkpoint."
-            }
-
-        ];
 
 
         /*
-            Internal code still uses
-            "machine" to avoid breaking
-            the existing working system.
-
-            User-facing equipment name:
-            Water Pump
+            offset:
+            x, y, z are normalized positions
+            relative to the model bounding box.
         */
 
-        const machineInspectionSteps = [
+        const conveyorInspectionSteps = [
+
 
             {
+                title:
+                    "1. Conveyor Frame",
+
                 instruction:
-                    "Select the pump housing inspection checkpoint."
+                    "Inspect the conveyor frame for visible bending, cracks, deformation, or other obvious structural damage.",
+
+                offset: [
+                    -0.32,
+                    0.00,
+                    0.35
+                ]
             },
 
-            {
-                instruction:
-                    "Select the inlet and outlet connection inspection checkpoint."
-            },
 
             {
+                title:
+                    "2. Belt / Carrying Surface",
+
                 instruction:
-                    "Select the electric motor housing inspection checkpoint."
+                    "Inspect the belt or carrying surface for visible wear, damage, obstruction, or obvious misalignment.",
+
+                offset: [
+                    0.00,
+                    0.35,
+                    0.28
+                ]
             },
 
+
             {
+                title:
+                    "3. Drive / Pulley Area",
+
                 instruction:
-                    "Select the pump base and mounting inspection checkpoint."
+                    "Inspect the drive and pulley area for visible damage, looseness, obstruction, or abnormal wear.",
+
+                offset: [
+                    0.34,
+                    0.05,
+                    0.30
+                ]
+            },
+
+
+            {
+                title:
+                    "4. Base / Support Structure",
+
+                instruction:
+                    "Inspect the conveyor support legs and base structure for visible damage, instability, or loose mounting areas.",
+
+                offset: [
+                    0.00,
+                    -0.40,
+                    0.28
+                ]
             }
 
         ];
+
+
+
+        const machineInspectionSteps = [
+
+
+            {
+                title:
+                    "1. Pump Housing",
+
+                instruction:
+                    "Inspect the pump housing for visible cracks, corrosion, physical damage, or signs of leakage.",
+
+                offset: [
+                    0.30,
+                    0.02,
+                    0.38
+                ]
+            },
+
+
+            {
+                title:
+                    "2. Inlet / Outlet Connections",
+
+                instruction:
+                    "Inspect the inlet and outlet connection areas for visible looseness, damage, corrosion, or leakage marks.",
+
+                offset: [
+                    0.35,
+                    0.30,
+                    0.30
+                ]
+            },
+
+
+            {
+                title:
+                    "3. Electric Motor Housing",
+
+                instruction:
+                    "Inspect the motor body and ventilation area for visible damage, obstruction, or abnormal external condition.",
+
+                offset: [
+                    -0.28,
+                    0.15,
+                    0.35
+                ]
+            },
+
+
+            {
+                title:
+                    "4. Base / Mounting",
+
+                instruction:
+                    "Inspect the pump base and mounting points for visible damage, looseness, or signs of instability.",
+
+                offset: [
+                    0.00,
+                    -0.40,
+                    0.30
+                ]
+            }
+
+        ];
+
 
 
         /* =====================================
            SCALE SETTINGS
         ===================================== */
 
-        const DEFAULT_SCALE =
+
+        /*
+            Different defaults improve
+            visual placement for the two
+            different model sizes.
+        */
+
+        const CONVEYOR_DEFAULT_SCALE =
+            0.25;
+
+
+        const PUMP_DEFAULT_SCALE =
             0.35;
 
 
@@ -700,6 +1161,7 @@
 
         const SCALE_STEP =
             0.05;
+
 
 
         /* =====================================
@@ -727,6 +1189,12 @@
         const controls =
             document.getElementById(
                 "controls"
+            );
+
+
+        const inspectionControls =
+            document.getElementById(
+                "inspectionControls"
             );
 
 
@@ -790,6 +1258,30 @@
             );
 
 
+        const inspectRotateLeft =
+            document.getElementById(
+                "inspectRotateLeft"
+            );
+
+
+        const inspectRotateRight =
+            document.getElementById(
+                "inspectRotateRight"
+            );
+
+
+        const inspectSizeDown =
+            document.getElementById(
+                "inspectSizeDown"
+            );
+
+
+        const inspectSizeUp =
+            document.getElementById(
+                "inspectSizeUp"
+            );
+
+
         const inspectionPanel =
             document.getElementById(
                 "inspectionPanel"
@@ -808,15 +1300,27 @@
             );
 
 
+        const progressBar =
+            document.getElementById(
+                "progressBar"
+            );
+
+
+        const inspectionStepTitle =
+            document.getElementById(
+                "inspectionStepTitle"
+            );
+
+
         const inspectionInstruction =
             document.getElementById(
                 "inspectionInstruction"
             );
 
 
-        const inspectionFeedback =
+        const checkedNextButton =
             document.getElementById(
-                "inspectionFeedback"
+                "checkedNextButton"
             );
 
 
@@ -824,6 +1328,7 @@
             document.getElementById(
                 "cancelInspection"
             );
+
 
 
         /* =====================================
@@ -841,6 +1346,7 @@
             ).href;
 
 
+
         const MACHINE_URL =
 
             new URL(
@@ -852,40 +1358,33 @@
             ).href;
 
 
-        /* =====================================
-           RAYCASTING
-        ===================================== */
-
-        const raycaster =
-            new THREE.Raycaster();
-
-
-        const tempMatrix =
-            new THREE.Matrix4();
-
 
         /* =====================================
-           START APPLICATION
+           START
         ===================================== */
 
         init();
 
 
+
         /* =====================================
-           INITIALISE
+           INITIALISE APPLICATION
         ===================================== */
 
         async function init() {
 
 
             info.textContent =
+
                 "Loading equipment models...";
+
 
 
             /* Scene */
 
             scene =
                 new THREE.Scene();
+
 
 
             /* Camera */
@@ -905,6 +1404,7 @@
                 );
 
 
+
             /* Renderer */
 
             renderer =
@@ -915,6 +1415,7 @@
                     alpha: true
 
                 });
+
 
 
             renderer.setPixelRatio(
@@ -930,6 +1431,7 @@
             );
 
 
+
             renderer.setSize(
 
                 window.innerWidth,
@@ -939,17 +1441,23 @@
             );
 
 
+
             renderer.xr.enabled =
                 true;
+
 
 
             renderer.outputColorSpace =
                 THREE.SRGBColorSpace;
 
 
+
             document.body.appendChild(
+
                 renderer.domElement
+
             );
+
 
 
             /* =================================
@@ -968,9 +1476,11 @@
                 );
 
 
+
             scene.add(
                 hemisphereLight
             );
+
 
 
             const directionalLight =
@@ -983,6 +1493,7 @@
                 );
 
 
+
             directionalLight.position.set(
 
                 2,
@@ -992,13 +1503,15 @@
             );
 
 
+
             scene.add(
                 directionalLight
             );
 
 
+
             /* =================================
-               RETICLE
+               SURFACE RETICLE
             ================================= */
 
             const reticleGeometry =
@@ -1013,9 +1526,13 @@
                 );
 
 
+
             reticleGeometry.rotateX(
+
                 -Math.PI / 2
+
             );
+
 
 
             const reticleMaterial =
@@ -1030,6 +1547,7 @@
                 });
 
 
+
             reticle =
                 new THREE.Mesh(
 
@@ -1040,17 +1558,21 @@
                 );
 
 
+
             reticle.matrixAutoUpdate =
                 false;
+
 
 
             reticle.visible =
                 false;
 
 
+
             scene.add(
                 reticle
             );
+
 
 
             /* =================================
@@ -1063,6 +1585,7 @@
                 );
 
 
+
             controller.addEventListener(
 
                 "select",
@@ -1072,20 +1595,23 @@
             );
 
 
+
             scene.add(
                 controller
             );
 
 
+
             /* =================================
-               LOAD BOTH MODELS
+               LOAD MODELS
             ================================= */
 
             await loadModels();
 
 
+
             /* =================================
-               AR BUTTON
+               START AR BUTTON
             ================================= */
 
             const arButton =
@@ -1119,9 +1645,11 @@
                 );
 
 
+
             document.body.appendChild(
                 arButton
             );
+
 
 
             /* =================================
@@ -1144,6 +1672,10 @@
 
 
                     controls.style.display =
+                        "none";
+
+
+                    inspectionControls.style.display =
                         "none";
 
 
@@ -1171,6 +1703,10 @@
                         false;
 
 
+                    inspectionTransitioning =
+                        false;
+
+
                     conveyorButton.classList.add(
                         "active"
                     );
@@ -1182,11 +1718,13 @@
 
 
                     info.textContent =
+
                         "Conveyor selected - scan and tap to place";
 
                 }
 
             );
+
 
 
             /* =================================
@@ -1200,7 +1738,7 @@
                 function () {
 
 
-                    clearInspectionHotspots();
+                    removeInspectionHotspot();
 
 
                     arPanel.style.display =
@@ -1208,6 +1746,10 @@
 
 
                     controls.style.display =
+                        "none";
+
+
+                    inspectionControls.style.display =
                         "none";
 
 
@@ -1236,6 +1778,10 @@
 
 
                     inspectionMode =
+                        false;
+
+
+                    inspectionTransitioning =
                         false;
 
 
@@ -1283,6 +1829,7 @@
             );
 
 
+
             window.addEventListener(
 
                 "resize",
@@ -1292,11 +1839,15 @@
             );
 
 
+
             renderer.setAnimationLoop(
+
                 render
+
             );
 
         }
+
 
 
         /* =====================================
@@ -1308,6 +1859,7 @@
 
             const loader =
                 new GLTFLoader();
+
 
 
             const conveyorPromise =
@@ -1348,13 +1900,27 @@
                             undefined,
 
 
-                            reject
+                            function (error) {
+
+
+                                console.error(
+                                    "Conveyor load error:",
+                                    error
+                                );
+
+
+                                reject(
+                                    error
+                                );
+
+                            }
 
                         );
 
                     }
 
                 );
+
 
 
             const machinePromise =
@@ -1395,13 +1961,27 @@
                             undefined,
 
 
-                            reject
+                            function (error) {
+
+
+                                console.error(
+                                    "Water Pump load error:",
+                                    error
+                                );
+
+
+                                reject(
+                                    error
+                                );
+
+                            }
 
                         );
 
                     }
 
                 );
+
 
 
             try {
@@ -1416,7 +1996,9 @@
                 ]);
 
 
+
                 info.textContent =
+
                     "Equipment ready - press START AR";
 
 
@@ -1429,6 +2011,7 @@
 
 
                 info.textContent =
+
                     "Unable to load equipment models";
 
             }
@@ -1436,11 +2019,14 @@
         }
 
 
+
         /* =====================================
            PREPARE MODEL
         ===================================== */
 
-        function prepareModel(model) {
+        function prepareModel(
+            model
+        ) {
 
 
             model.traverse(
@@ -1465,11 +2051,14 @@
         }
 
 
+
         /* =====================================
            CREATE MODEL
         ===================================== */
 
-        function createModel(type) {
+        function createModel(
+            type
+        ) {
 
 
             if (
@@ -1490,6 +2079,7 @@
             }
 
 
+
             if (
 
                 type === "machine"
@@ -1508,9 +2098,36 @@
             }
 
 
+
             return null;
 
         }
+
+
+
+        /* =====================================
+           GET DEFAULT SCALE
+        ===================================== */
+
+        function getDefaultScale(
+            type
+        ) {
+
+
+            if (
+                type === "conveyor"
+            ) {
+
+
+                return CONVEYOR_DEFAULT_SCALE;
+
+            }
+
+
+            return PUMP_DEFAULT_SCALE;
+
+        }
+
 
 
         /* =====================================
@@ -1534,6 +2151,7 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     600;
@@ -1555,6 +2173,7 @@
 
                 repositionMode =
                     false;
+
 
 
                 if (
@@ -1579,7 +2198,8 @@
 
 
                     info.textContent =
-                        "Conveyor selected";
+
+                        "Conveyor selected - explore or begin guided inspection";
 
 
                 } else {
@@ -1602,6 +2222,7 @@
 
 
                     info.textContent =
+
                         "Conveyor selected - scan and tap to place";
 
                 }
@@ -1611,9 +2232,9 @@
         );
 
 
+
         /* =====================================
            WATER PUMP SELECT
-           Internal variable still "machine"
         ===================================== */
 
         machineButton.addEventListener(
@@ -1633,6 +2254,7 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     600;
@@ -1654,6 +2276,7 @@
 
                 repositionMode =
                     false;
+
 
 
                 if (
@@ -1678,7 +2301,8 @@
 
 
                     info.textContent =
-                        "Water Pump selected";
+
+                        "Water Pump selected - explore or begin guided inspection";
 
 
                 } else {
@@ -1701,6 +2325,7 @@
 
 
                     info.textContent =
+
                         "Water Pump selected - scan and tap to place";
 
                 }
@@ -1708,6 +2333,7 @@
             }
 
         );
+
 
 
         /* =====================================
@@ -1725,26 +2351,31 @@
 
             ) {
 
+
                 return;
 
             }
 
 
-            /* =================================
-               INSPECTION MODE
-            ================================= */
+
+            /*
+                During inspection we no longer
+                require difficult hotspot tapping.
+
+                Training is guided using the
+                highlighted checkpoint and
+                Checked - Next button.
+            */
 
             if (
                 inspectionMode
             ) {
 
 
-                handleHotspotSelection();
-
-
                 return;
 
             }
+
 
 
             /* =================================
@@ -1768,7 +2399,8 @@
 
 
                     info.textContent =
-                        "Find a surface before moving";
+
+                        "Find a suitable surface before moving";
 
 
                     return;
@@ -1776,23 +2408,31 @@
                 }
 
 
+
                 const position =
                     new THREE.Vector3();
 
 
+
                 position.setFromMatrixPosition(
+
                     reticle.matrix
+
                 );
+
 
 
                 /*
-                    Preserve scale + rotation
-                    and change position only
+                    Keep scale and rotation.
+                    Change position only.
                 */
 
                 selectedObject.position.copy(
+
                     position
+
                 );
+
 
 
                 repositionMode =
@@ -1807,8 +2447,10 @@
                     false;
 
 
+
                 controls.style.display =
                     "grid";
+
 
 
                 info.textContent =
@@ -1816,9 +2458,10 @@
                     selectedEquipment ===
                     "conveyor"
 
-                    ? "Conveyor moved successfully"
+                    ? "Conveyor repositioned successfully"
 
-                    : "Water Pump moved successfully";
+                    : "Water Pump repositioned successfully";
+
 
 
                 return;
@@ -1826,17 +2469,20 @@
             }
 
 
+
             /* =================================
-               MODEL PLACEMENT
+               PLACE EQUIPMENT
             ================================= */
 
             if (
                 !placementMode
             ) {
 
+
                 return;
 
             }
+
 
 
             if (
@@ -1845,6 +2491,7 @@
 
 
                 info.textContent =
+
                     "Surface not detected yet";
 
 
@@ -1853,10 +2500,12 @@
             }
 
 
+
             const newObject =
                 createModel(
                     selectedEquipment
                 );
+
 
 
             if (
@@ -1865,7 +2514,8 @@
 
 
                 info.textContent =
-                    "Selected model is not ready";
+
+                    "Selected equipment is not ready";
 
 
                 return;
@@ -1873,18 +2523,24 @@
             }
 
 
+
             const position =
                 new THREE.Vector3();
 
 
+
             position.setFromMatrixPosition(
+
                 reticle.matrix
+
             );
+
 
 
             newObject.position.copy(
                 position
             );
+
 
 
             newObject.rotation.set(
@@ -1896,28 +2552,38 @@
             );
 
 
+
+            const defaultScale =
+                getDefaultScale(
+                    selectedEquipment
+                );
+
+
+
             newObject.scale.set(
 
-                DEFAULT_SCALE,
-
-                DEFAULT_SCALE,
-
-                DEFAULT_SCALE
+                defaultScale,
+                defaultScale,
+                defaultScale
 
             );
 
 
+
             newObject.userData.currentScale =
-                DEFAULT_SCALE;
+                defaultScale;
+
 
 
             newObject.userData.type =
                 selectedEquipment;
 
 
+
             scene.add(
                 newObject
             );
+
 
 
             if (
@@ -1941,8 +2607,10 @@
             }
 
 
+
             selectedObject =
                 newObject;
+
 
 
             placementMode =
@@ -1957,8 +2625,10 @@
                 false;
 
 
+
             controls.style.display =
                 "grid";
+
 
 
             info.textContent =
@@ -1966,15 +2636,156 @@
                 selectedEquipment ===
                 "conveyor"
 
-                ? "Conveyor placed successfully"
+                ? "Conveyor placed - explore the model or start guided inspection"
 
-                : "Water Pump placed successfully";
+                : "Water Pump placed - explore the model or start guided inspection";
 
         }
 
 
+
         /* =====================================
-           ROTATE LEFT
+           SHARED ROTATION FUNCTION
+        ===================================== */
+
+        function rotateSelected(
+            degrees
+        ) {
+
+
+            if (
+                !selectedObject
+            ) {
+
+
+                return;
+
+            }
+
+
+
+            selectedObject.rotation.y +=
+
+                THREE.MathUtils.degToRad(
+                    degrees
+                );
+
+
+
+            if (
+                inspectionMode
+            ) {
+
+
+                info.textContent =
+
+                    "Guided inspection active - examine the highlighted area";
+
+
+            } else {
+
+
+                info.textContent =
+
+                    degrees > 0
+
+                    ? "Equipment rotated left"
+
+                    : "Equipment rotated right";
+
+            }
+
+        }
+
+
+
+        /* =====================================
+           SHARED RESIZE FUNCTION
+        ===================================== */
+
+        function resizeSelected(
+            amount
+        ) {
+
+
+            if (
+                !selectedObject
+            ) {
+
+
+                return;
+
+            }
+
+
+
+            let scale =
+
+                selectedObject
+                    .userData
+                    .currentScale;
+
+
+
+            scale +=
+                amount;
+
+
+
+            scale =
+                Math.max(
+
+                    MIN_SCALE,
+
+                    Math.min(
+
+                        MAX_SCALE,
+
+                        scale
+
+                    )
+
+                );
+
+
+
+            selectedObject
+                .userData
+                .currentScale =
+                scale;
+
+
+
+            selectedObject.scale.set(
+
+                scale,
+                scale,
+                scale
+
+            );
+
+
+
+            info.textContent =
+
+                inspectionMode
+
+                ? "Guided inspection active - adjust the view as needed"
+
+                : "Size: "
+                  +
+                  Math.round(
+                      scale * 100
+                  )
+                  +
+                  "%";
+
+        }
+
+
+
+        /* =====================================
+           NORMAL ROTATE CONTROLS
         ===================================== */
 
         rotateLeft.addEventListener(
@@ -1985,48 +2796,29 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     500;
 
 
                 if (
-
-                    !selectedObject
-
-                    ||
-
                     repositionMode
-
-                    ||
-
-                    inspectionMode
-
                 ) {
 
                     return;
-
                 }
 
 
-                selectedObject.rotation.y +=
-
-                    THREE.MathUtils.degToRad(
-                        15
-                    );
-
-
-                info.textContent =
-                    "Rotated left";
+                rotateSelected(
+                    15
+                );
 
             }
 
         );
 
 
-        /* =====================================
-           ROTATE RIGHT
-        ===================================== */
 
         rotateRight.addEventListener(
 
@@ -2036,47 +2828,32 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     500;
 
 
                 if (
-
-                    !selectedObject
-
-                    ||
-
                     repositionMode
-
-                    ||
-
-                    inspectionMode
-
                 ) {
 
                     return;
-
                 }
 
 
-                selectedObject.rotation.y -=
-
-                    THREE.MathUtils.degToRad(
-                        15
-                    );
-
-
-                info.textContent =
-                    "Rotated right";
+                rotateSelected(
+                    -15
+                );
 
             }
 
         );
 
 
+
         /* =====================================
-           SIZE DOWN
+           NORMAL SIZE CONTROLS
         ===================================== */
 
         sizeDown.addEventListener(
@@ -2087,84 +2864,29 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     500;
 
 
                 if (
-
-                    !selectedObject
-
-                    ||
-
                     repositionMode
-
-                    ||
-
-                    inspectionMode
-
                 ) {
 
                     return;
-
                 }
 
 
-                let scale =
-
-                    selectedObject
-                        .userData
-                        .currentScale;
-
-
-                scale -=
-                    SCALE_STEP;
-
-
-                scale =
-                    Math.max(
-
-                        MIN_SCALE,
-
-                        scale
-
-                    );
-
-
-                selectedObject
-                    .userData
-                    .currentScale =
-                    scale;
-
-
-                selectedObject.scale.set(
-
-                    scale,
-                    scale,
-                    scale
-
+                resizeSelected(
+                    -SCALE_STEP
                 );
-
-
-                info.textContent =
-
-                    "Size: "
-                    +
-                    Math.round(
-                        scale * 100
-                    )
-                    +
-                    "%";
 
             }
 
         );
 
 
-        /* =====================================
-           SIZE UP
-        ===================================== */
 
         sizeUp.addEventListener(
 
@@ -2174,83 +2896,136 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     500;
 
 
                 if (
-
-                    !selectedObject
-
-                    ||
-
                     repositionMode
-
-                    ||
-
-                    inspectionMode
-
                 ) {
 
                     return;
-
                 }
 
 
-                let scale =
-
-                    selectedObject
-                        .userData
-                        .currentScale;
-
-
-                scale +=
-                    SCALE_STEP;
-
-
-                scale =
-                    Math.min(
-
-                        MAX_SCALE,
-
-                        scale
-
-                    );
-
-
-                selectedObject
-                    .userData
-                    .currentScale =
-                    scale;
-
-
-                selectedObject.scale.set(
-
-                    scale,
-                    scale,
-                    scale
-
+                resizeSelected(
+                    SCALE_STEP
                 );
-
-
-                info.textContent =
-
-                    "Size: "
-                    +
-                    Math.round(
-                        scale * 100
-                    )
-                    +
-                    "%";
 
             }
 
         );
 
 
+
         /* =====================================
-           MOVE
+           INSPECTION ROTATION
+        ===================================== */
+
+        inspectRotateLeft.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+
+                    performance.now()
+                    +
+                    500;
+
+
+                rotateSelected(
+                    15
+                );
+
+            }
+
+        );
+
+
+
+        inspectRotateRight.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+
+                    performance.now()
+                    +
+                    500;
+
+
+                rotateSelected(
+                    -15
+                );
+
+            }
+
+        );
+
+
+
+        /* =====================================
+           INSPECTION SIZE
+        ===================================== */
+
+        inspectSizeDown.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+
+                    performance.now()
+                    +
+                    500;
+
+
+                resizeSelected(
+                    -SCALE_STEP
+                );
+
+            }
+
+        );
+
+
+
+        inspectSizeUp.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                ignoreSelectUntil =
+
+                    performance.now()
+                    +
+                    500;
+
+
+                resizeSelected(
+                    SCALE_STEP
+                );
+
+            }
+
+        );
+
+
+
+        /* =====================================
+           MOVE EQUIPMENT
         ===================================== */
 
         moveButton.addEventListener(
@@ -2261,9 +3036,11 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     600;
+
 
 
                 if (
@@ -2272,6 +3049,7 @@
 
 
                     info.textContent =
+
                         "Select equipment first";
 
 
@@ -2280,13 +3058,16 @@
                 }
 
 
+
                 if (
                     inspectionMode
                 ) {
 
+
                     return;
 
                 }
+
 
 
                 placementMode =
@@ -2297,6 +3078,7 @@
                     true;
 
 
+
                 controls.style.display =
                     "none";
 
@@ -2305,16 +3087,19 @@
                     false;
 
 
+
                 info.textContent =
-                    "Move mode - scan and tap a new position";
+
+                    "Move mode - scan and tap a new surface position";
 
             }
 
         );
 
 
+
         /* =====================================
-           REMOVE SELECTED
+           REMOVE SELECTED EQUIPMENT
         ===================================== */
 
         removeButton.addEventListener(
@@ -2325,9 +3110,11 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     600;
+
 
 
                 if (
@@ -2336,6 +3123,7 @@
 
 
                     info.textContent =
+
                         "Select equipment first";
 
 
@@ -2344,13 +3132,16 @@
                 }
 
 
+
                 if (
                     inspectionMode
                 ) {
 
+
                     return;
 
                 }
+
 
 
                 /* REMOVE CONVEYOR */
@@ -2396,6 +3187,7 @@
                         false;
 
 
+
                     conveyorButton
                         .classList
                         .add(
@@ -2410,13 +3202,16 @@
                         );
 
 
+
                     info.textContent =
+
                         "Conveyor removed - scan and tap to place again";
 
 
                     return;
 
                 }
+
 
 
                 /* REMOVE WATER PUMP */
@@ -2462,6 +3257,7 @@
                         false;
 
 
+
                     machineButton
                         .classList
                         .add(
@@ -2476,7 +3272,9 @@
                         );
 
 
+
                     info.textContent =
+
                         "Water Pump removed - scan and tap to place again";
 
                 }
@@ -2484,6 +3282,7 @@
             }
 
         );
+
 
 
         /* =====================================
@@ -2498,12 +3297,18 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     700;
 
 
+
                 inspectionMode =
+                    false;
+
+
+                inspectionTransitioning =
                     false;
 
 
@@ -2511,15 +3316,18 @@
                     0;
 
 
-                inspectionMistakes =
-                    0;
 
+                removeInspectionHotspot();
 
-                clearInspectionHotspots();
 
 
                 inspectionPanel.style.display =
                     "none";
+
+
+                inspectionControls.style.display =
+                    "none";
+
 
 
                 if (
@@ -2538,6 +3346,7 @@
                 }
 
 
+
                 if (
                     placedMachine
                 ) {
@@ -2552,6 +3361,7 @@
                         null;
 
                 }
+
 
 
                 selectedObject =
@@ -2574,8 +3384,10 @@
                     false;
 
 
+
                 equipmentSelector.style.display =
                     "grid";
+
 
 
                 conveyorButton
@@ -2592,11 +3404,14 @@
                     );
 
 
+
                 controls.style.display =
                     "none";
 
 
+
                 info.textContent =
+
                     "Training restarted - scan and tap to place Conveyor";
 
             }
@@ -2604,8 +3419,9 @@
         );
 
 
+
         /* =====================================
-           START INSPECTION
+           START GUIDED INSPECTION
         ===================================== */
 
         inspectionButton.addEventListener(
@@ -2616,9 +3432,11 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     700;
+
 
 
                 if (
@@ -2627,6 +3445,7 @@
 
 
                     info.textContent =
+
                         "Place and select equipment first";
 
 
@@ -2635,8 +3454,13 @@
                 }
 
 
+
                 inspectionMode =
                     true;
+
+
+                inspectionTransitioning =
+                    false;
 
 
                 placementMode =
@@ -2651,13 +3475,15 @@
                     0;
 
 
-                inspectionMistakes =
-                    0;
-
-
                 reticle.visible =
                     false;
 
+
+
+                /*
+                    Hide controls that could
+                    interrupt the training flow.
+                */
 
                 controls.style.display =
                     "none";
@@ -2667,53 +3493,523 @@
                     "none";
 
 
+
+                /*
+                    Keep useful visual
+                    manipulation available.
+                */
+
+                inspectionControls.style.display =
+                    "grid";
+
+
                 inspectionPanel.style.display =
                     "block";
 
 
-                createInspectionHotspots();
-
 
                 updateInspectionStep();
+
+
+
+                info.textContent =
+
+                    selectedEquipment ===
+                    "conveyor"
+
+                    ? "Guided Conveyor inspection started"
+
+                    : "Guided Water Pump inspection started";
 
             }
 
         );
 
 
+
         /* =====================================
-           CREATE HOTSPOTS
+           GET CURRENT INSPECTION DATA
         ===================================== */
 
-        function createInspectionHotspots() {
+        function getInspectionSteps() {
 
 
-            clearInspectionHotspots();
+            return (
+
+                selectedEquipment ===
+                "conveyor"
+
+                ? conveyorInspectionSteps
+
+                : machineInspectionSteps
+
+            );
+
+        }
+
+
+
+        /* =====================================
+           CALCULATE MODEL LOCAL BOUNDING BOX
+
+           This keeps the marker attached
+           correctly even after rotation
+           and resizing.
+        ===================================== */
+
+        function getLocalBoundingBox(
+            root
+        ) {
+
+
+            const result =
+                new THREE.Box3();
+
+
+
+            result.makeEmpty();
+
+
+
+            root.updateMatrixWorld(
+                true
+            );
+
+
+
+            const inverseRoot =
+
+                root
+                    .matrixWorld
+                    .clone()
+                    .invert();
+
+
+
+            root.traverse(
+
+                function (child) {
+
+
+                    if (
+
+                        !child.isMesh
+
+                        ||
+
+                        !child.geometry
+
+                    ) {
+
+
+                        return;
+
+                    }
+
+
+
+                    if (
+                        !child.geometry.boundingBox
+                    ) {
+
+
+                        child.geometry
+                            .computeBoundingBox();
+
+                    }
+
+
+
+                    if (
+                        !child.geometry.boundingBox
+                    ) {
+
+
+                        return;
+
+                    }
+
+
+
+                    const childBox =
+
+                        child.geometry
+                            .boundingBox
+                            .clone();
+
+
+
+                    const childToRoot =
+
+                        new THREE.Matrix4()
+                            .multiplyMatrices(
+
+                                inverseRoot,
+
+                                child.matrixWorld
+
+                            );
+
+
+
+                    childBox.applyMatrix4(
+
+                        childToRoot
+
+                    );
+
+
+
+                    result.union(
+                        childBox
+                    );
+
+                }
+
+            );
+
+
+
+            /*
+                Safe fallback
+            */
+
+            if (
+                result.isEmpty()
+            ) {
+
+
+                result.set(
+
+                    new THREE.Vector3(
+                        -0.5,
+                        -0.5,
+                        -0.5
+                    ),
+
+                    new THREE.Vector3(
+                        0.5,
+                        0.5,
+                        0.5
+                    )
+
+                );
+
+            }
+
+
+
+            return result;
+
+        }
+
+
+
+        /* =====================================
+           CREATE PROFESSIONAL HOTSPOT ICON
+        ===================================== */
+
+        function createHotspotSprite(
+            stepNumber
+        ) {
+
+
+            const canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+
+
+            canvas.width =
+                128;
+
+
+            canvas.height =
+                128;
+
+
+
+            const context =
+                canvas.getContext(
+                    "2d"
+                );
+
+
+
+            /*
+                Transparent background
+            */
+
+            context.clearRect(
+                0,
+                0,
+                128,
+                128
+            );
+
+
+
+            /*
+                Outer amber ring
+            */
+
+            context.beginPath();
+
+
+            context.arc(
+                64,
+                64,
+                46,
+                0,
+                Math.PI * 2
+            );
+
+
+            context.fillStyle =
+                "rgba(245, 158, 11, 0.92)";
+
+
+            context.fill();
+
+
+
+            /*
+                White border
+            */
+
+            context.lineWidth =
+                6;
+
+
+            context.strokeStyle =
+                "#ffffff";
+
+
+            context.stroke();
+
+
+
+            /*
+                Inner dark circle
+            */
+
+            context.beginPath();
+
+
+            context.arc(
+                64,
+                64,
+                31,
+                0,
+                Math.PI * 2
+            );
+
+
+            context.fillStyle =
+                "rgba(7, 17, 31, 0.96)";
+
+
+            context.fill();
+
+
+
+            /*
+                Step number
+            */
+
+            context.fillStyle =
+                "#ffffff";
+
+
+            context.font =
+                "bold 42px Arial";
+
+
+            context.textAlign =
+                "center";
+
+
+            context.textBaseline =
+                "middle";
+
+
+            context.fillText(
+
+                String(
+                    stepNumber
+                ),
+
+                64,
+                65
+
+            );
+
+
+
+            const texture =
+                new THREE.CanvasTexture(
+                    canvas
+                );
+
+
+
+            texture.colorSpace =
+                THREE.SRGBColorSpace;
+
+
+
+            const material =
+                new THREE.SpriteMaterial({
+
+                    map:
+                        texture,
+
+                    transparent:
+                        true,
+
+                    depthTest:
+                        false,
+
+                    depthWrite:
+                        false
+
+                });
+
+
+
+            const sprite =
+                new THREE.Sprite(
+                    material
+                );
+
+
+
+            sprite.renderOrder =
+                1000;
+
+
+
+            return sprite;
+
+        }
+
+
+
+        /* =====================================
+           REMOVE CURRENT HOTSPOT
+        ===================================== */
+
+        function removeInspectionHotspot() {
 
 
             if (
-                !selectedObject
+                !currentHotspot
             ) {
+
 
                 return;
 
             }
 
 
-            const box =
 
-                new THREE.Box3()
-                    .setFromObject(
-                        selectedObject
-                    );
+            if (
+                currentHotspot.parent
+            ) {
+
+
+                currentHotspot.parent.remove(
+                    currentHotspot
+                );
+
+            }
+
+
+
+            if (
+                currentHotspot.material
+            ) {
+
+
+                if (
+                    currentHotspot.material.map
+                ) {
+
+
+                    currentHotspot
+                        .material
+                        .map
+                        .dispose();
+
+                }
+
+
+
+                currentHotspot
+                    .material
+                    .dispose();
+
+            }
+
+
+
+            currentHotspot =
+                null;
+
+        }
+
+
+
+        /* =====================================
+           CREATE ONE HOTSPOT FOR CURRENT STEP
+        ===================================== */
+
+        function showCurrentInspectionHotspot() {
+
+
+            removeInspectionHotspot();
+
+
+
+            if (
+                !selectedObject
+            ) {
+
+
+                return;
+
+            }
+
+
+
+            const steps =
+                getInspectionSteps();
+
+
+
+            const stepData =
+                steps[
+                    inspectionStep
+                ];
+
+
+
+            const box =
+                getLocalBoundingBox(
+                    selectedObject
+                );
+
 
 
             const center =
                 new THREE.Vector3();
 
 
+
             const size =
                 new THREE.Vector3();
+
 
 
             box.getCenter(
@@ -2721,203 +4017,147 @@
             );
 
 
+
             box.getSize(
                 size
             );
 
 
-            const radius =
+
+            const offset =
+                stepData.offset;
+
+
+
+            const hotspotPosition =
+                new THREE.Vector3(
+
+
+                    center.x
+                    +
+                    size.x
+                    *
+                    offset[0],
+
+
+                    center.y
+                    +
+                    size.y
+                    *
+                    offset[1],
+
+
+                    center.z
+                    +
+                    size.z
+                    *
+                    offset[2]
+
+                );
+
+
+
+            currentHotspot =
+
+                createHotspotSprite(
+
+                    inspectionStep + 1
+
+                );
+
+
+
+            currentHotspot.position.copy(
+
+                hotspotPosition
+
+            );
+
+
+
+            /*
+                Marker size is proportional
+                to model size.
+            */
+
+            hotspotBaseScale =
 
                 Math.max(
 
-                    0.025,
+                    0.15,
 
                     Math.min(
 
-                        0.065,
+                        0.38,
 
                         size.length()
                         *
-                        0.07
+                        0.12
 
                     )
 
                 );
 
 
-            const positions = [
 
+            currentHotspot.scale.set(
 
-                /* LEFT / BODY AREA */
+                hotspotBaseScale,
 
-                new THREE.Vector3(
+                hotspotBaseScale,
 
-                    center.x -
-                    size.x * 0.45,
-
-                    center.y,
-
-                    center.z +
-                    size.z * 0.20
-
-                ),
-
-
-                /* UPPER AREA */
-
-                new THREE.Vector3(
-
-                    center.x,
-
-                    center.y +
-                    size.y * 0.45,
-
-                    center.z
-
-                ),
-
-
-                /* RIGHT / DRIVE OR MOTOR AREA */
-
-                new THREE.Vector3(
-
-                    center.x +
-                    size.x * 0.45,
-
-                    center.y,
-
-                    center.z -
-                    size.z * 0.15
-
-                ),
-
-
-                /* BASE */
-
-                new THREE.Vector3(
-
-                    center.x,
-
-                    center.y -
-                    size.y * 0.38,
-
-                    center.z +
-                    size.z * 0.35
-
-                )
-
-            ];
-
-
-            for (
-                let i = 0;
-                i < 4;
-                i++
-            ) {
-
-
-                const geometry =
-                    new THREE.SphereGeometry(
-
-                        radius,
-
-                        24,
-
-                        24
-
-                    );
-
-
-                const material =
-                    new THREE.MeshBasicMaterial({
-
-                        color:
-                            0x38bdf8
-
-                    });
-
-
-                const hotspot =
-                    new THREE.Mesh(
-
-                        geometry,
-
-                        material
-
-                    );
-
-
-                hotspot.position.copy(
-                    positions[i]
-                );
-
-
-                hotspot.userData.hotspotIndex =
-                    i;
-
-
-                scene.add(
-                    hotspot
-                );
-
-
-                hotspotObjects.push(
-                    hotspot
-                );
-
-            }
-
-        }
-
-
-        /* =====================================
-           CLEAR HOTSPOTS
-        ===================================== */
-
-        function clearInspectionHotspots() {
-
-
-            hotspotObjects.forEach(
-
-                function (hotspot) {
-
-
-                    scene.remove(
-                        hotspot
-                    );
-
-
-                    hotspot.geometry.dispose();
-
-
-                    hotspot.material.dispose();
-
-                }
+                hotspotBaseScale
 
             );
 
 
-            hotspotObjects =
-                [];
+
+            /*
+                Attach to the model itself.
+
+                This means the hotspot follows
+                when user rotates/resizes model.
+            */
+
+            selectedObject.add(
+
+                currentHotspot
+
+            );
 
         }
 
 
+
         /* =====================================
-           UPDATE INSPECTION
+           UPDATE INSPECTION STEP
         ===================================== */
 
         function updateInspectionStep() {
 
 
+            if (
+                !inspectionMode
+            ) {
+
+
+                return;
+
+            }
+
+
+
             const steps =
+                getInspectionSteps();
 
-                selectedEquipment ===
-                "conveyor"
 
-                ? conveyorInspectionSteps
 
-                : machineInspectionSteps;
+            const currentStepData =
+
+                steps[
+                    inspectionStep
+                ];
+
 
 
             inspectionTitle.textContent =
@@ -2925,9 +4165,10 @@
                 selectedEquipment ===
                 "conveyor"
 
-                ? "Conveyor Inspection"
+                ? "Conveyor Guided Inspection"
 
-                : "Water Pump Inspection";
+                : "Water Pump Guided Inspection";
+
 
 
             inspectionProgress.textContent =
@@ -2941,153 +4182,97 @@
                 TOTAL_INSPECTION_STEPS;
 
 
+
+            progressBar.style.width =
+
+                (
+                    (
+                        inspectionStep + 1
+                    )
+                    /
+                    TOTAL_INSPECTION_STEPS
+                    *
+                    100
+                )
+                +
+                "%";
+
+
+
+            inspectionStepTitle.textContent =
+
+                currentStepData.title;
+
+
+
             inspectionInstruction.textContent =
 
-                steps[
-                    inspectionStep
-                ].instruction;
+                currentStepData.instruction;
 
 
-            inspectionFeedback.textContent =
-                "Tap the correct blue 3D checkpoint.";
+
+            checkedNextButton.disabled =
+                false;
+
+
+
+            checkedNextButton.textContent =
+
+                inspectionStep ===
+                TOTAL_INSPECTION_STEPS - 1
+
+                ? "✓ Checked — Complete"
+
+                : "✓ Checked — Next";
+
+
+
+            showCurrentInspectionHotspot();
+
 
 
             info.textContent =
-                "Inspection active - select the requested checkpoint";
+
+                "Review highlighted inspection area "
+                +
+                (inspectionStep + 1)
+                +
+                " of "
+                +
+                TOTAL_INSPECTION_STEPS;
 
         }
 
 
+
         /* =====================================
-           HOTSPOT SELECTION
+           CHECKED - NEXT
         ===================================== */
 
-        function handleHotspotSelection() {
+        checkedNextButton.addEventListener(
+
+            "click",
+
+            function () {
 
 
-            if (
-                hotspotObjects.length === 0
-            ) {
+                ignoreSelectUntil =
 
-                return;
+                    performance.now()
+                    +
+                    600;
 
-            }
-
-
-            tempMatrix
-                .identity()
-                .extractRotation(
-
-                    controller.matrixWorld
-
-                );
-
-
-            raycaster.ray.origin
-                .setFromMatrixPosition(
-
-                    controller.matrixWorld
-
-                );
-
-
-            raycaster.ray.direction
-
-                .set(
-                    0,
-                    0,
-                    -1
-                )
-
-                .applyMatrix4(
-                    tempMatrix
-                )
-
-                .normalize();
-
-
-            const intersections =
-
-                raycaster.intersectObjects(
-
-                    hotspotObjects,
-
-                    false
-
-                );
-
-
-            if (
-                intersections.length === 0
-            ) {
-
-
-                inspectionFeedback.textContent =
-                    "No checkpoint selected - tap directly on a blue hotspot.";
-
-
-                return;
-
-            }
-
-
-            const selectedHotspot =
-                intersections[0].object;
-
-
-            const selectedIndex =
-
-                selectedHotspot
-                    .userData
-                    .hotspotIndex;
-
-
-            /* =================================
-               CORRECT
-            ================================= */
-
-            if (
-
-                selectedIndex ===
-                inspectionStep
-
-            ) {
-
-
-                selectedHotspot
-                    .material
-                    .color
-                    .setHex(
-                        0x22c55e
-                    );
-
-
-                inspectionFeedback.textContent =
-                    "✓ Correct inspection checkpoint";
-
-
-                info.textContent =
-                    "Correct checkpoint identified";
-
-
-                inspectionStep++;
 
 
                 if (
 
-                    inspectionStep >=
-                    TOTAL_INSPECTION_STEPS
+                    !inspectionMode
+
+                    ||
+
+                    inspectionTransitioning
 
                 ) {
-
-
-                    setTimeout(
-
-                        finishInspection,
-
-                        700
-
-                    );
 
 
                     return;
@@ -3095,44 +4280,153 @@
                 }
 
 
-                setTimeout(
 
-                    function () {
-
-
-                        updateInspectionStep();
-
-                    },
-
-                    650
-
-                );
+                inspectionTransitioning =
+                    true;
 
 
-            } else {
+
+                checkedNextButton.disabled =
+                    true;
 
 
-                /* =================================
-                   WRONG
-                ================================= */
 
-                inspectionMistakes++;
+                checkedNextButton.textContent =
+
+                    "✓ Checkpoint Reviewed";
 
 
-                selectedHotspot
-                    .material
-                    .color
-                    .setHex(
-                        0xef4444
+
+                /*
+                    Give professional visual
+                    confirmation by turning
+                    the current marker green.
+                */
+
+                if (
+                    currentHotspot
+                ) {
+
+
+                    const canvas =
+
+                        currentHotspot
+                            .material
+                            .map
+                            .image;
+
+
+
+                    const context =
+
+                        canvas.getContext(
+                            "2d"
+                        );
+
+
+
+                    context.clearRect(
+                        0,
+                        0,
+                        128,
+                        128
                     );
 
 
-                inspectionFeedback.textContent =
-                    "✕ Incorrect checkpoint - try again";
+
+                    context.beginPath();
+
+
+                    context.arc(
+                        64,
+                        64,
+                        46,
+                        0,
+                        Math.PI * 2
+                    );
+
+
+                    context.fillStyle =
+                        "rgba(34, 197, 94, 0.95)";
+
+
+                    context.fill();
+
+
+
+                    context.lineWidth =
+                        6;
+
+
+                    context.strokeStyle =
+                        "#ffffff";
+
+
+                    context.stroke();
+
+
+
+                    context.beginPath();
+
+
+                    context.arc(
+                        64,
+                        64,
+                        31,
+                        0,
+                        Math.PI * 2
+                    );
+
+
+                    context.fillStyle =
+                        "rgba(5, 46, 22, 0.96)";
+
+
+                    context.fill();
+
+
+
+                    context.fillStyle =
+                        "#ffffff";
+
+
+                    context.font =
+                        "bold 46px Arial";
+
+
+                    context.textAlign =
+                        "center";
+
+
+                    context.textBaseline =
+                        "middle";
+
+
+                    context.fillText(
+
+                        "✓",
+
+                        64,
+                        65
+
+                    );
+
+
+
+                    currentHotspot
+                        .material
+                        .map
+                        .needsUpdate =
+                        true;
+
+                }
+
 
 
                 info.textContent =
-                    "Wrong checkpoint selected";
+
+                    "Checkpoint reviewed";
+
 
 
                 setTimeout(
@@ -3141,28 +4435,58 @@
 
 
                         if (
-                            selectedHotspot
+                            !inspectionMode
                         ) {
 
 
-                            selectedHotspot
-                                .material
-                                .color
-                                .setHex(
-                                    0x38bdf8
-                                );
+                            return;
 
                         }
 
+
+
+                        inspectionStep++;
+
+
+
+                        /*
+                            ALL STEPS COMPLETE
+                        */
+
+                        if (
+
+                            inspectionStep >=
+                            TOTAL_INSPECTION_STEPS
+
+                        ) {
+
+
+                            finishInspection();
+
+
+                            return;
+
+                        }
+
+
+
+                        inspectionTransitioning =
+                            false;
+
+
+
+                        updateInspectionStep();
+
                     },
 
-                    700
+                    550
 
                 );
 
             }
 
-        }
+        );
+
 
 
         /* =====================================
@@ -3176,15 +4500,27 @@
                 false;
 
 
-            clearInspectionHotspots();
+            inspectionTransitioning =
+                false;
+
+
+
+            removeInspectionHotspot();
+
 
 
             inspectionPanel.style.display =
                 "none";
 
 
+            inspectionControls.style.display =
+                "none";
+
+
+
             equipmentSelector.style.display =
                 "grid";
+
 
 
             if (
@@ -3198,13 +4534,18 @@
             }
 
 
+
             info.textContent =
 
-                "✓ Inspection completed | Correct: 4/4 | Mistakes: "
-                +
-                inspectionMistakes;
+                selectedEquipment ===
+                "conveyor"
+
+                ? "✓ Conveyor training complete — 4 inspection areas reviewed"
+
+                : "✓ Water Pump training complete — 4 inspection areas reviewed";
 
         }
+
 
 
         /* =====================================
@@ -3219,12 +4560,18 @@
 
 
                 ignoreSelectUntil =
+
                     performance.now()
                     +
                     600;
 
 
+
                 inspectionMode =
+                    false;
+
+
+                inspectionTransitioning =
                     false;
 
 
@@ -3232,15 +4579,22 @@
                     0;
 
 
-                clearInspectionHotspots();
+
+                removeInspectionHotspot();
+
 
 
                 inspectionPanel.style.display =
                     "none";
 
 
+                inspectionControls.style.display =
+                    "none";
+
+
                 equipmentSelector.style.display =
                     "grid";
+
 
 
                 if (
@@ -3261,12 +4615,15 @@
                 }
 
 
+
                 info.textContent =
-                    "Inspection cancelled";
+
+                    "Guided inspection cancelled";
 
             }
 
         );
+
 
 
         /* =====================================
@@ -3283,13 +4640,16 @@
                     renderer.xr.getSession();
 
 
+
                 if (
                     !session
                 ) {
 
+
                     return;
 
                 }
+
 
 
                 const viewerSpace =
@@ -3298,6 +4658,7 @@
                         .requestReferenceSpace(
                             "viewer"
                         );
+
 
 
                 hitTestSource =
@@ -3311,8 +4672,10 @@
                         });
 
 
+
                 hitTestSourceRequested =
                     true;
+
 
 
                 session.addEventListener(
@@ -3334,19 +4697,24 @@
                 );
 
 
+
             } catch (error) {
 
 
                 console.error(
+                    "Hit-test error:",
                     error
                 );
+
 
 
                 hitTestSourceRequested =
                     false;
 
 
+
                 info.textContent =
+
                     "Hit-test could not start";
 
             }
@@ -3354,8 +4722,9 @@
         }
 
 
+
         /* =====================================
-           RESIZE
+           WINDOW RESIZE
         ===================================== */
 
         function onResize() {
@@ -3368,7 +4737,9 @@
                 window.innerHeight;
 
 
+
             camera.updateProjectionMatrix();
+
 
 
             renderer.setSize(
@@ -3382,6 +4753,7 @@
         }
 
 
+
         /* =====================================
            RENDER LOOP
         ===================================== */
@@ -3390,6 +4762,59 @@
             timestamp,
             frame
         ) {
+
+
+            /*
+                Professional inspection marker
+                has a subtle pulse.
+
+                This draws attention without
+                using a game-like animation.
+            */
+
+            if (
+
+                inspectionMode
+
+                &&
+
+                currentHotspot
+
+            ) {
+
+
+                const pulse =
+
+                    1
+                    +
+                    Math.sin(
+                        timestamp * 0.004
+                    )
+                    *
+                    0.06;
+
+
+
+                const pulseScale =
+
+                    hotspotBaseScale
+                    *
+                    pulse;
+
+
+
+                currentHotspot.scale.set(
+
+                    pulseScale,
+
+                    pulseScale,
+
+                    pulseScale
+
+                );
+
+            }
+
 
 
             if (
@@ -3410,10 +4835,20 @@
                         true;
 
 
+
                     requestHitTestSource();
 
                 }
 
+
+
+                /*
+                    Hit testing only operates
+                    during placement or movement.
+
+                    It is disabled during guided
+                    inspection.
+                */
 
                 if (
 
@@ -3442,6 +4877,7 @@
                             .getReferenceSpace();
 
 
+
                     const results =
 
                         frame.getHitTestResults(
@@ -3449,6 +4885,7 @@
                             hitTestSource
 
                         );
+
 
 
                     if (
@@ -3462,6 +4899,7 @@
                             results[0];
 
 
+
                         const pose =
 
                             hit.getPose(
@@ -3469,6 +4907,7 @@
                                 referenceSpace
 
                             );
+
 
 
                         if (
@@ -3480,11 +4919,13 @@
                                 true;
 
 
+
                             reticle.matrix.fromArray(
 
                                 pose.transform.matrix
 
                             );
+
 
 
                             if (
@@ -3493,6 +4934,7 @@
 
 
                                 info.textContent =
+
                                     "New position detected - tap to move";
 
 
@@ -3513,11 +4955,13 @@
                         }
 
 
+
                     } else {
 
 
                         reticle.visible =
                             false;
+
 
 
                         if (
@@ -3526,14 +4970,16 @@
 
 
                             info.textContent =
-                                "Move mode - scan for a new surface";
+
+                                "Move phone slowly to find a new surface position";
 
 
                         } else {
 
 
                             info.textContent =
-                                "Move phone slowly to detect a surface";
+
+                                "Move phone slowly to detect a suitable surface";
 
                         }
 
@@ -3542,6 +4988,7 @@
                 }
 
             }
+
 
 
             renderer.render(
