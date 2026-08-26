@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -10,15 +9,13 @@
           initial-scale=1.0,
           user-scalable=no">
 
-    <title>FixAR | Guided AR Equipment Training</title>
-
+    <title>FixAR | AR Equipment Training</title>
 
     <style>
 
         * {
             box-sizing: border-box;
         }
-
 
         body {
             margin: 0;
@@ -30,16 +27,14 @@
             color: white;
         }
 
-
-        /* =====================================
+        /* ==============================
            TOP STATUS
-        ===================================== */
+        ============================== */
 
         #info {
-
             position: fixed;
 
-            top: 10px;
+            top: 9px;
             left: 50%;
 
             transform: translateX(-50%);
@@ -47,74 +42,64 @@
             width: calc(100% - 20px);
             max-width: 460px;
 
-            padding: 9px 12px;
+            padding: 8px 11px;
 
-            background: rgba(0, 0, 0, 0.82);
+            background: rgba(0, 0, 0, 0.80);
 
             border: 1px solid #38bdf8;
-
             border-radius: 10px;
 
             text-align: center;
 
-            font-size: 13px;
+            font-size: 12px;
 
             z-index: 9999;
 
             pointer-events: none;
         }
 
-
-
-        /* =====================================
+        /* ==============================
            MAIN AR PANEL
-        ===================================== */
+        ============================== */
 
         #arPanel {
-
             position: fixed;
 
             left: 50%;
-            bottom: 70px;
+            bottom: 68px;
 
             transform: translateX(-50%);
 
-            width: calc(100% - 16px);
+            width: calc(100% - 14px);
             max-width: 470px;
 
             display: none;
-
             flex-direction: column;
 
-            gap: 7px;
+            gap: 6px;
 
             z-index: 9999;
         }
 
-
-
-        /* =====================================
+        /* ==============================
            EQUIPMENT SELECTOR
-        ===================================== */
+        ============================== */
 
         #equipmentSelector {
-
             display: grid;
 
             grid-template-columns:
                 1fr 1fr;
 
-            gap: 7px;
+            gap: 6px;
         }
 
-
         #equipmentSelector button {
+            min-height: 40px;
 
-            min-height: 42px;
+            padding: 7px;
 
-            padding: 8px 10px;
-
-            border-radius: 10px;
+            border-radius: 9px;
 
             border: 2px solid #38bdf8;
 
@@ -122,48 +107,40 @@
                 7,
                 17,
                 31,
-                0.96
+                0.95
             );
 
             color: white;
 
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
         }
 
-
         #equipmentSelector button.active {
-
             background: #38bdf8;
-
             color: #07111f;
         }
 
-
-
-        /* =====================================
+        /* ==============================
            NORMAL CONTROLS
-        ===================================== */
+        ============================== */
 
         #controls {
-
             display: none;
 
             grid-template-columns:
                 repeat(4, 1fr);
 
-            gap: 6px;
+            gap: 5px;
         }
 
-
         #controls button {
-
             min-width: 0;
-            min-height: 40px;
+            min-height: 37px;
 
-            padding: 7px 4px;
+            padding: 6px 3px;
 
-            border-radius: 9px;
+            border-radius: 8px;
 
             border: 1px solid #38bdf8;
 
@@ -176,66 +153,49 @@
 
             color: white;
 
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: bold;
-
-            line-height: 1.15;
         }
-
 
         #moveButton {
             border-color: #f59e0b;
         }
 
-
         #removeButton {
-
             border-color: #ef4444;
-
             color: #fecaca;
         }
 
-
         #inspectionButton {
-
             border-color: #22c55e;
-
             color: #bbf7d0;
         }
 
-
         #resetButton {
-
             border-color: #a78bfa;
-
             color: #ddd6fe;
         }
 
-
-
-        /* =====================================
-           INSPECTION VIEW CONTROLS
-        ===================================== */
+        /* ==============================
+           INSPECTION CONTROLS
+        ============================== */
 
         #inspectionControls {
-
             display: none;
 
             grid-template-columns:
                 repeat(4, 1fr);
 
-            gap: 6px;
+            gap: 5px;
         }
 
-
         #inspectionControls button {
-
             min-width: 0;
-            min-height: 38px;
+            min-height: 35px;
 
-            padding: 7px 4px;
+            padding: 5px 2px;
 
-            border-radius: 9px;
+            border-radius: 8px;
 
             border: 1px solid #f59e0b;
 
@@ -243,95 +203,85 @@
                 7,
                 17,
                 31,
-                0.97
+                0.94
             );
 
             color: white;
 
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: bold;
         }
 
-
-
-        /* =====================================
-           INSPECTION PANEL
-        ===================================== */
+        /* ==============================
+           COMPACT INSPECTION PANEL
+        ============================== */
 
         #inspectionPanel {
-
             display: none;
 
-            padding: 13px;
+            padding: 10px 11px;
 
             background: rgba(
                 7,
                 17,
                 31,
-                0.97
+                0.96
             );
 
             border: 1px solid #22c55e;
 
-            border-radius: 13px;
+            border-radius: 11px;
 
-            max-height: 42vh;
+            max-height: 31vh;
 
             overflow-y: auto;
         }
 
-
         #inspectionHeader {
-
             display: flex;
 
             justify-content: space-between;
-
             align-items: center;
 
-            gap: 10px;
+            gap: 7px;
 
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
-
         #inspectionTitle {
-
             margin: 0;
 
             color: #86efac;
 
-            font-size: 16px;
+            font-size: 14px;
         }
 
-
         #inspectionProgress {
-
             color: #cbd5e1;
 
-            font-size: 11px;
+            font-size: 10px;
 
             white-space: nowrap;
         }
 
+        /* ==============================
+           PROGRESS BAR
+        ============================== */
 
         #progressTrack {
-
             width: 100%;
-            height: 5px;
+            height: 4px;
+
+            margin: 5px 0 7px;
 
             background: #334155;
 
             border-radius: 5px;
 
             overflow: hidden;
-
-            margin: 7px 0 10px;
         }
 
-
         #progressBar {
-
             width: 25%;
             height: 100%;
 
@@ -340,47 +290,42 @@
             transition: width 0.25s ease;
         }
 
-
         #inspectionStepTitle {
-
-            margin: 0 0 5px;
+            margin: 0 0 3px;
 
             color: #fbbf24;
 
-            font-size: 14px;
+            font-size: 12.5px;
             font-weight: bold;
         }
 
-
         #inspectionInstruction {
+            margin: 0 0 5px;
 
-            margin: 0 0 8px;
+            line-height: 1.32;
 
-            line-height: 1.4;
-
-            font-size: 13px;
+            font-size: 11.5px;
 
             color: #f8fafc;
         }
 
-
         #inspectionHint {
-
-            margin: 0 0 10px;
-
-            font-size: 11px;
-
-            line-height: 1.35;
+            margin: 0 0 6px;
 
             color: #94a3b8;
+
+            font-size: 9.5px;
+            line-height: 1.25;
         }
 
+        /* ==============================
+           SMALL PROFESSIONAL NOTICE
+        ============================== */
 
         #trainingNotice {
+            margin: 0 0 7px;
 
-            margin: 0 0 10px;
-
-            padding: 7px 9px;
+            padding: 5px 7px;
 
             background: rgba(
                 245,
@@ -389,293 +334,192 @@
                 0.10
             );
 
-            border-left: 3px solid #f59e0b;
+            border-left: 2px solid #f59e0b;
 
-            border-radius: 5px;
+            border-radius: 4px;
 
             color: #fde68a;
 
-            font-size: 10px;
-
-            line-height: 1.35;
+            font-size: 8.5px;
+            line-height: 1.25;
         }
 
-
-
-        /* =====================================
+        /* ==============================
            INSPECTION ACTIONS
-        ===================================== */
+        ============================== */
 
         #inspectionActions {
-
             display: grid;
 
             grid-template-columns:
                 2fr 1fr;
 
-            gap: 7px;
+            gap: 6px;
         }
 
-
         #checkedNextButton {
-
-            min-height: 42px;
+            min-height: 37px;
 
             border: none;
-
-            border-radius: 9px;
+            border-radius: 8px;
 
             background: #22c55e;
 
             color: #052e16;
 
-            font-size: 12px;
-
+            font-size: 11px;
             font-weight: bold;
         }
 
-
         #checkedNextButton:disabled {
-
             opacity: 0.75;
         }
 
-
         #cancelInspection {
-
-            min-height: 42px;
+            min-height: 37px;
 
             border: none;
-
-            border-radius: 9px;
+            border-radius: 8px;
 
             background: #475569;
 
             color: white;
 
-            font-size: 11px;
-
+            font-size: 10px;
             font-weight: bold;
         }
 
-
         button:active {
-
             transform: scale(0.96);
         }
 
-
-
-        /* =====================================
+        /* ==============================
            SMALL PHONE SUPPORT
-        ===================================== */
+        ============================== */
 
         @media (max-width: 360px) {
 
+            #arPanel {
+                bottom: 63px;
+            }
+
+            #inspectionPanel {
+                max-height: 29vh;
+            }
+
             #controls button,
             #inspectionControls button {
-
-                font-size: 10px;
-
-                padding: 6px 2px;
+                font-size: 9.5px;
             }
-
-
-            #arPanel {
-
-                bottom: 65px;
-            }
-
-
-            #inspectionInstruction {
-
-                font-size: 12px;
-            }
-
         }
 
     </style>
-
 </head>
 
 
 <body>
 
-
-    <!-- =====================================
-         STATUS
-    ====================================== -->
-
     <div id="info">
-
         Loading FixAR...
-
     </div>
 
 
-
-    <!-- =====================================
-         AR INTERFACE
-    ====================================== -->
-
     <div id="arPanel">
 
-
-        <!-- EQUIPMENT SELECTOR -->
+        <!-- EQUIPMENT -->
 
         <div id="equipmentSelector">
-
 
             <button
                 id="conveyorButton"
                 class="active">
-
                 Conveyor
-
             </button>
-
 
             <button id="machineButton">
-
                 Water Pump
-
             </button>
-
 
         </div>
 
 
-
-        <!-- NORMAL MODEL CONTROLS -->
+        <!-- NORMAL CONTROLS -->
 
         <div id="controls">
 
-
             <button id="rotateLeft">
-
                 ↶ Rotate
-
             </button>
-
 
             <button id="rotateRight">
-
                 Rotate ↷
-
             </button>
-
 
             <button id="sizeDown">
-
                 Size −
-
             </button>
-
 
             <button id="sizeUp">
-
                 Size +
-
             </button>
-
 
             <button id="moveButton">
-
                 Move
-
             </button>
-
 
             <button id="removeButton">
-
                 Remove
-
             </button>
-
 
             <button id="inspectionButton">
-
                 Inspect
-
             </button>
-
 
             <button id="resetButton">
-
                 Restart
-
             </button>
-
 
         </div>
 
 
-
-        <!-- =================================
-             INSPECTION VIEW CONTROLS
-        ================================== -->
+        <!-- INSPECTION VIEW CONTROLS -->
 
         <div id="inspectionControls">
 
-
             <button id="inspectRotateLeft">
-
                 ↶ Rotate
-
             </button>
-
 
             <button id="inspectRotateRight">
-
                 Rotate ↷
-
             </button>
-
 
             <button id="inspectSizeDown">
-
                 Size −
-
             </button>
-
 
             <button id="inspectSizeUp">
-
                 Size +
-
             </button>
-
 
         </div>
 
 
-
-        <!-- =================================
-             GUIDED INSPECTION PANEL
-        ================================== -->
+        <!-- INSPECTION PANEL -->
 
         <div id="inspectionPanel">
 
-
             <div id="inspectionHeader">
 
-
                 <h3 id="inspectionTitle">
-
                     Equipment Guided Inspection
-
                 </h3>
 
-
                 <div id="inspectionProgress">
-
                     Step 1 of 4
-
                 </div>
 
-
             </div>
-
 
 
             <div id="progressTrack">
@@ -685,84 +529,53 @@
             </div>
 
 
-
             <div id="inspectionStepTitle">
-
                 Inspection Area
-
             </div>
-
 
 
             <p id="inspectionInstruction">
-
-                Review the highlighted equipment area.
-
+                Review the highlighted area.
             </p>
-
 
 
             <p id="inspectionHint">
-
-                Use Rotate and Size controls to examine the highlighted area from a suitable view.
-
+                Rotate or resize the model to examine the highlighted zone.
             </p>
 
 
-
             <div id="trainingNotice">
-
-                Training aid only — this guided visual familiarisation does not replace workplace SOPs, qualified supervision, or formal equipment inspection.
-
+                Training aid only — follow workplace SOPs and qualified supervision.
             </div>
-
 
 
             <div id="inspectionActions">
 
-
                 <button id="checkedNextButton">
-
                     ✓ Checked — Next
-
                 </button>
-
 
                 <button id="cancelInspection">
-
                     Cancel
-
                 </button>
-
 
             </div>
 
-
         </div>
-
 
     </div>
 
 
-
-    <!-- =====================================
-         ERROR HANDLING
-    ====================================== -->
-
     <script>
 
         window.addEventListener(
-
             "error",
-
             function (event) {
-
 
                 const info =
                     document.getElementById(
                         "info"
                     );
-
 
                 if (info) {
 
@@ -770,31 +583,23 @@
                         "JavaScript Error: "
                         +
                         event.message;
-
                 }
-
 
                 console.error(
                     event.error
                 );
-
             }
-
         );
 
 
         window.addEventListener(
-
             "unhandledrejection",
-
             function (event) {
-
 
                 const info =
                     document.getElementById(
                         "info"
                     );
-
 
                 if (info) {
 
@@ -808,32 +613,18 @@
                             ||
                             "Unknown error"
                         );
-
                 }
-
 
                 console.error(
                     event.reason
                 );
-
             }
-
         );
 
     </script>
 
 
-
-    <!-- =====================================
-         MAIN AR CODE
-    ====================================== -->
-
     <script type="module">
-
-
-        /* =====================================
-           IMPORTS
-        ===================================== */
 
         import * as THREE from
             "https://esm.sh/three@0.164.1";
@@ -847,19 +638,14 @@
             "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
 
 
-
-        /* =====================================
-           THREE VARIABLES
-        ===================================== */
+        /* ==============================
+           THREE
+        ============================== */
 
         let scene;
-
         let camera;
-
         let renderer;
-
         let controller;
-
         let reticle;
 
 
@@ -871,10 +657,9 @@
             false;
 
 
-
-        /* =====================================
+        /* ==============================
            MODEL TEMPLATES
-        ===================================== */
+        ============================== */
 
         let conveyorTemplate =
             null;
@@ -892,10 +677,9 @@
             false;
 
 
-
-        /* =====================================
-           PLACED EQUIPMENT
-        ===================================== */
+        /* ==============================
+           PLACED MODELS
+        ============================== */
 
         let placedConveyor =
             null;
@@ -910,18 +694,17 @@
 
 
         /*
-            Internal name remains "machine".
-            User-facing name = Water Pump.
+            Keep internal "machine"
+            for stable existing logic.
         */
 
         let selectedEquipment =
             "conveyor";
 
 
-
-        /* =====================================
-           APPLICATION STATE
-        ===================================== */
+        /* ==============================
+           APP STATE
+        ============================== */
 
         let placementMode =
             true;
@@ -943,24 +726,17 @@
             0;
 
 
-
-        /* =====================================
-           INSPECTION FOCUS STATE
-        ===================================== */
-
-        /*
-            Stores the non-selected equipment
-            while it is temporarily hidden.
-        */
+        /* ==============================
+           INSPECTION FOCUS
+        ============================== */
 
         let hiddenOtherEquipment =
             null;
 
 
-
-        /* =====================================
+        /* ==============================
            INSPECTION STATE
-        ===================================== */
+        ============================== */
 
         let inspectionStep =
             0;
@@ -971,27 +747,25 @@
 
 
         let hotspotBaseScale =
-            0.1;
+            0.08;
 
 
         const TOTAL_INSPECTION_STEPS =
             4;
 
 
-
-        /* =====================================
-           PROFESSIONAL TRAINING CONTENT
-        ===================================== */
+        /* ==============================
+           TRAINING CONTENT
+        ============================== */
 
         const conveyorInspectionSteps = [
-
 
             {
                 title:
                     "1. Conveyor Frame",
 
                 instruction:
-                    "Inspect the conveyor frame for visible bending, cracks, deformation, or other obvious structural damage.",
+                    "Inspect the frame for visible bending, cracks, deformation, or structural damage.",
 
                 offset: [
                     -0.32,
@@ -1000,13 +774,12 @@
                 ]
             },
 
-
             {
                 title:
                     "2. Belt / Carrying Surface",
 
                 instruction:
-                    "Inspect the belt or carrying surface for visible wear, damage, obstruction, or obvious misalignment.",
+                    "Inspect the belt surface for visible wear, damage, obstruction, or obvious misalignment.",
 
                 offset: [
                     0.00,
@@ -1015,13 +788,12 @@
                 ]
             },
 
-
             {
                 title:
                     "3. Drive / Pulley Area",
 
                 instruction:
-                    "Inspect the drive and pulley area for visible damage, looseness, obstruction, or abnormal wear.",
+                    "Inspect the drive and pulley area for visible looseness, obstruction, damage, or abnormal wear.",
 
                 offset: [
                     0.34,
@@ -1030,13 +802,12 @@
                 ]
             },
 
-
             {
                 title:
-                    "4. Base / Support Structure",
+                    "4. Base / Supports",
 
                 instruction:
-                    "Inspect the conveyor support legs and base structure for visible damage, instability, or loose mounting areas.",
+                    "Inspect the support legs and base for visible damage, instability, or loose mounting areas.",
 
                 offset: [
                     0.00,
@@ -1048,16 +819,14 @@
         ];
 
 
-
         const machineInspectionSteps = [
-
 
             {
                 title:
                     "1. Pump Housing",
 
                 instruction:
-                    "Inspect the pump housing for visible cracks, corrosion, physical damage, or signs of leakage.",
+                    "Inspect the pump housing for visible cracks, corrosion, physical damage, or leakage signs.",
 
                 offset: [
                     0.30,
@@ -1066,13 +835,12 @@
                 ]
             },
 
-
             {
                 title:
                     "2. Inlet / Outlet Connections",
 
                 instruction:
-                    "Inspect the inlet and outlet connection areas for visible looseness, damage, corrosion, or leakage marks.",
+                    "Inspect connection areas for visible looseness, damage, corrosion, or leakage marks.",
 
                 offset: [
                     0.35,
@@ -1081,13 +849,12 @@
                 ]
             },
 
-
             {
                 title:
                     "3. Electric Motor Housing",
 
                 instruction:
-                    "Inspect the motor body and ventilation area for visible damage, obstruction, or abnormal external condition.",
+                    "Inspect the motor body and ventilation area for visible damage or obstruction.",
 
                 offset: [
                     -0.28,
@@ -1096,13 +863,12 @@
                 ]
             },
 
-
             {
                 title:
                     "4. Base / Mounting",
 
                 instruction:
-                    "Inspect the pump base and mounting points for visible damage, looseness, or signs of instability.",
+                    "Inspect the base and mounting points for visible damage, looseness, or instability.",
 
                 offset: [
                     0.00,
@@ -1114,17 +880,16 @@
         ];
 
 
-
-        /* =====================================
-           SCALE SETTINGS
-        ===================================== */
+        /* ==============================
+           SCALE
+        ============================== */
 
         const CONVEYOR_DEFAULT_SCALE =
             0.25;
 
 
         const PUMP_DEFAULT_SCALE =
-            0.35;
+            0.40;
 
 
         const MIN_SCALE =
@@ -1139,10 +904,9 @@
             0.05;
 
 
-
-        /* =====================================
-           HTML ELEMENTS
-        ===================================== */
+        /* ==============================
+           ELEMENTS
+        ============================== */
 
         const info =
             document.getElementById(
@@ -1306,46 +1070,30 @@
             );
 
 
-
-        /* =====================================
+        /* ==============================
            MODEL URLS
-        ===================================== */
+        ============================== */
 
         const CONVEYOR_URL =
-
             new URL(
-
                 "./models/conveyor.glb",
-
                 window.location.href
-
             ).href;
-
 
 
         const MACHINE_URL =
-
             new URL(
-
                 "./models/machine.glb",
-
                 window.location.href
-
             ).href;
 
-
-
-        /* =====================================
-           START
-        ===================================== */
 
         init();
 
 
-
-        /* =====================================
+        /* ==============================
            INITIALISE
-        ===================================== */
+        ============================== */
 
         async function init() {
 
@@ -1360,45 +1108,32 @@
 
             camera =
                 new THREE.PerspectiveCamera(
-
                     70,
-
                     window.innerWidth /
                     window.innerHeight,
-
                     0.01,
-
                     20
-
                 );
 
 
             renderer =
                 new THREE.WebGLRenderer({
-
                     antialias: true,
-
                     alpha: true
-
                 });
 
 
             renderer.setPixelRatio(
-
                 Math.min(
                     window.devicePixelRatio,
                     2
                 )
-
             );
 
 
             renderer.setSize(
-
                 window.innerWidth,
-
                 window.innerHeight
-
             );
 
 
@@ -1415,20 +1150,13 @@
             );
 
 
-
-            /* =================================
-               LIGHTING
-            ================================= */
+            /* LIGHTING */
 
             const hemisphereLight =
                 new THREE.HemisphereLight(
-
                     0xffffff,
-
                     0x444444,
-
                     2
-
                 );
 
 
@@ -1439,11 +1167,8 @@
 
             const directionalLight =
                 new THREE.DirectionalLight(
-
                     0xffffff,
-
                     2
-
                 );
 
 
@@ -1459,20 +1184,13 @@
             );
 
 
-
-            /* =================================
-               SURFACE RETICLE
-            ================================= */
+            /* RETICLE */
 
             const reticleGeometry =
                 new THREE.RingGeometry(
-
                     0.07,
-
                     0.10,
-
                     32
-
                 );
 
 
@@ -1483,23 +1201,15 @@
 
             const reticleMaterial =
                 new THREE.MeshBasicMaterial({
-
-                    color:
-                        0x00ffff,
-
-                    side:
-                        THREE.DoubleSide
-
+                    color: 0x00ffff,
+                    side: THREE.DoubleSide
                 });
 
 
             reticle =
                 new THREE.Mesh(
-
                     reticleGeometry,
-
                     reticleMaterial
-
                 );
 
 
@@ -1516,11 +1226,6 @@
             );
 
 
-
-            /* =================================
-               XR CONTROLLER
-            ================================= */
-
             controller =
                 renderer.xr.getController(
                     0
@@ -1528,11 +1233,8 @@
 
 
             controller.addEventListener(
-
                 "select",
-
                 onSelect
-
             );
 
 
@@ -1541,26 +1243,13 @@
             );
 
 
-
-            /* =================================
-               LOAD MODELS
-            ================================= */
-
             await loadModels();
 
 
-
-            /* =================================
-               AR BUTTON
-            ================================= */
-
             const arButton =
                 ARButton.createButton(
-
                     renderer,
-
                     {
-
                         requiredFeatures: [
                             "hit-test"
                         ],
@@ -1570,14 +1259,10 @@
                         ],
 
                         domOverlay: {
-
                             root:
                                 document.body
-
                         }
-
                     }
-
                 );
 
 
@@ -1586,15 +1271,10 @@
             );
 
 
-
-            /* =================================
-               SESSION START
-            ================================= */
+            /* SESSION START */
 
             renderer.xr.addEventListener(
-
                 "sessionstart",
-
                 function () {
 
 
@@ -1660,19 +1340,13 @@
                         "Conveyor selected - scan and tap to place";
 
                 }
-
             );
 
 
-
-            /* =================================
-               SESSION END
-            ================================= */
+            /* SESSION END */
 
             renderer.xr.addEventListener(
-
                 "sessionend",
-
                 function () {
 
 
@@ -1730,35 +1404,25 @@
                         null;
 
 
-                    if (
-                        placedConveyor
-                    ) {
-
+                    if (placedConveyor) {
 
                         scene.remove(
                             placedConveyor
                         );
 
-
                         placedConveyor =
                             null;
-
                     }
 
 
-                    if (
-                        placedMachine
-                    ) {
-
+                    if (placedMachine) {
 
                         scene.remove(
                             placedMachine
                         );
 
-
                         placedMachine =
                             null;
-
                     }
 
 
@@ -1766,16 +1430,12 @@
                         "AR session ended";
 
                 }
-
             );
 
 
             window.addEventListener(
-
                 "resize",
-
                 onResize
-
             );
 
 
@@ -1786,10 +1446,9 @@
         }
 
 
-
-        /* =====================================
+        /* ==============================
            LOAD MODELS
-        ===================================== */
+        ============================== */
 
         async function loadModels() {
 
@@ -1800,7 +1459,6 @@
 
             const conveyorPromise =
                 new Promise(
-
                     function (
                         resolve,
                         reject
@@ -1808,12 +1466,9 @@
 
 
                         loader.load(
-
                             CONVEYOR_URL,
 
-
                             function (gltf) {
-
 
                                 conveyorTemplate =
                                     gltf.scene;
@@ -1829,38 +1484,19 @@
 
 
                                 resolve();
-
                             },
-
 
                             undefined,
 
-
-                            function (error) {
-
-
-                                console.error(
-                                    "Conveyor load error:",
-                                    error
-                                );
-
-
-                                reject(
-                                    error
-                                );
-
-                            }
-
+                            reject
                         );
 
                     }
-
                 );
 
 
             const machinePromise =
                 new Promise(
-
                     function (
                         resolve,
                         reject
@@ -1868,12 +1504,9 @@
 
 
                         loader.load(
-
                             MACHINE_URL,
 
-
                             function (gltf) {
-
 
                                 machineTemplate =
                                     gltf.scene;
@@ -1889,32 +1522,14 @@
 
 
                                 resolve();
-
                             },
-
 
                             undefined,
 
-
-                            function (error) {
-
-
-                                console.error(
-                                    "Water Pump load error:",
-                                    error
-                                );
-
-
-                                reject(
-                                    error
-                                );
-
-                            }
-
+                            reject
                         );
 
                     }
-
                 );
 
 
@@ -1922,11 +1537,8 @@
 
 
                 await Promise.all([
-
                     conveyorPromise,
-
                     machinePromise
-
                 ]);
 
 
@@ -1944,16 +1556,10 @@
 
                 info.textContent =
                     "Unable to load equipment models";
-
             }
 
         }
 
-
-
-        /* =====================================
-           PREPARE MODEL
-        ===================================== */
 
         function prepareModel(
             model
@@ -1961,7 +1567,6 @@
 
 
             model.traverse(
-
                 function (child) {
 
 
@@ -1972,20 +1577,13 @@
 
                         child.frustumCulled =
                             false;
-
                     }
 
                 }
-
             );
 
         }
 
-
-
-        /* =====================================
-           CREATE MODEL
-        ===================================== */
 
         function createModel(
             type
@@ -1993,40 +1591,28 @@
 
 
             if (
-
-                type ===
-                "conveyor"
-
+                type === "conveyor"
                 &&
-
                 conveyorReady
-
             ) {
 
 
                 return conveyorTemplate.clone(
                     true
                 );
-
             }
 
 
             if (
-
-                type ===
-                "machine"
-
+                type === "machine"
                 &&
-
                 machineReady
-
             ) {
 
 
                 return machineTemplate.clone(
                     true
                 );
-
             }
 
 
@@ -2035,56 +1621,40 @@
         }
 
 
-
-        /* =====================================
-           GET DEFAULT SCALE
-        ===================================== */
-
         function getDefaultScale(
             type
         ) {
 
 
-            if (
+            return (
                 type === "conveyor"
-            ) {
-
-
-                return CONVEYOR_DEFAULT_SCALE;
-
-            }
-
-
-            return PUMP_DEFAULT_SCALE;
+                ?
+                CONVEYOR_DEFAULT_SCALE
+                :
+                PUMP_DEFAULT_SCALE
+            );
 
         }
 
 
-
-        /* =====================================
-           CONVEYOR SELECT
-        ===================================== */
+        /* ==============================
+           EQUIPMENT SELECT
+        ============================== */
 
         conveyorButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 if (
                     inspectionMode
                 ) {
-
                     return;
-
                 }
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                    performance.now() + 600;
 
 
                 selectedEquipment =
@@ -2127,7 +1697,7 @@
 
 
                     info.textContent =
-                        "Conveyor selected - explore or begin guided inspection";
+                        "Conveyor selected - explore or inspect";
 
 
                 } else {
@@ -2151,39 +1721,26 @@
 
                     info.textContent =
                         "Conveyor selected - scan and tap to place";
-
                 }
 
             }
-
         );
 
 
-
-        /* =====================================
-           WATER PUMP SELECT
-        ===================================== */
-
         machineButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 if (
                     inspectionMode
                 ) {
-
                     return;
-
                 }
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                    performance.now() + 600;
 
 
                 selectedEquipment =
@@ -2226,7 +1783,7 @@
 
 
                     info.textContent =
-                        "Water Pump selected - explore or begin guided inspection";
+                        "Water Pump selected - explore or inspect";
 
 
                 } else {
@@ -2250,64 +1807,41 @@
 
                     info.textContent =
                         "Water Pump selected - scan and tap to place";
-
                 }
 
             }
-
         );
 
 
-
-        /* =====================================
-           MAIN XR TAP
-        ===================================== */
+        /* ==============================
+           XR TAP
+        ============================== */
 
         function onSelect() {
 
 
             if (
-
                 performance.now()
                 <
                 ignoreSelectUntil
-
             ) {
-
-
                 return;
-
             }
 
-
-            /*
-                During guided inspection,
-                screen tap is not required.
-            */
 
             if (
                 inspectionMode
             ) {
-
-
                 return;
-
             }
 
 
-
-            /* =================================
-               MOVE MODE
-            ================================= */
+            /* MOVE */
 
             if (
-
                 repositionMode
-
                 &&
-
                 selectedObject
-
             ) {
 
 
@@ -2321,7 +1855,6 @@
 
 
                     return;
-
                 }
 
 
@@ -2366,22 +1899,15 @@
 
 
                 return;
-
             }
 
 
-
-            /* =================================
-               EQUIPMENT PLACEMENT
-            ================================= */
+            /* PLACE */
 
             if (
                 !placementMode
             ) {
-
-
                 return;
-
             }
 
 
@@ -2395,7 +1921,6 @@
 
 
                 return;
-
             }
 
 
@@ -2415,7 +1940,6 @@
 
 
                 return;
-
             }
 
 
@@ -2447,11 +1971,9 @@
 
 
             newObject.scale.set(
-
                 defaultScale,
                 defaultScale,
                 defaultScale
-
             );
 
 
@@ -2469,10 +1991,8 @@
 
 
             if (
-
                 selectedEquipment ===
                 "conveyor"
-
             ) {
 
 
@@ -2485,7 +2005,6 @@
 
                 placedMachine =
                     newObject;
-
             }
 
 
@@ -2514,17 +2033,16 @@
                 selectedEquipment ===
                 "conveyor"
 
-                ? "Conveyor placed - explore the model or start guided inspection"
+                ? "Conveyor placed - explore or start inspection"
 
-                : "Water Pump placed - explore the model or start guided inspection";
+                : "Water Pump placed - explore or start inspection";
 
         }
 
 
-
-        /* =====================================
-           SHARED ROTATION
-        ===================================== */
+        /* ==============================
+           ROTATE / SIZE
+        ============================== */
 
         function rotateSelected(
             degrees
@@ -2534,10 +2052,7 @@
             if (
                 !selectedObject
             ) {
-
-
                 return;
-
             }
 
 
@@ -2548,35 +2063,16 @@
                 );
 
 
-            if (
+            info.textContent =
+
                 inspectionMode
-            ) {
 
+                ? "Inspection active - examine highlighted area"
 
-                info.textContent =
-                    "Guided inspection active - examine the highlighted area";
-
-
-            } else {
-
-
-                info.textContent =
-
-                    degrees > 0
-
-                    ? "Equipment rotated left"
-
-                    : "Equipment rotated right";
-
-            }
+                : "Equipment rotated";
 
         }
 
-
-
-        /* =====================================
-           SHARED RESIZE
-        ===================================== */
 
         function resizeSelected(
             amount
@@ -2586,10 +2082,7 @@
             if (
                 !selectedObject
             ) {
-
-
                 return;
-
             }
 
 
@@ -2605,17 +2098,12 @@
 
             scale =
                 Math.max(
-
                     MIN_SCALE,
 
                     Math.min(
-
                         MAX_SCALE,
-
                         scale
-
                     )
-
                 );
 
 
@@ -2626,11 +2114,9 @@
 
 
             selectedObject.scale.set(
-
                 scale,
                 scale,
                 scale
-
             );
 
 
@@ -2638,7 +2124,7 @@
 
                 inspectionMode
 
-                ? "Guided inspection active - adjust the view as needed"
+                ? "Inspection active - adjust view as needed"
 
                 : "Size: "
                   +
@@ -2651,156 +2137,105 @@
         }
 
 
-
-        /* =====================================
-           NORMAL ROTATION CONTROLS
-        ===================================== */
-
         rotateLeft.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 if (
-                    repositionMode
+                    !repositionMode
                 ) {
 
-                    return;
 
+                    rotateSelected(
+                        15
+                    );
                 }
 
-
-                rotateSelected(
-                    15
-                );
-
             }
-
         );
 
 
         rotateRight.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 if (
-                    repositionMode
+                    !repositionMode
                 ) {
 
-                    return;
 
+                    rotateSelected(
+                        -15
+                    );
                 }
 
-
-                rotateSelected(
-                    -15
-                );
-
             }
-
         );
 
 
-
-        /* =====================================
-           NORMAL SIZE CONTROLS
-        ===================================== */
-
         sizeDown.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 if (
-                    repositionMode
+                    !repositionMode
                 ) {
 
-                    return;
 
+                    resizeSelected(
+                        -SCALE_STEP
+                    );
                 }
 
-
-                resizeSelected(
-                    -SCALE_STEP
-                );
-
             }
-
         );
 
 
         sizeUp.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 if (
-                    repositionMode
+                    !repositionMode
                 ) {
 
-                    return;
 
+                    resizeSelected(
+                        SCALE_STEP
+                    );
                 }
 
-
-                resizeSelected(
-                    SCALE_STEP
-                );
-
             }
-
         );
 
 
-
-        /* =====================================
-           INSPECTION ROTATION CONTROLS
-        ===================================== */
-
         inspectRotateLeft.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 rotateSelected(
@@ -2808,21 +2243,16 @@
                 );
 
             }
-
         );
 
 
         inspectRotateRight.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 rotateSelected(
@@ -2830,26 +2260,16 @@
                 );
 
             }
-
         );
 
 
-
-        /* =====================================
-           INSPECTION SIZE CONTROLS
-        ===================================== */
-
         inspectSizeDown.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 resizeSelected(
@@ -2857,21 +2277,16 @@
                 );
 
             }
-
         );
 
 
         inspectSizeUp.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    500;
+                    performance.now() + 500;
 
 
                 resizeSelected(
@@ -2879,49 +2294,26 @@
                 );
 
             }
-
         );
 
 
-
-        /* =====================================
+        /* ==============================
            MOVE
-        ===================================== */
+        ============================== */
 
         moveButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                    performance.now() + 600;
 
 
                 if (
                     !selectedObject
                 ) {
-
-
-                    info.textContent =
-                        "Select equipment first";
-
-
                     return;
-
-                }
-
-
-                if (
-                    inspectionMode
-                ) {
-
-
-                    return;
-
                 }
 
 
@@ -2942,63 +2334,35 @@
 
 
                 info.textContent =
-                    "Move mode - scan and tap a new surface position";
+                    "Move mode - scan and tap a new position";
 
             }
-
         );
 
 
-
-        /* =====================================
+        /* ==============================
            REMOVE
-        ===================================== */
+        ============================== */
 
         removeButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                    performance.now() + 600;
 
 
                 if (
                     !selectedObject
                 ) {
-
-
-                    info.textContent =
-                        "Select equipment first";
-
-
                     return;
-
                 }
 
 
                 if (
-                    inspectionMode
-                ) {
-
-
-                    return;
-
-                }
-
-
-
-                /* REMOVE CONVEYOR */
-
-                if (
-
                     selectedObject ===
                     placedConveyor
-
                 ) {
 
 
@@ -3019,22 +2383,6 @@
                         "conveyor";
 
 
-                    placementMode =
-                        true;
-
-
-                    repositionMode =
-                        false;
-
-
-                    controls.style.display =
-                        "none";
-
-
-                    reticle.visible =
-                        false;
-
-
                     conveyorButton.classList.add(
                         "active"
                     );
@@ -3046,23 +2394,10 @@
 
 
                     info.textContent =
-                        "Conveyor removed - scan and tap to place again";
+                        "Conveyor removed - scan and place again";
 
 
-                    return;
-
-                }
-
-
-
-                /* REMOVE WATER PUMP */
-
-                if (
-
-                    selectedObject ===
-                    placedMachine
-
-                ) {
+                } else {
 
 
                     scene.remove(
@@ -3082,22 +2417,6 @@
                         "machine";
 
 
-                    placementMode =
-                        true;
-
-
-                    repositionMode =
-                        false;
-
-
-                    controls.style.display =
-                        "none";
-
-
-                    reticle.visible =
-                        false;
-
-
                     machineButton.classList.add(
                         "active"
                     );
@@ -3109,21 +2428,32 @@
 
 
                     info.textContent =
-                        "Water Pump removed - scan and tap to place again";
-
+                        "Water Pump removed - scan and place again";
                 }
 
-            }
 
+                placementMode =
+                    true;
+
+
+                repositionMode =
+                    false;
+
+
+                reticle.visible =
+                    false;
+
+
+                controls.style.display =
+                    "none";
+
+            }
         );
 
 
-
-        /* =====================================
-           FOCUSED INSPECTION
-
-           Hide the other equipment.
-        ===================================== */
+        /* ==============================
+           FOCUS INSPECTION
+        ============================== */
 
         function hideOtherEquipmentForInspection() {
 
@@ -3132,24 +2462,13 @@
                 null;
 
 
-            /*
-                Conveyor inspection
-                → hide Water Pump
-            */
-
             if (
-
                 selectedEquipment ===
                 "conveyor"
-
                 &&
-
                 placedMachine
-
                 &&
-
                 placedMachine.visible
-
             ) {
 
 
@@ -3159,29 +2478,16 @@
 
                 placedMachine.visible =
                     false;
-
             }
 
 
-
-            /*
-                Water Pump inspection
-                → hide Conveyor
-            */
-
             if (
-
                 selectedEquipment ===
                 "machine"
-
                 &&
-
                 placedConveyor
-
                 &&
-
                 placedConveyor.visible
-
             ) {
 
 
@@ -3191,16 +2497,10 @@
 
                 placedConveyor.visible =
                     false;
-
             }
 
         }
 
-
-
-        /* =====================================
-           RESTORE HIDDEN EQUIPMENT
-        ===================================== */
 
         function restoreOtherEquipmentAfterInspection() {
 
@@ -3216,28 +2516,22 @@
 
                 hiddenOtherEquipment =
                     null;
-
             }
 
         }
 
 
-
-        /* =====================================
-           RESTART TRAINING
-        ===================================== */
+        /* ==============================
+           RESTART
+        ============================== */
 
         resetButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    700;
+                    performance.now() + 700;
 
 
                 inspectionMode =
@@ -3278,7 +2572,6 @@
 
                     placedConveyor =
                         null;
-
                 }
 
 
@@ -3294,7 +2587,6 @@
 
                     placedMachine =
                         null;
-
                 }
 
 
@@ -3337,42 +2629,29 @@
 
 
                 info.textContent =
-                    "Training restarted - scan and tap to place Conveyor";
+                    "Training restarted - scan and place Conveyor";
 
             }
-
         );
 
 
-
-        /* =====================================
-           START GUIDED INSPECTION
-        ===================================== */
+        /* ==============================
+           START INSPECTION
+        ============================== */
 
         inspectionButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    700;
+                    performance.now() + 700;
 
 
                 if (
                     !selectedObject
                 ) {
-
-
-                    info.textContent =
-                        "Place and select equipment first";
-
-
                     return;
-
                 }
 
 
@@ -3383,12 +2662,6 @@
                 inspectionTransitioning =
                     false;
 
-
-                /*
-                    Important:
-                    hide the other equipment
-                    before starting inspection.
-                */
 
                 hideOtherEquipmentForInspection();
 
@@ -3409,10 +2682,6 @@
                     false;
 
 
-                /*
-                    Hide standard controls.
-                */
-
                 controls.style.display =
                     "none";
 
@@ -3420,11 +2689,6 @@
                 equipmentSelector.style.display =
                     "none";
 
-
-                /*
-                    Keep Rotate and Size controls
-                    available.
-                */
 
                 inspectionControls.style.display =
                     "grid";
@@ -3442,41 +2706,32 @@
                     selectedEquipment ===
                     "conveyor"
 
-                    ? "Focused Conveyor guided inspection started"
+                    ? "Conveyor guided inspection started"
 
-                    : "Focused Water Pump guided inspection started";
+                    : "Water Pump guided inspection started";
 
             }
-
         );
 
-
-
-        /* =====================================
-           GET INSPECTION STEPS
-        ===================================== */
 
         function getInspectionSteps() {
 
 
             return (
-
                 selectedEquipment ===
                 "conveyor"
 
                 ? conveyorInspectionSteps
 
                 : machineInspectionSteps
-
             );
 
         }
 
 
-
-        /* =====================================
-           LOCAL MODEL BOUNDING BOX
-        ===================================== */
+        /* ==============================
+           LOCAL BOUNDING BOX
+        ============================== */
 
         function getLocalBoundingBox(
             root
@@ -3496,31 +2751,21 @@
 
 
             const inverseRoot =
-
-                root
-                    .matrixWorld
+                root.matrixWorld
                     .clone()
                     .invert();
 
 
             root.traverse(
-
                 function (child) {
 
 
                     if (
-
                         !child.isMesh
-
                         ||
-
                         !child.geometry
-
                     ) {
-
-
                         return;
-
                     }
 
 
@@ -3531,36 +2776,20 @@
 
                         child.geometry
                             .computeBoundingBox();
-
-                    }
-
-
-                    if (
-                        !child.geometry.boundingBox
-                    ) {
-
-
-                        return;
-
                     }
 
 
                     const childBox =
-
                         child.geometry
                             .boundingBox
                             .clone();
 
 
                     const childToRoot =
-
                         new THREE.Matrix4()
                             .multiplyMatrices(
-
                                 inverseRoot,
-
                                 child.matrixWorld
-
                             );
 
 
@@ -3574,7 +2803,6 @@
                     );
 
                 }
-
             );
 
 
@@ -3584,7 +2812,6 @@
 
 
                 result.set(
-
                     new THREE.Vector3(
                         -0.5,
                         -0.5,
@@ -3596,9 +2823,7 @@
                         0.5,
                         0.5
                     )
-
                 );
-
             }
 
 
@@ -3607,10 +2832,9 @@
         }
 
 
-
-        /* =====================================
-           CREATE NUMBERED INSPECTION MARKER
-        ===================================== */
+        /* ==============================
+           PROFESSIONAL MARKER
+        ============================== */
 
         function createHotspotSprite(
             stepNumber
@@ -3645,31 +2869,27 @@
             );
 
 
-            /*
-                Amber outer circle
-            */
-
             context.beginPath();
 
 
             context.arc(
                 64,
                 64,
-                46,
+                42,
                 0,
                 Math.PI * 2
             );
 
 
             context.fillStyle =
-                "rgba(245, 158, 11, 0.94)";
+                "rgba(245,158,11,0.94)";
 
 
             context.fill();
 
 
             context.lineWidth =
-                6;
+                5;
 
 
             context.strokeStyle =
@@ -3679,39 +2899,31 @@
             context.stroke();
 
 
-            /*
-                Inner dark circle
-            */
-
             context.beginPath();
 
 
             context.arc(
                 64,
                 64,
-                31,
+                27,
                 0,
                 Math.PI * 2
             );
 
 
             context.fillStyle =
-                "rgba(7, 17, 31, 0.97)";
+                "rgba(7,17,31,0.98)";
 
 
             context.fill();
 
-
-            /*
-                Step number
-            */
 
             context.fillStyle =
                 "#ffffff";
 
 
             context.font =
-                "bold 42px Arial";
+                "bold 38px Arial";
 
 
             context.textAlign =
@@ -3723,14 +2935,11 @@
 
 
             context.fillText(
-
                 String(
                     stepNumber
                 ),
-
                 64,
                 65
-
             );
 
 
@@ -3746,19 +2955,10 @@
 
             const material =
                 new THREE.SpriteMaterial({
-
-                    map:
-                        texture,
-
-                    transparent:
-                        true,
-
-                    depthTest:
-                        false,
-
-                    depthWrite:
-                        false
-
+                    map: texture,
+                    transparent: true,
+                    depthTest: false,
+                    depthWrite: false
                 });
 
 
@@ -3777,21 +2977,13 @@
         }
 
 
-
-        /* =====================================
-           REMOVE CURRENT MARKER
-        ===================================== */
-
         function removeInspectionHotspot() {
 
 
             if (
                 !currentHotspot
             ) {
-
-
                 return;
-
             }
 
 
@@ -3803,7 +2995,6 @@
                 currentHotspot.parent.remove(
                     currentHotspot
                 );
-
             }
 
 
@@ -3821,14 +3012,12 @@
                         .material
                         .map
                         .dispose();
-
                 }
 
 
                 currentHotspot
                     .material
                     .dispose();
-
             }
 
 
@@ -3837,11 +3026,6 @@
 
         }
 
-
-
-        /* =====================================
-           SHOW CURRENT INSPECTION MARKER
-        ===================================== */
 
         function showCurrentInspectionHotspot() {
 
@@ -3852,10 +3036,7 @@
             if (
                 !selectedObject
             ) {
-
-
                 return;
-
             }
 
 
@@ -3897,7 +3078,7 @@
                 stepData.offset;
 
 
-            const hotspotPosition =
+            const position =
                 new THREE.Vector3(
 
                     center.x
@@ -3922,53 +3103,42 @@
 
 
             currentHotspot =
-
                 createHotspotSprite(
                     inspectionStep + 1
                 );
 
 
             currentHotspot.position.copy(
-                hotspotPosition
-            );
-
-
-            hotspotBaseScale =
-
-                Math.max(
-
-                    0.15,
-
-                    Math.min(
-
-                        0.38,
-
-                        size.length()
-                        *
-                        0.12
-
-                    )
-
-                );
-
-
-            currentHotspot.scale.set(
-
-                hotspotBaseScale,
-
-                hotspotBaseScale,
-
-                hotspotBaseScale
-
+                position
             );
 
 
             /*
-                Attach marker to selected model.
-
-                Marker follows rotation
-                and resizing automatically.
+                Smaller marker
+                for professional appearance.
             */
+
+            hotspotBaseScale =
+
+                Math.max(
+                    0.10,
+
+                    Math.min(
+                        0.22,
+
+                        size.length()
+                        *
+                        0.07
+                    )
+                );
+
+
+            currentHotspot.scale.set(
+                hotspotBaseScale,
+                hotspotBaseScale,
+                hotspotBaseScale
+            );
+
 
             selectedObject.add(
                 currentHotspot
@@ -3977,10 +3147,9 @@
         }
 
 
-
-        /* =====================================
-           UPDATE CURRENT INSPECTION STEP
-        ===================================== */
+        /* ==============================
+           UPDATE INSPECTION
+        ============================== */
 
         function updateInspectionStep() {
 
@@ -3988,10 +3157,7 @@
             if (
                 !inspectionMode
             ) {
-
-
                 return;
-
             }
 
 
@@ -3999,7 +3165,7 @@
                 getInspectionSteps();
 
 
-            const currentStepData =
+            const step =
                 steps[
                     inspectionStep
                 ];
@@ -4010,9 +3176,9 @@
                 selectedEquipment ===
                 "conveyor"
 
-                ? "Conveyor Guided Inspection"
+                ? "Conveyor Inspection"
 
-                : "Water Pump Guided Inspection";
+                : "Water Pump Inspection";
 
 
             inspectionProgress.textContent =
@@ -4021,7 +3187,7 @@
                 +
                 (inspectionStep + 1)
                 +
-                " of "
+                "/"
                 +
                 TOTAL_INSPECTION_STEPS;
 
@@ -4042,11 +3208,11 @@
 
 
             inspectionStepTitle.textContent =
-                currentStepData.title;
+                step.title;
 
 
             inspectionInstruction.textContent =
-                currentStepData.instruction;
+                step.instruction;
 
 
             checkedNextButton.disabled =
@@ -4068,7 +3234,7 @@
 
             info.textContent =
 
-                "Review highlighted inspection area "
+                "Review inspection area "
                 +
                 (inspectionStep + 1)
                 +
@@ -4079,37 +3245,25 @@
         }
 
 
-
-        /* =====================================
-           CHECKED - NEXT
-        ===================================== */
+        /* ==============================
+           NEXT CHECKPOINT
+        ============================== */
 
         checkedNextButton.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                    performance.now() + 600;
 
 
                 if (
-
                     !inspectionMode
-
                     ||
-
                     inspectionTransitioning
-
                 ) {
-
-
                     return;
-
                 }
 
 
@@ -4122,13 +3276,8 @@
 
 
                 checkedNextButton.textContent =
-                    "✓ Checkpoint Reviewed";
+                    "✓ Reviewed";
 
-
-                /*
-                    Turn marker green
-                    to show completion.
-                */
 
                 if (
                     currentHotspot
@@ -4136,7 +3285,6 @@
 
 
                     const canvas =
-
                         currentHotspot
                             .material
                             .map
@@ -4144,7 +3292,6 @@
 
 
                     const context =
-
                         canvas.getContext(
                             "2d"
                         );
@@ -4164,21 +3311,21 @@
                     context.arc(
                         64,
                         64,
-                        46,
+                        42,
                         0,
                         Math.PI * 2
                     );
 
 
                     context.fillStyle =
-                        "rgba(34, 197, 94, 0.95)";
+                        "rgba(34,197,94,0.96)";
 
 
                     context.fill();
 
 
                     context.lineWidth =
-                        6;
+                        5;
 
 
                     context.strokeStyle =
@@ -4188,31 +3335,12 @@
                     context.stroke();
 
 
-                    context.beginPath();
-
-
-                    context.arc(
-                        64,
-                        64,
-                        31,
-                        0,
-                        Math.PI * 2
-                    );
-
-
-                    context.fillStyle =
-                        "rgba(5, 46, 22, 0.96)";
-
-
-                    context.fill();
-
-
                     context.fillStyle =
                         "#ffffff";
 
 
                     context.font =
-                        "bold 46px Arial";
+                        "bold 42px Arial";
 
 
                     context.textAlign =
@@ -4235,26 +3363,17 @@
                         .map
                         .needsUpdate =
                         true;
-
                 }
 
 
-                info.textContent =
-                    "Inspection checkpoint reviewed";
-
-
                 setTimeout(
-
                     function () {
 
 
                         if (
                             !inspectionMode
                         ) {
-
-
                             return;
-
                         }
 
 
@@ -4262,10 +3381,8 @@
 
 
                         if (
-
                             inspectionStep >=
                             TOTAL_INSPECTION_STEPS
-
                         ) {
 
 
@@ -4273,7 +3390,6 @@
 
 
                             return;
-
                         }
 
 
@@ -4285,19 +3401,16 @@
 
                     },
 
-                    550
-
+                    500
                 );
 
             }
-
         );
 
 
-
-        /* =====================================
-           FINISH INSPECTION
-        ===================================== */
+        /* ==============================
+           FINISH
+        ============================== */
 
         function finishInspection() {
 
@@ -4312,11 +3425,6 @@
 
             removeInspectionHotspot();
 
-
-            /*
-                Restore the equipment that
-                was hidden during inspection.
-            */
 
             restoreOtherEquipmentAfterInspection();
 
@@ -4340,7 +3448,6 @@
 
                 controls.style.display =
                     "grid";
-
             }
 
 
@@ -4349,29 +3456,24 @@
                 selectedEquipment ===
                 "conveyor"
 
-                ? "✓ Conveyor training complete — 4 inspection areas reviewed"
+                ? "✓ Conveyor training complete — 4 areas reviewed"
 
-                : "✓ Water Pump training complete — 4 inspection areas reviewed";
+                : "✓ Water Pump training complete — 4 areas reviewed";
 
         }
 
 
-
-        /* =====================================
-           CANCEL INSPECTION
-        ===================================== */
+        /* ==============================
+           CANCEL
+        ============================== */
 
         cancelInspection.addEventListener(
-
             "click",
-
             function () {
 
 
                 ignoreSelectUntil =
-                    performance.now()
-                    +
-                    600;
+                    performance.now() + 600;
 
 
                 inspectionMode =
@@ -4388,10 +3490,6 @@
 
                 removeInspectionHotspot();
 
-
-                /*
-                    Restore hidden equipment.
-                */
 
                 restoreOtherEquipmentAfterInspection();
 
@@ -4422,7 +3520,6 @@
 
                     controls.style.display =
                         "none";
-
                 }
 
 
@@ -4430,14 +3527,12 @@
                     "Guided inspection cancelled";
 
             }
-
         );
 
 
-
-        /* =====================================
-           HIT TEST SOURCE
-        ===================================== */
+        /* ==============================
+           HIT TEST
+        ============================== */
 
         async function requestHitTestSource() {
 
@@ -4452,15 +3547,11 @@
                 if (
                     !session
                 ) {
-
-
                     return;
-
                 }
 
 
                 const viewerSpace =
-
                     await session
                         .requestReferenceSpace(
                             "viewer"
@@ -4468,13 +3559,10 @@
 
 
                 hitTestSource =
-
                     await session
                         .requestHitTestSource({
-
                             space:
                                 viewerSpace
-
                         });
 
 
@@ -4483,9 +3571,7 @@
 
 
                 session.addEventListener(
-
                     "end",
-
                     function () {
 
 
@@ -4495,9 +3581,7 @@
 
                         hitTestSource =
                             null;
-
                     }
-
                 );
 
 
@@ -4505,7 +3589,6 @@
 
 
                 console.error(
-                    "Hit-test error:",
                     error
                 );
 
@@ -4516,24 +3599,16 @@
 
                 info.textContent =
                     "Hit-test could not start";
-
             }
 
         }
 
 
-
-        /* =====================================
-           WINDOW RESIZE
-        ===================================== */
-
         function onResize() {
 
 
             camera.aspect =
-
-                window.innerWidth
-                /
+                window.innerWidth /
                 window.innerHeight;
 
 
@@ -4541,20 +3616,16 @@
 
 
             renderer.setSize(
-
                 window.innerWidth,
-
                 window.innerHeight
-
             );
 
         }
 
 
-
-        /* =====================================
-           RENDER LOOP
-        ===================================== */
+        /* ==============================
+           RENDER
+        ============================== */
 
         function render(
             timestamp,
@@ -4563,51 +3634,38 @@
 
 
             /*
-                Subtle professional pulse
-                on active inspection marker.
+                Subtle pulse
             */
 
             if (
-
                 inspectionMode
-
                 &&
-
                 currentHotspot
-
             ) {
 
 
                 const pulse =
-
                     1
                     +
                     Math.sin(
                         timestamp * 0.004
                     )
                     *
-                    0.06;
+                    0.04;
 
 
-                const pulseScale =
-
+                const markerScale =
                     hotspotBaseScale
                     *
                     pulse;
 
 
                 currentHotspot.scale.set(
-
-                    pulseScale,
-
-                    pulseScale,
-
-                    pulseScale
-
+                    markerScale,
+                    markerScale,
+                    markerScale
                 );
-
             }
-
 
 
             if (
@@ -4616,11 +3674,8 @@
 
 
                 if (
-
-                    hitTestSourceRequested
-                    ===
+                    hitTestSourceRequested ===
                     false
-
                 ) {
 
 
@@ -4629,47 +3684,28 @@
 
 
                     requestHitTestSource();
-
                 }
 
 
-
-                /*
-                    Hit testing works only during
-                    placement or repositioning.
-
-                    During inspection it is disabled.
-                */
-
                 if (
-
                     hitTestSource
-
                     &&
-
                     !inspectionMode
-
                     &&
-
                     (
                         placementMode
-
                         ||
-
                         repositionMode
                     )
-
                 ) {
 
 
                     const referenceSpace =
-
                         renderer.xr
                             .getReferenceSpace();
 
 
                     const results =
-
                         frame.getHitTestResults(
                             hitTestSource
                         );
@@ -4685,7 +3721,6 @@
 
 
                         const pose =
-
                             hit.getPose(
                                 referenceSpace
                             );
@@ -4725,9 +3760,7 @@
                                     ? "Surface detected - tap to place Conveyor"
 
                                     : "Surface detected - tap to place Water Pump";
-
                             }
-
                         }
 
 
@@ -4738,27 +3771,15 @@
                             false;
 
 
-                        if (
+                        info.textContent =
+
                             repositionMode
-                        ) {
 
+                            ? "Move phone slowly to find a new position"
 
-                            info.textContent =
-                                "Move phone slowly to find a new surface position";
-
-
-                        } else {
-
-
-                            info.textContent =
-                                "Move phone slowly to detect a suitable surface";
-
-                        }
-
+                            : "Move phone slowly to detect a suitable surface";
                     }
-
                 }
-
             }
 
 
@@ -4768,7 +3789,6 @@
             );
 
         }
-
 
     </script>
 
