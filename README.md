@@ -52,6 +52,10 @@ Guided inspection areas:
 2. Belt / Carrying Surface
 3. Drive / Pulley Area
 4. Base / Supports
+   ### Conveyor Model
+Source: DigitalFactory (DIFactory) – PERFORM Lab
+Model: Conveyor.glb
+Licence: Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
 ### Industrial Water Pump
 Guided inspection areas:
@@ -59,7 +63,12 @@ Guided inspection areas:
 2. Inlet / Outlet Connections
 3. Electric Motor Housing
 4. Base / Mounting
-
+### Water Pump Model
+Model: Simple centrifugal pump model
+Creator: T-Art (@person-x)
+Source: Sketchfab
+Licence: Creative Commons Attribution (CC BY)
+Published: 16 March 2019
 ---
 
 ## Technologies Used
