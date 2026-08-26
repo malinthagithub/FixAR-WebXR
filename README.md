@@ -63,8 +63,8 @@ Guided inspection areas:
 2. Inlet / Outlet Connections
 3. Electric Motor Housing
 4. Base / Mounting
-### Water Pump Model
-Model: Simple centrifugal pump model
+
+   Model: Simple centrifugal pump model
 Creator: T-Art (@person-x)
 Source: Sketchfab
 Licence: Creative Commons Attribution (CC BY)
