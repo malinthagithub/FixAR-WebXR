@@ -699,7 +699,7 @@
         */
 
         let selectedEquipment =
-            "conveyor";
+            "conveyor";// defult add conveyor
 
 
         /* ==============================
@@ -1124,7 +1124,7 @@
 
 
             renderer.setPixelRatio(
-                Math.min(
+                Math.min(  // set qulity based on device pixel ratio
                     window.devicePixelRatio,
                     2
                 )
@@ -1141,18 +1141,18 @@
                 true;
 
 
-            renderer.outputColorSpace =
+            renderer.outputColorSpace =  // set color space to sRGB for correct color rendering
                 THREE.SRGBColorSpace;
 
 
-            document.body.appendChild(
+            document.body.appendChild( // add the renderer canvas to the DOM all reday make render put without lod html user cant see 
                 renderer.domElement
             );
 
 
             /* LIGHTING */
 
-            const hemisphereLight =
+            const hemisphereLight =  // in this use make seccren without black keep light
                 new THREE.HemisphereLight(
                     0xffffff,
                     0x444444,
@@ -1165,28 +1165,28 @@
             );
 
 
-            const directionalLight =
+            const directionalLight =  // make more lihgt 
                 new THREE.DirectionalLight(
                     0xffffff,
                     2
                 );
 
 
-            directionalLight.position.set(
+            directionalLight.position.set( // set location  light
                 2,
                 4,
                 2
             );
 
-
+ 
             scene.add(
                 directionalLight
-            );
+            );  
 
 
             /* RETICLE */
 
-            const reticleGeometry =
+            const reticleGeometry =   // make circle for disply floor 
                 new THREE.RingGeometry(
                     0.07,
                     0.10,
