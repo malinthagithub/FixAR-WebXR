@@ -58,13 +58,15 @@ Model: Conveyor.glb
 Licence: Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
 ### Industrial Water Pump
+
 Guided inspection areas:
 1. Pump Housing
 2. Inlet / Outlet Connections
 3. Electric Motor Housing
 4. Base / Mounting
 
-   Model: Simple centrifugal pump model
+### Water Pump Model
+Model: Simple centrifugal pump model
 Creator: T-Art (@person-x)
 Source: Sketchfab
 Licence: Creative Commons Attribution (CC BY)
@@ -136,3 +138,4 @@ FixAR-WebXR/
 │   ├── conveyor.glb
 │   └── machine.glb
 └── README.md
+```
