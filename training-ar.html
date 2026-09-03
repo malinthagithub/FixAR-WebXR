@@ -885,7 +885,7 @@
         ============================== */
 
         const CONVEYOR_DEFAULT_SCALE =
-    1.5;
+    0.45;
 
 
 
@@ -1623,19 +1623,21 @@
         }
 
 
-        function getDefaultScale(name){
+        function getDefaultScale(
+            type
+        ) {
 
-    if(name === "Conveyor"){
-        return 8.0;
-    }
 
-    if(name === "Water Pump"){
-        return 0.8;
-    }
+            return (
+                type === "conveyor"
+                ?
+                CONVEYOR_DEFAULT_SCALE
+                :
+                PUMP_DEFAULT_SCALE
+            );
 
-    return 1.0;
+        }
 
-}
 
         /* ==============================
            EQUIPMENT SELECT
