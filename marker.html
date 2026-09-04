@@ -378,49 +378,47 @@
       </a-entity>
 
       <!-- ===========================
-           MOTOR PART
+           MOTOR PART (REAL MODEL)
       ============================ -->
-      <a-entity id="motorPart" position="-0.58 0.08 0.78" scale="1.28 1.28 1.28">
-        <a-cylinder position="0 0.08 0" rotation="0 0 90" radius="0.11" height="0.25" color="#2563eb"></a-cylinder>
-        <a-cylinder position="0.14 0.08 0" rotation="0 0 90" radius="0.045" height="0.12" color="#cbd5e1"></a-cylinder>
-        <a-box position="0 0.005 0" width="0.28" height="0.035" depth="0.22" color="#334155"></a-box>
-        <a-entity id="motorFan" position="-0.14 0.08 0">
-          <a-cylinder rotation="0 0 90" radius="0.08" height="0.025" color="#0f172a"></a-cylinder>
-          <a-box position="0 0.055 0" width="0.018" height="0.11" depth="0.035" color="#93c5fd"></a-box>
-          <a-box position="0 -0.055 0" width="0.018" height="0.11" depth="0.035" color="#93c5fd"></a-box>
+      <a-entity id="motorPart" position="-0.58 0.08 0.78" scale="1 1 1">
+        <a-box position="0 0.012 0" width="0.34" height="0.03" depth="0.24" color="#334155"></a-box>
+        <a-entity id="motorFan" position="0 0.06 0">
+          <a-entity gltf-model="url(models/motor.glb)"
+                    position="0 0 0"
+                    rotation="0 90 0"
+                    scale="0.18 0.18 0.18"></a-entity>
         </a-entity>
-        <a-box id="motorHit" width="0.36" height="0.30" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.27 0" scale="0.16 0.16 0.16" align="center" color="#ffffff"></a-text>
+        <a-box id="motorHit" width="0.40" height="0.34" depth="0.40" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.29 0" scale="0.16 0.16 0.16" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
-           COUPLING PART
+           COUPLING PART (REAL MODEL)
       ============================ -->
-      <a-entity id="couplingPart" position="0 0.08 0.78" scale="1.30 1.30 1.30">
-        <a-entity id="couplingVisual">
-          <a-cylinder position="-0.05 0.08 0" rotation="0 0 90" radius="0.075" height="0.09" color="#f59e0b"></a-cylinder>
-          <a-cylinder position="0.05 0.08 0" rotation="0 0 90" radius="0.075" height="0.09" color="#f59e0b"></a-cylinder>
-          <a-cylinder position="0 0.08 0" rotation="0 0 90" radius="0.035" height="0.21" color="#fde68a"></a-cylinder>
+      <a-entity id="couplingPart" position="0 0.08 0.78" scale="1 1 1">
+        <a-entity id="couplingVisual" position="0 0.06 0">
+          <a-entity gltf-model="url(models/coupling.glb)"
+                    position="0 0 0"
+                    rotation="0 90 0"
+                    scale="0.16 0.16 0.16"></a-entity>
         </a-entity>
-        <a-box id="couplingHit" width="0.31" height="0.28" depth="0.31" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.27 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+        <a-box id="couplingHit" width="0.34" height="0.32" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.28 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
-           PUMP PART
+           PUMP PART (REAL MODEL)
       ============================ -->
-      <a-entity id="pumpPart" position="0.58 0.08 0.78" scale="1.24 1.24 1.24">
-        <a-cylinder position="0 0.10 0" rotation="90 0 0" radius="0.14" height="0.18" color="#0ea5e9"></a-cylinder>
-        <a-cylinder position="-0.15 0.10 0" rotation="0 0 90" radius="0.055" height="0.15" color="#94a3b8"></a-cylinder>
-        <a-cylinder position="0.08 0.22 0" radius="0.055" height="0.17" color="#0ea5e9"></a-cylinder>
-        <a-box position="0 0.01 0" width="0.31" height="0.04" depth="0.24" color="#334155"></a-box>
-        <a-entity id="pumpImpeller" position="0 0.10 -0.105">
-          <a-cylinder rotation="90 0 0" radius="0.09" height="0.015" color="#dbeafe"></a-cylinder>
-          <a-box width="0.02" height="0.15" depth="0.02" color="#0284c7"></a-box>
-          <a-box rotation="0 0 90" width="0.02" height="0.15" depth="0.02" color="#0284c7"></a-box>
+      <a-entity id="pumpPart" position="0.58 0.08 0.78" scale="1 1 1">
+        <a-box position="0 0.012 0" width="0.34" height="0.03" depth="0.24" color="#334155"></a-box>
+        <a-entity id="pumpImpeller" position="0 0.07 0">
+          <a-entity gltf-model="url(models/pump.glb)"
+                    position="0 0 0"
+                    rotation="0 90 0"
+                    scale="0.18 0.18 0.18"></a-entity>
         </a-entity>
-        <a-box id="pumpHit" width="0.40" height="0.37" depth="0.38" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.31 0" scale="0.15 0.15 0.15" align="center" color="#ffffff"></a-text>
+        <a-box id="pumpHit" width="0.42" height="0.38" depth="0.42" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.32 0" scale="0.15 0.15 0.15" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
@@ -929,8 +927,8 @@
       faultIntroduced = true;
 
       // Visually misalign the coupling slightly.
-      couplingVisual.object3D.position.z = 0.105;
-      couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(10);
+      couplingVisual.object3D.position.z = 0.08;
+      couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(14);
 
       setVisible(faultIndicator, true);
       showDiagnosisActions(true);
@@ -970,7 +968,7 @@
       }
 
       diagnosisCorrect = true;
-      setEntityPosition(action.el, { x: 0, y: 0.18, z: 0 });
+      setEntityPosition(action.el, { x: 0, y: 0.18, z: -0.08 });
       setFeedback("Correct. Coupling misalignment can cause abnormal vibration.", "ok");
 
       setTimeout(() => {
@@ -1279,9 +1277,9 @@
       // Machine running animation.
       if (machineRunning) {
         const speed = THREE.MathUtils.degToRad(14);
-        if (motorFan && motorFan.object3D) motorFan.object3D.rotation.x += speed;
-        if (couplingVisual && couplingVisual.object3D) couplingVisual.object3D.rotation.x += speed;
-        if (pumpImpeller && pumpImpeller.object3D) pumpImpeller.object3D.rotation.z += speed;
+        if (motorFan && motorFan.object3D) motorFan.object3D.rotation.y += speed * 0.55;
+        if (couplingVisual && couplingVisual.object3D) couplingVisual.object3D.rotation.x += speed * 0.9;
+        if (pumpImpeller && pumpImpeller.object3D) pumpImpeller.object3D.rotation.y += speed * 0.65;
       }
 
       // Coupling correction animation.
