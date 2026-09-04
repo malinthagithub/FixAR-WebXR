@@ -3,884 +3,1078 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width,
+          initial-scale=1.0,
+          user-scalable=no">
 
-<title>FixAR | Motor Wiring Training</title>
+    <title>FixAR | AR Motor Training</title>
 
-<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-<style>
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
-body {
-    margin: 0;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background: #07111f;
-}
 
-#info {
-    position: fixed;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
+    <style>
 
-    width: calc(100% - 20px);
-    max-width: 460px;
+        * {
+            box-sizing: border-box;
+        }
 
-    padding: 10px 12px;
+        html,
+        body {
 
-    background: rgba(0,0,0,0.84);
+            margin: 0;
 
-    color: white;
+            width: 100%;
+            height: 100%;
 
-    border: 1px solid #38bdf8;
-    border-radius: 10px;
+            overflow: hidden;
 
-    text-align: center;
-    font-size: 13px;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
-    z-index: 1000;
-
-    pointer-events: none;
-}
-
-#resetBtn {
-    position: fixed;
-    right: 12px;
-    bottom: 18px;
-
-    z-index: 1000;
-
-    padding: 10px 14px;
-
-    border: 1px solid #38bdf8;
-    border-radius: 8px;
-
-    background: rgba(7,17,31,0.92);
-
-    color: white;
-
-    font-weight: bold;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div id="info">
-Scan the Hiro marker to begin.
-</div>
-
-<button id="resetBtn">
-Reset
-</button>
-
-<a-scene
-    embedded
-    renderer="antialias:true; colorManagement:true;"
-    arjs="sourceType:webcam; debugUIEnabled:false;">
-
-
-<a-marker
-    id="hiroMarker"
-    preset="hiro">
-
-
-<!-- =========================
-     MOTOR MODEL
-========================= -->
-
-<a-entity
-    id="motorModel"
-    gltf-model="url(models/machine.glb)"
-    position="0 0 0"
-    rotation="0 0 0"
-    scale="0.5 0.5 0.5">
-</a-entity>
-
-
-<!-- =========================
-     WIRE PLUGS
-========================= -->
-
-<a-sphere
-    id="redPlug"
-    class="clickable"
-    position="-0.45 0.28 0.28"
-    radius="0.05"
-    color="#ef4444">
-</a-sphere>
-
-<a-text
-    value="RED"
-    position="-0.45 0.38 0.28"
-    scale="0.28 0.28 0.28"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-<a-sphere
-    id="blackPlug"
-    class="clickable"
-    position="-0.45 0.17 0.28"
-    radius="0.05"
-    color="#111827">
-</a-sphere>
-
-<a-text
-    value="BLACK"
-    position="-0.45 0.07 0.28"
-    scale="0.24 0.24 0.24"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-<a-sphere
-    id="greenPlug"
-    class="clickable"
-    position="-0.45 0.06 0.28"
-    radius="0.05"
-    color="#22c55e">
-</a-sphere>
-
-<a-text
-    value="GND"
-    position="-0.45 -0.04 0.28"
-    scale="0.28 0.28 0.28"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-<!-- =========================
-     MOTOR TERMINALS
-========================= -->
-
-<a-sphere
-    id="terminalL1"
-    class="clickable"
-    position="0.25 0.25 0.32"
-    radius="0.04"
-    color="#ef4444">
-</a-sphere>
-
-<a-text
-    value="L1"
-    position="0.25 0.33 0.32"
-    scale="0.30 0.30 0.30"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-<a-sphere
-    id="terminalL2"
-    class="clickable"
-    position="0.34 0.18 0.32"
-    radius="0.04"
-    color="#111827">
-</a-sphere>
-
-<a-text
-    value="L2"
-    position="0.34 0.27 0.32"
-    scale="0.30 0.30 0.30"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-<a-sphere
-    id="terminalGND"
-    class="clickable"
-    position="0.43 0.11 0.32"
-    radius="0.04"
-    color="#22c55e">
-</a-sphere>
-
-<a-text
-    value="GND"
-    position="0.43 0.20 0.32"
-    scale="0.28 0.28 0.28"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-<!-- =========================
-     CONNECTED WIRES
-========================= -->
-
-<a-cylinder
-    id="redWire"
-    radius="0.012"
-    height="0.1"
-    color="#ef4444"
-    visible="false">
-</a-cylinder>
-
-<a-cylinder
-    id="blackWire"
-    radius="0.012"
-    height="0.1"
-    color="#111827"
-    visible="false">
-</a-cylinder>
-
-<a-cylinder
-    id="greenWire"
-    radius="0.012"
-    height="0.1"
-    color="#22c55e"
-    visible="false">
-</a-cylinder>
-
-
-<!-- =========================
-     3D POWER SWITCH
-========================= -->
-
-<a-cylinder
-    id="powerSwitch"
-    class="clickable"
-    position="0 -0.22 0.30"
-    radius="0.09"
-    height="0.06"
-    rotation="90 0 0"
-    color="#991b1b">
-</a-cylinder>
-
-<a-text
-    id="switchText"
-    value="OFF"
-    position="0 -0.22 0.36"
-    scale="0.30 0.30 0.30"
-    color="#ffffff"
-    align="center">
-</a-text>
-
-
-</a-marker>
-
-
-<!-- CAMERA + TOUCH RAYCASTER -->
-
-<a-entity
-    camera
-    cursor="rayOrigin: mouse; fuse:false"
-    raycaster="objects:.clickable">
-</a-entity>
-
-
-</a-scene>
-
-
-<script>
-
-const info =
-    document.getElementById("info");
-
-const marker =
-    document.getElementById("hiroMarker");
-
-const redPlug =
-    document.getElementById("redPlug");
-
-const blackPlug =
-    document.getElementById("blackPlug");
-
-const greenPlug =
-    document.getElementById("greenPlug");
-
-const terminalL1 =
-    document.getElementById("terminalL1");
-
-const terminalL2 =
-    document.getElementById("terminalL2");
-
-const terminalGND =
-    document.getElementById("terminalGND");
-
-const redWire =
-    document.getElementById("redWire");
-
-const blackWire =
-    document.getElementById("blackWire");
-
-const greenWire =
-    document.getElementById("greenWire");
-
-const powerSwitch =
-    document.getElementById("powerSwitch");
-
-const switchText =
-    document.getElementById("switchText");
-
-const resetBtn =
-    document.getElementById("resetBtn");
-
-
-let selectedWire = null;
-
-let motorRunning = false;
-
-
-const connected = {
-
-    red: false,
-    black: false,
-    green: false
-
-};
-
-
-const correctTerminal = {
-
-    red: "L1",
-    black: "L2",
-    green: "GND"
-
-};
-
-
-const wireData = {
-
-    red: {
-
-        plug: redPlug,
-
-        wire: redWire,
-
-        start:
-            new THREE.Vector3(
-                -0.45,
-                0.28,
-                0.28
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.25,
-                0.25,
-                0.32
-            )
-
-    },
-
-
-    black: {
-
-        plug: blackPlug,
-
-        wire: blackWire,
-
-        start:
-            new THREE.Vector3(
-                -0.45,
-                0.17,
-                0.28
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.34,
-                0.18,
-                0.32
-            )
-
-    },
-
-
-    green: {
-
-        plug: greenPlug,
-
-        wire: greenWire,
-
-        start:
-            new THREE.Vector3(
-                -0.45,
-                0.06,
-                0.28
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.43,
-                0.11,
-                0.32
-            )
-
-    }
-
-};
-
-
-function clearSelection(){
-
-    redPlug.setAttribute(
-        "scale",
-        "1 1 1"
-    );
-
-    blackPlug.setAttribute(
-        "scale",
-        "1 1 1"
-    );
-
-    greenPlug.setAttribute(
-        "scale",
-        "1 1 1"
-    );
-
-}
-
-
-function selectWire(name){
-
-    if(
-        connected[name]
-    ){
-
-        info.textContent =
-            "This wire is already connected.";
-
-        return;
-    }
-
-
-    selectedWire =
-        name;
-
-
-    clearSelection();
-
-
-    wireData[name]
-        .plug
-        .setAttribute(
-            "scale",
-            "1.35 1.35 1.35"
-        );
-
-
-    if(name === "red"){
-
-        info.textContent =
-            "Red wire selected — tap L1.";
-
-    }
-
-
-    if(name === "black"){
-
-        info.textContent =
-            "Black wire selected — tap L2.";
-
-    }
-
-
-    if(name === "green"){
-
-        info.textContent =
-            "Ground wire selected — tap GND.";
-
-    }
-
-}
-
-
-redPlug.addEventListener(
-    "click",
-    function(){
-
-        selectWire("red");
-
-    }
-);
-
-
-blackPlug.addEventListener(
-    "click",
-    function(){
-
-        selectWire("black");
-
-    }
-);
-
-
-greenPlug.addEventListener(
-    "click",
-    function(){
-
-        selectWire("green");
-
-    }
-);
-
-
-function createWire(name){
-
-    const data =
-        wireData[name];
-
-
-    const start =
-        data.start.clone();
-
-
-    const end =
-        data.end.clone();
-
-
-    const direction =
-        end.clone()
-        .sub(start);
-
-
-    const length =
-        direction.length();
-
-
-    const midpoint =
-        start.clone()
-        .add(end)
-        .multiplyScalar(0.5);
-
-
-    const wire =
-        data.wire;
-
-
-    wire.object3D.position.copy(
-        midpoint
-    );
-
-
-    wire.setAttribute(
-        "height",
-        length
-    );
-
-
-    direction.normalize();
-
-
-    const yAxis =
-        new THREE.Vector3(
-            0,
-            1,
-            0
-        );
-
-
-    const quaternion =
-        new THREE.Quaternion();
-
-
-    quaternion.setFromUnitVectors(
-        yAxis,
-        direction
-    );
-
-
-    wire.object3D.quaternion.copy(
-        quaternion
-    );
-
-
-    wire.setAttribute(
-        "visible",
-        true
-    );
-
-}
-
-
-function attemptConnection(
-    terminalName
-){
-
-    if(
-        !selectedWire
-    ){
-
-        info.textContent =
-            "Tap a wire plug first.";
-
-        return;
-    }
-
-
-    if(
-        correctTerminal[selectedWire]
-        !==
-        terminalName
-    ){
-
-        info.textContent =
-            "Incorrect terminal — try again.";
-
-        return;
-    }
-
-
-    connected[selectedWire] =
-        true;
-
-
-    createWire(
-        selectedWire
-    );
-
-
-    wireData[selectedWire]
-        .plug
-        .setAttribute(
-            "visible",
-            false
-        );
-
-
-    info.textContent =
-        "✓ Wire connected successfully.";
-
-
-    selectedWire =
-        null;
-
-
-    clearSelection();
-
-
-    checkComplete();
-
-}
-
-
-terminalL1.addEventListener(
-    "click",
-    function(){
-
-        attemptConnection("L1");
-
-    }
-);
-
-
-terminalL2.addEventListener(
-    "click",
-    function(){
-
-        attemptConnection("L2");
-
-    }
-);
-
-
-terminalGND.addEventListener(
-    "click",
-    function(){
-
-        attemptConnection("GND");
-
-    }
-);
-
-
-function checkComplete(){
-
-    if(
-        connected.red
-        &&
-        connected.black
-        &&
-        connected.green
-    ){
-
-        powerSwitch.setAttribute(
-            "color",
-            "#f59e0b"
-        );
-
-
-        info.textContent =
-            "✓ All connections complete — tap the power switch.";
-
-    }
-
-}
-
-
-powerSwitch.addEventListener(
-    "click",
-    function(){
-
-        if(
-            !connected.red
-            ||
-            !connected.black
-            ||
-            !connected.green
-        ){
-
-            info.textContent =
-                "Connect all three wires first.";
-
-            return;
+            background:
+                #07111f;
         }
 
 
-        motorRunning =
-            !motorRunning;
+        /* ==============================
+           TOP STATUS
+        ============================== */
+
+        #info {
+
+            position: fixed;
+
+            top: 12px;
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width:
+                calc(100% - 20px);
+
+            max-width:
+                470px;
+
+            padding:
+                11px 13px;
+
+            background:
+                rgba(0, 0, 0, 0.84);
+
+            border:
+                1px solid #38bdf8;
+
+            border-radius:
+                10px;
+
+            color:
+                white;
+
+            text-align:
+                center;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.35;
+
+            z-index:
+                1000;
+
+            pointer-events:
+                none;
+        }
 
 
-        if(
-            motorRunning
-        ){
+        /* ==============================
+           RESET
+        ============================== */
 
-            powerSwitch.setAttribute(
+        #resetBtn {
+
+            position:
+                fixed;
+
+            right:
+                12px;
+
+            bottom:
+                18px;
+
+            z-index:
+                1000;
+
+            padding:
+                10px 14px;
+
+            border:
+                1px solid #38bdf8;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(7, 17, 31, 0.94);
+
+            color:
+                white;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+        }
+
+
+        #statusBadge {
+
+            position:
+                fixed;
+
+            left:
+                12px;
+
+            bottom:
+                18px;
+
+            z-index:
+                1000;
+
+            padding:
+                9px 13px;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(7, 17, 31, 0.94);
+
+            border:
+                1px solid #ef4444;
+
+            color:
+                #fecaca;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+        }
+
+
+        #statusBadge.running {
+
+            border-color:
+                #22c55e;
+
+            color:
+                #86efac;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div id="info">
+
+        Point the camera at the Hiro marker.
+
+    </div>
+
+
+    <div id="statusBadge">
+
+        MOTOR OFF
+
+    </div>
+
+
+    <button id="resetBtn">
+
+        Reset
+
+    </button>
+
+
+
+    <!-- ==============================
+         AR SCENE
+    ============================== -->
+
+    <a-scene
+
+        embedded
+
+        renderer="
+            antialias: true;
+            colorManagement: true;
+        "
+
+        arjs="
+            sourceType: webcam;
+            debugUIEnabled: false;
+        ">
+
+
+        <a-marker
+
+            id="hiroMarker"
+
+            preset="hiro">
+
+
+            <!-- ==============================
+                 MOTOR
+            ============================== -->
+
+            <a-entity
+
+                id="motorModel"
+
+                gltf-model="
+                    url(models/machine.glb)
+                "
+
+                position="
+                    0
+                    0
+                    0
+                "
+
+                rotation="
+                    0
+                    0
+                    0
+                "
+
+                scale="
+                    0.5
+                    0.5
+                    0.5
+                ">
+
+            </a-entity>
+
+
+
+            <!-- ==============================
+                 3D SWITCH MODEL
+            ============================== -->
+
+            <a-entity
+
+                id="switchModel"
+
+                class="clickable"
+
+                gltf-model="
+                    url(models/switch.glb)
+                "
+
+                position="
+                    -0.55
+                    0.10
+                    0.15
+                "
+
+                rotation="
+                    0
+                    0
+                    0
+                "
+
+                scale="
+                    0.12
+                    0.12
+                    0.12
+                ">
+
+            </a-entity>
+
+
+
+            <!-- ==============================
+                 SWITCH LABEL
+            ============================== -->
+
+            <a-text
+
+                id="switchLabel"
+
+                value="
+                    TAP SWITCH
+                "
+
+                position="
+                    -0.55
+                    0.32
+                    0.20
+                "
+
+                scale="
+                    0.30
+                    0.30
+                    0.30
+                "
+
+                align="
+                    center
+                "
+
+                color="
+                    #ffffff
+                ">
+
+            </a-text>
+
+
+
+            <!-- ==============================
+                 MOTOR SHAFT / ROTOR INDICATOR
+            ============================== -->
+
+            <a-entity
+
+                id="rotorGroup"
+
+                position="
+                    0
+                    0.18
+                    0.30
+                ">
+
+
+                <a-cylinder
+
+                    id="shaft"
+
+                    radius="
+                        0.055
+                    "
+
+                    height="
+                        0.18
+                    "
+
+                    rotation="
+                        90
+                        0
+                        0
+                    "
+
+                    color="
+                        #cbd5e1
+                    ">
+
+                </a-cylinder>
+
+
+                <a-box
+
+                    position="
+                        0.09
+                        0
+                        0
+                    "
+
+                    width="
+                        0.16
+                    "
+
+                    height="
+                        0.025
+                    "
+
+                    depth="
+                        0.025
+                    "
+
+                    color="
+                        #38bdf8
+                    ">
+
+                </a-box>
+
+
+                <a-box
+
+                    position="
+                        -0.09
+                        0
+                        0
+                    "
+
+                    width="
+                        0.16
+                    "
+
+                    height="
+                        0.025
+                    "
+
+                    depth="
+                        0.025
+                    "
+
+                    color="
+                        #38bdf8
+                    ">
+
+                </a-box>
+
+
+                <a-box
+
+                    position="
+                        0
+                        0.09
+                        0
+                    "
+
+                    width="
+                        0.025
+                    "
+
+                    height="
+                        0.16
+                    "
+
+                    depth="
+                        0.025
+                    "
+
+                    color="
+                        #38bdf8
+                    ">
+
+                </a-box>
+
+
+                <a-box
+
+                    position="
+                        0
+                        -0.09
+                        0
+                    "
+
+                    width="
+                        0.025
+                    "
+
+                    height="
+                        0.16
+                    "
+
+                    depth="
+                        0.025
+                    "
+
+                    color="
+                        #38bdf8
+                    ">
+
+                </a-box>
+
+
+            </a-entity>
+
+
+
+            <!-- ==============================
+                 ON INDICATOR
+            ============================== -->
+
+            <a-sphere
+
+                id="runningLight"
+
+                position="
+                    0.42
+                    0.05
+                    0.30
+                "
+
+                radius="
+                    0.035
+                "
+
+                color="
+                    #ef4444
+                ">
+
+            </a-sphere>
+
+
+            <a-text
+
+                id="motorStatusText"
+
+                value="
+                    OFF
+                "
+
+                position="
+                    0.42
+                    0.14
+                    0.30
+                "
+
+                scale="
+                    0.28
+                    0.28
+                    0.28
+                "
+
+                align="
+                    center
+                "
+
+                color="
+                    #ffffff
+                ">
+
+            </a-text>
+
+
+        </a-marker>
+
+
+
+        <!-- ==============================
+             CAMERA + TOUCH RAYCASTER
+        ============================== -->
+
+        <a-entity
+
+            camera
+
+            cursor="
+                rayOrigin: mouse;
+                fuse: false;
+            "
+
+            raycaster="
+                objects: .clickable;
+            ">
+
+        </a-entity>
+
+
+    </a-scene>
+
+
+
+    <script>
+
+
+        /* ==============================
+           ELEMENTS
+        ============================== */
+
+        const info =
+            document.getElementById(
+                "info"
+            );
+
+
+        const marker =
+            document.getElementById(
+                "hiroMarker"
+            );
+
+
+        const motorModel =
+            document.getElementById(
+                "motorModel"
+            );
+
+
+        const switchModel =
+            document.getElementById(
+                "switchModel"
+            );
+
+
+        const switchLabel =
+            document.getElementById(
+                "switchLabel"
+            );
+
+
+        const rotorGroup =
+            document.getElementById(
+                "rotorGroup"
+            );
+
+
+        const runningLight =
+            document.getElementById(
+                "runningLight"
+            );
+
+
+        const motorStatusText =
+            document.getElementById(
+                "motorStatusText"
+            );
+
+
+        const statusBadge =
+            document.getElementById(
+                "statusBadge"
+            );
+
+
+        const resetBtn =
+            document.getElementById(
+                "resetBtn"
+            );
+
+
+
+        /* ==============================
+           STATE
+        ============================== */
+
+        let motorRunning =
+            false;
+
+
+        let markerVisible =
+            false;
+
+
+        let motorLoaded =
+            false;
+
+
+        let switchLoaded =
+            false;
+
+
+
+        /* ==============================
+           MODEL LOADING
+        ============================== */
+
+        motorModel.addEventListener(
+
+            "model-loaded",
+
+            function () {
+
+
+                motorLoaded =
+                    true;
+
+
+                console.log(
+                    "Motor model loaded"
+                );
+
+
+                updateReadyMessage();
+
+            }
+
+        );
+
+
+        switchModel.addEventListener(
+
+            "model-loaded",
+
+            function () {
+
+
+                switchLoaded =
+                    true;
+
+
+                console.log(
+                    "Switch model loaded"
+                );
+
+
+                updateReadyMessage();
+
+            }
+
+        );
+
+
+        motorModel.addEventListener(
+
+            "model-error",
+
+            function () {
+
+
+                info.textContent =
+                    "Motor model could not be loaded.";
+
+            }
+
+        );
+
+
+        switchModel.addEventListener(
+
+            "model-error",
+
+            function () {
+
+
+                info.textContent =
+                    "Switch model could not be loaded.";
+
+            }
+
+        );
+
+
+
+        function updateReadyMessage() {
+
+
+            if (
+                markerVisible
+                &&
+                motorLoaded
+                &&
+                switchLoaded
+            ) {
+
+
+                if (
+                    motorRunning
+                ) {
+
+
+                    info.textContent =
+                        "Motor simulation running — tap the 3D switch to stop.";
+
+
+                } else {
+
+
+                    info.textContent =
+                        "Motor ready — tap the 3D switch to start.";
+
+                }
+
+            }
+
+        }
+
+
+
+        /* ==============================
+           MOTOR ON
+        ============================== */
+
+        function startMotor() {
+
+
+            motorRunning =
+                true;
+
+
+            runningLight.setAttribute(
                 "color",
                 "#22c55e"
             );
 
 
-            switchText.setAttribute(
+            motorStatusText.setAttribute(
                 "value",
                 "ON"
             );
 
 
-            info.textContent =
-                "✓ Motor simulation running.";
-
-        }
-
-        else{
-
-            powerSwitch.setAttribute(
-                "color",
-                "#f59e0b"
+            switchLabel.setAttribute(
+                "value",
+                "TAP TO STOP"
             );
 
 
-            switchText.setAttribute(
+            statusBadge.textContent =
+                "MOTOR RUNNING";
+
+
+            statusBadge.classList.add(
+                "running"
+            );
+
+
+            info.textContent =
+                "✓ Motor simulation running. Tap the 3D switch again to stop.";
+
+
+            /*
+                Small visual change on switch
+                to show ON state.
+            */
+
+            switchModel.setAttribute(
+
+                "rotation",
+
+                "0 0 -12"
+
+            );
+
+        }
+
+
+
+        /* ==============================
+           MOTOR OFF
+        ============================== */
+
+        function stopMotor() {
+
+
+            motorRunning =
+                false;
+
+
+            runningLight.setAttribute(
+                "color",
+                "#ef4444"
+            );
+
+
+            motorStatusText.setAttribute(
                 "value",
                 "OFF"
             );
 
 
+            switchLabel.setAttribute(
+                "value",
+                "TAP SWITCH"
+            );
+
+
+            statusBadge.textContent =
+                "MOTOR OFF";
+
+
+            statusBadge.classList.remove(
+                "running"
+            );
+
+
             info.textContent =
-                "Motor simulation stopped.";
+                "Motor simulation stopped. Tap the 3D switch to start.";
+
+
+            switchModel.setAttribute(
+
+                "rotation",
+
+                "0 0 0"
+
+            );
 
         }
 
-    }
-);
 
 
-resetBtn.addEventListener(
-    "click",
-    function(){
+        /* ==============================
+           SWITCH INTERACTION
+        ============================== */
 
-        selectedWire = null;
+        switchModel.addEventListener(
 
-        motorRunning = false;
+            "click",
 
-
-        connected.red = false;
-        connected.black = false;
-        connected.green = false;
+            function () {
 
 
-        redWire.setAttribute(
-            "visible",
-            false
-        );
-
-        blackWire.setAttribute(
-            "visible",
-            false
-        );
-
-        greenWire.setAttribute(
-            "visible",
-            false
-        );
+                if (
+                    !markerVisible
+                ) {
 
 
-        redPlug.setAttribute(
-            "visible",
-            true
-        );
+                    return;
 
-        blackPlug.setAttribute(
-            "visible",
-            true
-        );
-
-        greenPlug.setAttribute(
-            "visible",
-            true
-        );
+                }
 
 
-        clearSelection();
+                if (
+                    !motorLoaded
+                    ||
+                    !switchLoaded
+                ) {
 
 
-        powerSwitch.setAttribute(
-            "color",
-            "#991b1b"
-        );
+                    info.textContent =
+                        "Wait until the 3D models finish loading.";
 
 
-        switchText.setAttribute(
-            "value",
-            "OFF"
+                    return;
+
+                }
+
+
+                if (
+                    motorRunning
+                ) {
+
+
+                    stopMotor();
+
+
+                } else {
+
+
+                    startMotor();
+
+                }
+
+            }
+
         );
 
 
-        info.textContent =
-            "Training reset — tap a wire plug.";
 
-    }
-);
+        /* ==============================
+           ROTOR ANIMATION
+        ============================== */
 
-
-marker.addEventListener(
-    "markerFound",
-    function(){
-
-        info.textContent =
-            "Motor detected — tap a wire plug.";
-
-    }
-);
+        function animate() {
 
 
-marker.addEventListener(
-    "markerLost",
-    function(){
+            if (
+                motorRunning
+            ) {
 
-        info.textContent =
-            "Marker lost — point the camera at the Hiro marker.";
 
-    }
-);
+                rotorGroup.object3D.rotation.z +=
+                    0.22;
 
-</script>
+            }
+
+
+            requestAnimationFrame(
+                animate
+            );
+
+        }
+
+
+        animate();
+
+
+
+        /* ==============================
+           RESET
+        ============================== */
+
+        resetBtn.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                stopMotor();
+
+
+                info.textContent =
+                    "Training reset — point the camera at the Hiro marker.";
+
+            }
+
+        );
+
+
+
+        /* ==============================
+           MARKER FOUND
+        ============================== */
+
+        marker.addEventListener(
+
+            "markerFound",
+
+            function () {
+
+
+                markerVisible =
+                    true;
+
+
+                if (
+                    motorLoaded
+                    &&
+                    switchLoaded
+                ) {
+
+
+                    info.textContent =
+                        "Motor detected — tap the 3D switch to start the motor simulation.";
+
+
+                } else {
+
+
+                    info.textContent =
+                        "Marker detected — loading motor and switch models...";
+
+                }
+
+            }
+
+        );
+
+
+
+        /* ==============================
+           MARKER LOST
+        ============================== */
+
+        marker.addEventListener(
+
+            "markerLost",
+
+            function () {
+
+
+                markerVisible =
+                    false;
+
+
+                info.textContent =
+                    "Marker lost — point the camera at the Hiro marker.";
+
+            }
+
+        );
+
+
+    </script>
 
 
 </body>
