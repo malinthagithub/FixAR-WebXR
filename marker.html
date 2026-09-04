@@ -179,7 +179,26 @@
 
 
         <!-- ==========================================
-             BATTERY MODEL
+             LAYOUT NOTE
+             Four corners of a rounded square/circle
+             around the marker center (0,0,0):
+
+               switch (back-left)     motor (back-right)
+                        \\              /
+                         \\            /
+               battery (front-left)  turbine (front-right)
+
+             All models sit at MODEL_Y = 0.05.
+             Wires run at WIRE_Y = 0.0 (below the
+             models) with a short vertical "drop"
+             segment connecting each model down to
+             the wire, so wires never cross a model's
+             face.
+        =========================================== -->
+
+
+        <!-- ==========================================
+             BATTERY MODEL — front-left
         =========================================== -->
 
         <a-entity
@@ -188,9 +207,9 @@
 
             gltf-model="url(models/battery.glb)"
 
-            position="-0.75 0.05 0.2"
+            position="-0.55 0.05 0.4"
 
-            rotation="0 0 0"
+            rotation="0 40 0"
 
             scale="0.15 0.15 0.15">
 
@@ -199,7 +218,7 @@
 
 
         <!-- ==========================================
-             SWITCH MODEL
+             SWITCH MODEL — back-left
         =========================================== -->
 
         <a-entity
@@ -208,9 +227,9 @@
 
             gltf-model="url(models/switch.glb)"
 
-            position="-0.35 0.05 0.2"
+            position="-0.55 0.05 -0.4"
 
-            rotation="0 0 0"
+            rotation="0 -40 0"
 
             scale="0.15 0.15 0.15">
 
@@ -226,7 +245,7 @@
 
             id="switchHitArea"
 
-            position="-0.35 0.05 0.2"
+            position="-0.55 0.05 -0.4"
 
             width="0.55"
 
@@ -245,7 +264,7 @@
 
 
         <!-- ==========================================
-             MOTOR MODEL
+             MOTOR MODEL — back-right
         =========================================== -->
 
         <a-entity
@@ -254,9 +273,9 @@
 
             gltf-model="url(models/motor.glb)"
 
-            position="0.15 0 0.2"
+            position="0.55 0.05 -0.4"
 
-            rotation="0 0 0"
+            rotation="0 -140 0"
 
             scale="0.3 0.3 0.3">
 
@@ -265,11 +284,7 @@
 
 
         <!-- ==========================================
-             TURBINE MODEL
-             (the "blade/rotor" child is spun in JS —
-             adjust turbineRotor's -id- selector below
-             if your glb's rotating part has a different
-             node name; otherwise the whole model spins)
+             TURBINE MODEL — front-right
         =========================================== -->
 
         <a-entity
@@ -278,9 +293,9 @@
 
             gltf-model="url(models/turbine.glb)"
 
-            position="0.75 0.05 0.2"
+            position="0.55 0.05 0.4"
 
-            rotation="0 0 0"
+            rotation="0 140 0"
 
             scale="0.2 0.2 0.2">
 
@@ -289,38 +304,34 @@
 
 
         <!-- ==========================================
-             WIRES (drawn lines, not models)
-             Supply run: battery -> switch -> motor -> turbine
-             Return run: turbine -> battery (closes the loop)
+             WIRES — drawn lines (not models), routed
+             at WIRE_Y = 0.0, below the models, each
+             side bowed slightly outward so the loop
+             reads as a rounded circuit rather than a
+             stiff square.
         =========================================== -->
 
-        <a-entity
-            id="wireBatterySwitch"
-            line="start: -0.75 0.12 0.2; end: -0.35 0.12 0.2; color: #ef4444"
-        ></a-entity>
+        <!-- battery -> switch (left side, bows further left) -->
+        <a-entity line="start: -0.55 0 0.4; end: -0.68 0 0; color: #ef4444" id="wireA1"></a-entity>
+        <a-entity line="start: -0.68 0 0; end: -0.55 0 -0.4; color: #ef4444" id="wireA2"></a-entity>
 
-        <a-entity
-            id="wireSwitchMotor"
-            line="start: -0.35 0.12 0.2; end: 0.15 0.12 0.2; color: #ef4444"
-        ></a-entity>
+        <!-- switch -> motor (back side, bows further back) -->
+        <a-entity line="start: -0.55 0 -0.4; end: 0 0 -0.55; color: #ef4444" id="wireB1"></a-entity>
+        <a-entity line="start: 0 0 -0.55; end: 0.55 0 -0.4; color: #ef4444" id="wireB2"></a-entity>
 
-        <a-entity
-            id="wireMotorTurbine"
-            line="start: 0.15 0.12 0.2; end: 0.75 0.12 0.2; color: #ef4444"
-        ></a-entity>
+        <!-- motor -> turbine (right side, bows further right) -->
+        <a-entity line="start: 0.55 0 -0.4; end: 0.68 0 0; color: #ef4444" id="wireC1"></a-entity>
+        <a-entity line="start: 0.68 0 0; end: 0.55 0 0.4; color: #ef4444" id="wireC2"></a-entity>
 
-        <a-entity
-            id="wireReturn"
-            line="start: 0.75 -0.02 0.2; end: -0.75 -0.02 0.2; color: #7f1d1d"
-        ></a-entity>
+        <!-- turbine -> battery (front side, bows further front — return leg) -->
+        <a-entity line="start: 0.55 0 0.4; end: 0 0 0.55; color: #7f1d1d" id="wireD1"></a-entity>
+        <a-entity line="start: 0 0 0.55; end: -0.55 0 0.4; color: #7f1d1d" id="wireD2"></a-entity>
 
-        <!-- small drops connecting each model down to its wire -->
-        <a-entity line="start: -0.75 0.05 0.2; end: -0.75 0.12 0.2; color: #ef4444"></a-entity>
-        <a-entity line="start: -0.35 0.05 0.2; end: -0.35 0.12 0.2; color: #ef4444"></a-entity>
-        <a-entity line="start: 0.15 0.08 0.2; end: 0.15 0.12 0.2; color: #ef4444"></a-entity>
-        <a-entity line="start: 0.75 0.05 0.2; end: 0.75 0.12 0.2; color: #ef4444"></a-entity>
-        <a-entity line="start: -0.75 -0.02 0.2; end: -0.75 0.05 0.2; color: #7f1d1d"></a-entity>
-        <a-entity line="start: 0.75 -0.02 0.2; end: 0.75 0.05 0.2; color: #7f1d1d"></a-entity>
+        <!-- short vertical drops connecting each model down to the wire loop -->
+        <a-entity line="start: -0.55 0.05 0.4; end: -0.55 0 0.4; color: #ef4444"></a-entity>
+        <a-entity line="start: -0.55 0.05 -0.4; end: -0.55 0 -0.4; color: #ef4444"></a-entity>
+        <a-entity line="start: 0.55 0.08 -0.4; end: 0.55 0 -0.4; color: #ef4444"></a-entity>
+        <a-entity line="start: 0.55 0.05 0.4; end: 0.55 0 0.4; color: #ef4444"></a-entity>
 
 
 
@@ -330,8 +341,8 @@
 
         <a-text
             value="BATTERY"
-            position="-0.75 0.30 0.2"
-            scale="0.22 0.22 0.22"
+            position="-0.55 0.30 0.4"
+            scale="0.20 0.20 0.20"
             align="center"
             color="#ffffff">
         </a-text>
@@ -339,8 +350,8 @@
         <a-text
             id="switchLabel"
             value="TAP SWITCH"
-            position="-0.35 0.30 0.2"
-            scale="0.22 0.22 0.22"
+            position="-0.55 0.30 -0.4"
+            scale="0.20 0.20 0.20"
             align="center"
             color="#ffffff">
         </a-text>
@@ -348,8 +359,8 @@
         <a-text
             id="motorLabel"
             value="MOTOR OFF"
-            position="0.15 0.35 0.2"
-            scale="0.22 0.22 0.22"
+            position="0.55 0.38 -0.4"
+            scale="0.20 0.20 0.20"
             align="center"
             color="#ef4444">
         </a-text>
@@ -357,8 +368,8 @@
         <a-text
             id="turbineLabel"
             value="TURBINE OFF"
-            position="0.75 0.35 0.2"
-            scale="0.22 0.22 0.22"
+            position="0.55 0.32 0.4"
+            scale="0.20 0.20 0.20"
             align="center"
             color="#ef4444">
         </a-text>
@@ -400,15 +411,17 @@ const switchLabel = document.getElementById("switchLabel");
 const motorLabel = document.getElementById("motorLabel");
 const turbineLabel = document.getElementById("turbineLabel");
 
-const wireBatterySwitch = document.getElementById("wireBatterySwitch");
-const wireSwitchMotor = document.getElementById("wireSwitchMotor");
-const wireMotorTurbine = document.getElementById("wireMotorTurbine");
-const wireReturn = document.getElementById("wireReturn");
+const wireIds = ["wireA1", "wireA2", "wireB1", "wireB2", "wireC1", "wireC2"];
+const returnWireIds = ["wireD1", "wireD2"];
 
 const ON_WIRE_COLOR = "#22c55e";
 const OFF_WIRE_COLOR = "#ef4444";
 const ON_RETURN_COLOR = "#166534";
 const OFF_RETURN_COLOR = "#7f1d1d";
+
+/* fixed rest positions, reused on reset */
+const MOTOR_REST_POS = { x: 0.55, y: 0.05, z: -0.4 };
+const TURBINE_REST_ROT = { x: 0, y: 140, z: 0 };
 
 
 
@@ -426,12 +439,12 @@ let turbineLoaded = false;
 let systemRunning = false;
 
 let turbineSpin = 0;
-let motorVibrateTime = 0;
+let motorSpin = 0;
 
 
 
 /* ==========================================
-   SYSTEM SOUND (simple hum, same idea as before)
+   SYSTEM SOUND (simple hum)
 ========================================== */
 
 let audioContext = null;
@@ -577,20 +590,26 @@ function updateStatus() {
 
 function setWiresOn() {
 
-    wireBatterySwitch.setAttribute("line", "color", ON_WIRE_COLOR);
-    wireSwitchMotor.setAttribute("line", "color", ON_WIRE_COLOR);
-    wireMotorTurbine.setAttribute("line", "color", ON_WIRE_COLOR);
-    wireReturn.setAttribute("line", "color", ON_RETURN_COLOR);
+    wireIds.forEach(function (id) {
+        document.getElementById(id).setAttribute("line", "color", ON_WIRE_COLOR);
+    });
+
+    returnWireIds.forEach(function (id) {
+        document.getElementById(id).setAttribute("line", "color", ON_RETURN_COLOR);
+    });
 
 }
 
 
 function setWiresOff() {
 
-    wireBatterySwitch.setAttribute("line", "color", OFF_WIRE_COLOR);
-    wireSwitchMotor.setAttribute("line", "color", OFF_WIRE_COLOR);
-    wireMotorTurbine.setAttribute("line", "color", OFF_WIRE_COLOR);
-    wireReturn.setAttribute("line", "color", OFF_RETURN_COLOR);
+    wireIds.forEach(function (id) {
+        document.getElementById(id).setAttribute("line", "color", OFF_WIRE_COLOR);
+    });
+
+    returnWireIds.forEach(function (id) {
+        document.getElementById(id).setAttribute("line", "color", OFF_RETURN_COLOR);
+    });
 
 }
 
@@ -621,11 +640,11 @@ function startSystem() {
 
     switchLabel.setAttribute("value", "TAP TO STOP");
 
-    switchModel.setAttribute("rotation", "0 0 -18");
+    switchModel.setAttribute("rotation", "0 -58 0");
 
     setWiresOn();
 
-    info.textContent = "✓ System running — turbine spinning.";
+    info.textContent = "✓ System running — motor and turbine spinning.";
 
 }
 
@@ -651,13 +670,15 @@ function stopSystem() {
 
     switchLabel.setAttribute("value", "TAP SWITCH");
 
-    switchModel.setAttribute("rotation", "0 0 0");
+    switchModel.setAttribute("rotation", "0 -40 0");
 
     setWiresOff();
 
-    /* restore positions/rotations */
-    motorModel.object3D.position.set(0.15, 0, 0.2);
-    turbineModel.object3D.rotation.set(0, 0, 0);
+    /* restore rest positions/rotations exactly */
+    motorModel.object3D.position.set(MOTOR_REST_POS.x, MOTOR_REST_POS.y, MOTOR_REST_POS.z);
+    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(-140);
+
+    turbineModel.object3D.rotation.set(0, THREE.MathUtils.degToRad(TURBINE_REST_ROT.y), 0);
 
     info.textContent = "System stopped.";
 
@@ -782,7 +803,8 @@ document.addEventListener(
 /* ==========================================
    ANIMATION LOOP
    - turbine spins continuously while running
-   - motor gets a small vibration while running
+   - motor shaft rotates continuously while running
+     (a real spin, not just vibration, per request)
 ========================================== */
 
 function animate() {
@@ -797,14 +819,11 @@ function animate() {
     turbineSpin += 6; // degrees per frame — adjust for speed
     turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(turbineSpin);
 
-    /* Motor vibration, same feel as original */
-    motorVibrateTime += 0.20;
-
-    motorModel.object3D.position.x =
-        0.15 + Math.sin(motorVibrateTime) * 0.004;
-
-    motorModel.object3D.position.z =
-        0.2 + Math.cos(motorVibrateTime * 1.25) * 0.003;
+    /* Motor shaft rotation — spins around Y axis too.
+       Change to .x or .z if your motor.glb's shaft
+       points a different way. */
+    motorSpin += 10;
+    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(motorSpin - 140);
 
 }
 
@@ -833,10 +852,12 @@ resetBtn.addEventListener(
 
             stopSystemSound();
 
-            motorModel.object3D.position.set(0.15, 0, 0.2);
-            turbineModel.object3D.rotation.set(0, 0, 0);
+            motorModel.object3D.position.set(MOTOR_REST_POS.x, MOTOR_REST_POS.y, MOTOR_REST_POS.z);
+            motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(-140);
 
-            switchModel.setAttribute("rotation", "0 0 0");
+            turbineModel.object3D.rotation.set(0, THREE.MathUtils.degToRad(TURBINE_REST_ROT.y), 0);
+
+            switchModel.setAttribute("rotation", "0 -40 0");
 
             systemStatus.textContent = "SYSTEM OFF";
             systemStatus.classList.remove("running");
