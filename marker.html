@@ -13,10 +13,10 @@
     <title>FixAR | Turbine System Trainer</title>
 
     <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-    <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+    <!-- MindAR image tracking -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
 
@@ -198,6 +198,22 @@
         }
 
 
+        #targetPreview {
+            display: none;
+            width: 92px;
+            height: auto;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            background: #fff;
+        }
+
+
+        #targetPreview.visible {
+            display: block;
+        }
+
+
         #trainWhy,
         #trainNotice,
         #trainFeedback:empty {
@@ -331,7 +347,8 @@
         }
 
 
-        #arjs-video {
+        #arjs-video,
+        video {
             pointer-events: none !important;
         }
 
@@ -345,7 +362,7 @@
 
 <div id="info">
 
-    Point the camera at the Hiro marker to start training.
+    Point the camera at the target image to start training.
 
 </div>
 
@@ -381,8 +398,10 @@
     <h2 id="trainTitle">Battery-powered turbine trainer</h2>
 
     <p id="trainBody">
-    Scan the Hiro marker, then drag each part onto its own pad.
+    Point the camera at the target image, then drag each part onto its own pad.
     </p>
+
+    <img id="targetPreview" src="target.png" alt="Scan this target image">
 
     <p id="trainWhy">
         This is a familiarisation module, not a workplace procedure. It trains names, order of assembly, and isolation.
@@ -414,20 +433,30 @@
 
     vr-mode-ui="enabled: false"
 
+    device-orientation-permission-ui="enabled: false"
+
     renderer="
         antialias: true;
         colorManagement: true;
     "
 
-    arjs="
-        sourceType: webcam;
-        debugUIEnabled: false;
+    mindar-image="
+        imageTargetSrc: ./target.mind;
+        autoStart: true;
+        uiScanning: no;
+        uiLoading: no;
     ">
 
 
-    <a-marker
+    <a-camera
+        position="0 0 0"
+        look-controls="enabled: false">
+    </a-camera>
+
+
+    <a-entity
         id="hiroMarker"
-        preset="hiro">
+        mindar-image-target="targetIndex: 0">
 
 
         <!-- ==========================================
@@ -622,12 +651,14 @@
                 scale="0.42 0.42 0.42">
             </a-entity>
 
-            <a-entity
-                id="turbineModel"
-                gltf-model="url(models/turbine.glb)"
-                position="0.12 0.06 0"
-                rotation="0 90 0"
-                scale="0.36 0.36 0.36">
+            <a-entity id="turbineSpinner" position="0.12 0.06 0">
+                <a-entity
+                    id="turbineModel"
+                    gltf-model="url(models/turbine.glb)"
+                    position="0 0 0"
+                    rotation="0 90 0"
+                    scale="0.36 0.36 0.36">
+                </a-entity>
             </a-entity>
 
             <a-cylinder
@@ -724,13 +755,7 @@
         </a-text>
 
 
-    </a-marker>
-
-
-
-    <!-- CAMERA -->
-
-    <a-entity camera></a-entity>
+    </a-entity>
 
 
 </a-scene>
@@ -754,6 +779,7 @@ const trainStep = document.getElementById("trainStep");
 const trainScore = document.getElementById("trainScore");
 const trainTitle = document.getElementById("trainTitle");
 const trainBody = document.getElementById("trainBody");
+const targetPreview = document.getElementById("targetPreview");
 const trainWhy = document.getElementById("trainWhy");
 const trainFeedback = document.getElementById("trainFeedback");
 const progressBar = document.getElementById("progressBar");
@@ -772,6 +798,7 @@ const batteryModel = document.getElementById("batteryModel");
 const switchModel = document.getElementById("switchModel");
 const motorModel = document.getElementById("motorModel");
 const turbineModel = document.getElementById("turbineModel");
+const turbineSpinner = document.getElementById("turbineSpinner");
 
 const batteryHit = document.getElementById("batteryHit");
 const switchHit = document.getElementById("switchHit");
@@ -917,8 +944,6 @@ let turbineLoaded = false;
 
 let systemRunning = false;
 let dropAnimating = false;
-
-let driveSpin = 0;
 
 let dragging = null;
 let dragStartScreenX = 0;
@@ -1356,11 +1381,15 @@ function renderCoach() {
     startMotorBtn.classList.remove("running");
     trainScore.textContent = "Mistakes " + mistakes;
 
+    if (targetPreview) {
+        targetPreview.classList.toggle("visible", phase === "scan");
+    }
+
     if (phase === "scan") {
         trainStep.textContent = "Step 0 of 3";
         progressBar.style.width = "6%";
         trainTitle.textContent = "Battery-powered turbine trainer";
-        trainBody.textContent = "Scan the Hiro marker, then drag each part onto its own pad.";
+        trainBody.textContent = "Point the camera at the target image, then drag each part onto its own pad.";
         trainWhy.textContent = "This is a familiarisation module, not a workplace procedure.";
         return;
     }
@@ -1456,7 +1485,7 @@ function allPlaced() {
 function updateStatus() {
 
     if (!markerVisible) {
-        info.textContent = "Point the camera at the Hiro marker to start training.";
+        info.textContent = "Point the camera at the target image to start training.";
         return;
     }
 
@@ -1733,6 +1762,16 @@ function startSystem() {
 }
 
 
+function resetRotorSpin() {
+    if (turbineSpinner && turbineSpinner.object3D) {
+        turbineSpinner.object3D.rotation.set(0, 0, 0);
+    }
+    if (turbineModel && turbineModel.object3D) {
+        turbineModel.object3D.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+    }
+}
+
+
 function stopSystem() {
 
     if (!systemRunning) {
@@ -1740,7 +1779,6 @@ function stopSystem() {
     }
 
     systemRunning = false;
-    driveSpin = 0;
 
     stopSystemSound();
 
@@ -1755,7 +1793,7 @@ function stopSystem() {
 
     switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
 
-    turbineModel.object3D.rotation.x = 0;
+    resetRotorSpin();
 
     setWiresOff();
 
@@ -2157,12 +2195,11 @@ function animate() {
 
     });
 
-    if (!systemRunning) {
+    if (!systemRunning || !turbineSpinner || !turbineSpinner.object3D) {
         return;
     }
 
-    driveSpin += 16;
-    turbineModel.object3D.rotation.x = THREE.MathUtils.degToRad(driveSpin);
+    turbineSpinner.object3D.rotation.x += THREE.MathUtils.degToRad(18);
 
 }
 
@@ -2180,7 +2217,6 @@ function resetTraining() {
     dragging = null;
     hoverSlotId = null;
     pointerActive = false;
-    driveSpin = 0;
     mistakes = 0;
     quizIndex = 0;
     quizCorrect = 0;
@@ -2193,7 +2229,7 @@ function resetTraining() {
     } else {
         stopSystemSound();
         switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
-        turbineModel.object3D.rotation.x = 0;
+        resetRotorSpin();
         setWiresOff();
     }
 
@@ -2230,7 +2266,7 @@ resetBtn.addEventListener("click", function (event) {
    MARKER FOUND / LOST
 ========================================== */
 
-marker.addEventListener("markerFound", function () {
+marker.addEventListener("targetFound", function () {
     markerVisible = true;
     maybeStartDrop();
     if (phase === "scan") {
@@ -2242,9 +2278,13 @@ marker.addEventListener("markerFound", function () {
 });
 
 
-marker.addEventListener("markerLost", function () {
+marker.addEventListener("targetLost", function () {
     markerVisible = false;
-    info.textContent = "Marker lost — point the camera at the Hiro marker.";
+    info.textContent = "Target lost — point the camera at the target image.";
+});
+
+sceneEl.addEventListener("arError", function () {
+    trainBody.textContent = "Could not load target.mind. Put your compiled MindAR file in the project folder and refresh.";
 });
 
 
