@@ -10,7 +10,7 @@
           initial-scale=1.0,
           user-scalable=no">
 
-    <title>FixAR | Turbine System Training</title>
+    <title>FixAR | Turbine System Trainer</title>
 
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -46,7 +46,7 @@
 
             position: fixed;
 
-            top: 12px;
+            top: 56px;
             left: 50%;
 
             transform: translateX(-50%);
@@ -80,7 +80,7 @@
             position: fixed;
 
             left: 15px;
-            bottom: 18px;
+            top: 12px;
 
             padding: 10px 14px;
 
@@ -116,12 +116,10 @@
         }
 
 
-        #resetBtn {
+        #resetBtn,
+        #homeBtn {
 
             position: fixed;
-
-            right: 15px;
-            bottom: 18px;
 
             padding: 10px 14px;
 
@@ -135,7 +133,202 @@
             font-size: 11px;
             font-weight: bold;
 
-            z-index: 1000;
+            z-index: 1100;
+
+            text-decoration: none;
+        }
+
+
+        #homeBtn {
+            right: 15px;
+            top: 12px;
+        }
+
+
+        #resetBtn {
+            right: 15px;
+            bottom: 18px;
+        }
+
+
+        #trainPanel {
+
+            position: fixed;
+
+            left: 50%;
+            top: 108px;
+
+            transform: translateX(-50%);
+
+            width: calc(100% - 20px);
+            max-width: 470px;
+
+            padding: 12px 13px 11px;
+
+            background: rgba(7, 17, 31, 0.96);
+
+            border: 1px solid #38bdf8;
+            border-radius: 12px;
+
+            color: white;
+
+            z-index: 1100;
+
+            pointer-events: auto;
+
+            max-height: calc(100% - 180px);
+
+            overflow-y: auto;
+        }
+
+
+        .train-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 7px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.04em;
+            color: #7dd3fc;
+        }
+
+
+        #trainTitle {
+            margin: 0 0 6px;
+            font-size: 15px;
+            line-height: 1.25;
+        }
+
+
+        #trainBody,
+        #trainWhy,
+        #trainFeedback {
+            margin: 0 0 7px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+
+        #trainWhy {
+            color: #cbd5e1;
+        }
+
+
+        #trainFeedback {
+            min-height: 1.2em;
+            color: #fde68a;
+            font-weight: bold;
+        }
+
+
+        #trainFeedback.ok {
+            color: #86efac;
+        }
+
+
+        #trainFeedback.bad {
+            color: #fca5a5;
+        }
+
+
+        #progressTrack {
+            height: 5px;
+            margin: 4px 0 10px;
+            background: #1e293b;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+
+        #progressBar {
+            width: 8%;
+            height: 100%;
+            background: #38bdf8;
+        }
+
+
+        #quizBox {
+            display: none;
+            flex-direction: column;
+            gap: 7px;
+            margin: 8px 0;
+        }
+
+
+        #quizBox.visible {
+            display: flex;
+        }
+
+
+        .quiz-btn,
+        #continueBtn,
+        #retryQuizBtn {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+
+        .quiz-btn:disabled {
+            opacity: 0.7;
+        }
+
+
+        .quiz-btn.correct {
+            border-color: #22c55e;
+            background: #052e16;
+        }
+
+
+        .quiz-btn.wrong {
+            border-color: #ef4444;
+            background: #450a0a;
+        }
+
+
+        #continueBtn,
+        #retryQuizBtn {
+            display: none;
+            margin-top: 6px;
+            text-align: center;
+            border-color: #38bdf8;
+            background: #38bdf8;
+            color: #07111f;
+        }
+
+
+        #continueBtn.visible,
+        #retryQuizBtn.visible {
+            display: block;
+        }
+
+
+        #trainNotice {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+
+        #completeList {
+            display: none;
+            margin: 8px 0 0;
+            padding-left: 18px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #dbeafe;
+        }
+
+
+        #completeList.visible {
+            display: block;
         }
 
     </style>
@@ -148,23 +341,63 @@
 
 <div id="info">
 
-    Point the camera at the Hiro marker.
+    Point the camera at the Hiro marker to start training.
 
 </div>
 
 
 <div id="systemStatus">
 
-    SYSTEM OFF · 0/3 PLACED
+    SCAN MARKER
 
 </div>
 
 
+<a href="index.html" id="homeBtn">Home</a>
+
+
 <button id="resetBtn" type="button">
 
-    Reset
+    Restart
 
 </button>
+
+
+<div id="trainPanel">
+
+    <div class="train-top">
+        <span id="trainStep">Step 0 of 4</span>
+        <span id="trainScore">Mistakes 0</span>
+    </div>
+
+    <div id="progressTrack">
+        <div id="progressBar"></div>
+    </div>
+
+    <h2 id="trainTitle">Battery-powered turbine trainer</h2>
+
+    <p id="trainBody">
+        Scan the Hiro marker. You will identify each component, assemble the circuit in a safe order, start and isolate the drive, then answer a short knowledge check.
+    </p>
+
+    <p id="trainWhy">
+        This is a familiarisation module, not a workplace procedure. It trains names, order of assembly, and isolation.
+    </p>
+
+    <p id="trainFeedback"></p>
+
+    <div id="quizBox"></div>
+
+    <ul id="completeList"></ul>
+
+    <button id="continueBtn" type="button">Continue</button>
+    <button id="retryQuizBtn" type="button">Retry knowledge check</button>
+
+    <div id="trainNotice">
+        Training aid only — follow workplace SOPs and qualified supervision.
+    </div>
+
+</div>
 
 
 
@@ -309,7 +542,7 @@
 
             <a-text
                 id="trayLabel"
-                value="PARTS TRAY  —  DRAG ONTO SLOTS"
+                value="PARTS TRAY"
                 position="0 0.10 1.04"
                 scale="0.18 0.18 0.18"
                 align="center"
@@ -534,6 +767,19 @@ const marker = document.getElementById("hiroMarker");
 const info = document.getElementById("info");
 const systemStatus = document.getElementById("systemStatus");
 const resetBtn = document.getElementById("resetBtn");
+const trainPanel = document.getElementById("trainPanel");
+const trainStep = document.getElementById("trainStep");
+const trainScore = document.getElementById("trainScore");
+const trainTitle = document.getElementById("trainTitle");
+const trainBody = document.getElementById("trainBody");
+const trainWhy = document.getElementById("trainWhy");
+const trainFeedback = document.getElementById("trainFeedback");
+const progressBar = document.getElementById("progressBar");
+const quizBox = document.getElementById("quizBox");
+const completeList = document.getElementById("completeList");
+const continueBtn = document.getElementById("continueBtn");
+const retryQuizBtn = document.getElementById("retryQuizBtn");
+const trayLabel = document.getElementById("trayLabel");
 
 const batteryPart = document.getElementById("batteryPart");
 const switchPart = document.getElementById("switchPart");
@@ -623,6 +869,81 @@ const PARTS = {
 const PART_LIST = [PARTS.battery, PARTS.switch, PARTS.drive];
 
 
+const IDENTIFY_STEPS = [
+    {
+        id: "battery",
+        title: "1. Identify the power source",
+        body: "Tap the battery on the tray.",
+        why: "The battery supplies energy. Without it the motor cannot run."
+    },
+    {
+        id: "switch",
+        title: "1. Identify the isolator",
+        body: "Tap the switch on the tray.",
+        why: "The switch starts the circuit and isolates power. Do not energise a machine you cannot switch off."
+    },
+    {
+        id: "drive",
+        title: "1. Identify the coupled drive",
+        body: "Tap the motor and turbine unit.",
+        why: "The motor and turbine share one shaft. When the motor turns, the turbine turns with it."
+    }
+];
+
+
+const ASSEMBLE_STEPS = [
+    {
+        id: "battery",
+        title: "2. Fit the power source",
+        body: "Drag the battery onto the glowing battery slot.",
+        why: "Fit the supply first so the rest of the circuit has a power source."
+    },
+    {
+        id: "switch",
+        title: "2. Fit the isolator",
+        body: "Drag the switch onto the glowing switch slot.",
+        why: "The switch sits between the battery and the motor so you can isolate the drive."
+    },
+    {
+        id: "drive",
+        title: "2. Fit the coupled drive",
+        body: "Drag the motor-turbine onto the glowing drive slot.",
+        why: "The load goes on last. The circuit is then complete, but still isolated until you use the switch."
+    }
+];
+
+
+const QUIZ = [
+    {
+        question: "What is the battery's job in this system?",
+        why: "Power has to come from somewhere before a motor can run.",
+        options: [
+            { text: "It supplies electrical power", correct: true },
+            { text: "It isolates the motor", correct: false },
+            { text: "It cools the turbine", correct: false }
+        ]
+    },
+    {
+        question: "Why must the switch be fitted before you start the drive?",
+        why: "You need a way to energise and isolate the motor.",
+        options: [
+            { text: "It isolates and controls power to the motor", correct: true },
+            { text: "It holds the turbine in place", correct: false },
+            { text: "It charges the battery", correct: false }
+        ]
+    },
+    {
+        question: "The motor and turbine are one unit on a shared shaft. What happens when the motor runs?",
+        why: "A mechanical coupling transmits rotation.",
+        options: [
+            { text: "Both rotate together because they are coupled", correct: true },
+            { text: "Only the motor can rotate", correct: false },
+            { text: "The battery starts spinning", correct: false }
+        ]
+    }
+];
+
+
 
 /* ==========================================
    STATE
@@ -645,6 +966,16 @@ let dragOffsetX = 0;
 let dragOffsetZ = 0;
 let pointerActive = false;
 let hoverSlotId = null;
+
+let phase = "scan";
+let identifyIndex = 0;
+let quizIndex = 0;
+let quizCorrect = 0;
+let mistakes = 0;
+let identified = { battery: false, switch: false, drive: false };
+let startedOnce = false;
+let stoppedOnce = false;
+let feedbackTimer = null;
 
 const touchRaycaster = new THREE.Raycaster();
 const touchPointer = new THREE.Vector2();
@@ -793,6 +1124,318 @@ function maybeStartDrop() {
 
     dropAnimating = true;
 
+    if (markerVisible && phase === "scan") {
+        beginIdentify();
+    }
+
+}
+
+function currentIdentifyStep() {
+    return IDENTIFY_STEPS[identifyIndex] || null;
+}
+
+
+function currentAssembleStep() {
+    for (let i = 0; i < ASSEMBLE_STEPS.length; i += 1) {
+        const step = ASSEMBLE_STEPS[i];
+        if (!PARTS[step.id].placed) {
+            return step;
+        }
+    }
+    return null;
+}
+
+
+function setFeedback(message, kind) {
+
+    trainFeedback.textContent = message || "";
+    trainFeedback.className = kind || "";
+
+    if (feedbackTimer) {
+        clearTimeout(feedbackTimer);
+        feedbackTimer = null;
+    }
+
+    if (message && kind === "ok") {
+        feedbackTimer = setTimeout(function () {
+            trainFeedback.textContent = "";
+            trainFeedback.className = "";
+        }, 1600);
+    }
+
+}
+
+
+function addMistake() {
+    mistakes += 1;
+    trainScore.textContent = "Mistakes " + mistakes;
+}
+
+
+function setButtonVisible(button, visible) {
+    if (visible) {
+        button.classList.add("visible");
+    } else {
+        button.classList.remove("visible");
+    }
+}
+
+
+function beginIdentify() {
+    phase = "identify";
+    identifyIndex = 0;
+    identified = { battery: false, switch: false, drive: false };
+    refreshAssemblyLook();
+}
+
+
+function beginAssemble() {
+    phase = "assemble";
+    refreshAssemblyLook();
+}
+
+
+function beginOperate() {
+    phase = "operate";
+    startedOnce = false;
+    stoppedOnce = false;
+    refreshAssemblyLook();
+}
+
+
+function beginQuiz() {
+    phase = "quiz";
+    quizIndex = 0;
+    quizCorrect = 0;
+    refreshAssemblyLook();
+}
+
+
+function finishTraining() {
+
+    phase = "complete";
+
+    if (systemRunning) {
+        stopSystem();
+    }
+
+    refreshAssemblyLook();
+
+}
+
+
+function tryAdvanceAfterIdentify() {
+
+    identifyIndex += 1;
+
+    if (identifyIndex >= IDENTIFY_STEPS.length) {
+        setFeedback("All parts identified. Now assemble in a safe order.", "ok");
+        beginAssemble();
+        return;
+    }
+
+    refreshAssemblyLook();
+
+}
+
+
+function handleIdentifyTap(part) {
+
+    const step = currentIdentifyStep();
+
+    if (!step) {
+        return;
+    }
+
+    if (!part) {
+        setFeedback("Tap the component on the tray.", "bad");
+        return;
+    }
+
+    if (part.id === step.id) {
+        identified[part.id] = true;
+        setFeedback("Correct — that is the " + step.id + ".", "ok");
+        tryAdvanceAfterIdentify();
+        return;
+    }
+
+    addMistake();
+    setFeedback("That is the " + part.id + ". You need the " + step.id + ".", "bad");
+
+}
+
+
+function renderQuiz() {
+
+    const item = QUIZ[quizIndex];
+
+    quizBox.innerHTML = "";
+    quizBox.classList.add("visible");
+
+    item.options.forEach(function (option, index) {
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "quiz-btn";
+        button.textContent = option.text;
+        button.addEventListener("click", function () {
+            answerQuiz(index);
+        });
+        quizBox.appendChild(button);
+
+    });
+
+}
+
+
+function answerQuiz(optionIndex) {
+
+    const item = QUIZ[quizIndex];
+    const buttons = quizBox.querySelectorAll(".quiz-btn");
+
+    if (buttons.length === 0 || buttons[0].disabled) {
+        return;
+    }
+
+    buttons.forEach(function (button) {
+        button.disabled = true;
+    });
+
+    const chosen = item.options[optionIndex];
+
+    buttons.forEach(function (button, index) {
+        if (item.options[index].correct) {
+            button.classList.add("correct");
+        }
+        if (index === optionIndex && !chosen.correct) {
+            button.classList.add("wrong");
+        }
+    });
+
+    if (chosen.correct) {
+        quizCorrect += 1;
+        setFeedback("Correct.", "ok");
+    } else {
+        addMistake();
+        setFeedback("Not quite. " + item.why, "bad");
+    }
+
+    setTimeout(function () {
+
+        quizIndex += 1;
+
+        if (quizIndex >= QUIZ.length) {
+            finishTraining();
+            return;
+        }
+
+        renderCoach();
+
+    }, 1100);
+
+}
+
+
+function trainingPassed() {
+    return quizCorrect >= 2 && startedOnce && stoppedOnce && allPlaced();
+}
+
+
+function renderCoach() {
+
+    quizBox.classList.remove("visible");
+    quizBox.innerHTML = "";
+    completeList.classList.remove("visible");
+    completeList.innerHTML = "";
+    setButtonVisible(continueBtn, false);
+    setButtonVisible(retryQuizBtn, false);
+    trainScore.textContent = "Mistakes " + mistakes;
+
+    if (phase === "scan") {
+        trainStep.textContent = "Step 0 of 4";
+        progressBar.style.width = "6%";
+        trainTitle.textContent = "Battery-powered turbine trainer";
+        trainBody.textContent = "Scan the Hiro marker. You will identify each component, assemble the circuit in a safe order, start and isolate the drive, then answer a short knowledge check.";
+        trainWhy.textContent = "This is a familiarisation module, not a workplace procedure.";
+        return;
+    }
+
+    if (phase === "identify") {
+        const step = currentIdentifyStep();
+        trainStep.textContent = "Step 1 of 4 · Identify " + (identifyIndex + 1) + "/3";
+        progressBar.style.width = (10 + identifyIndex * 10) + "%";
+        trainTitle.textContent = step.title;
+        trainBody.textContent = step.body;
+        trainWhy.textContent = "Why it matters: " + step.why;
+        return;
+    }
+
+    if (phase === "assemble") {
+        const step = currentAssembleStep();
+        const done = placedCount();
+        trainStep.textContent = "Step 2 of 4 · Assemble " + done + "/3";
+        progressBar.style.width = (40 + done * 8) + "%";
+        if (step) {
+            trainTitle.textContent = step.title;
+            trainBody.textContent = step.body;
+            trainWhy.textContent = "Why it matters: " + step.why;
+        }
+        return;
+    }
+
+    if (phase === "operate") {
+        trainStep.textContent = "Step 3 of 4 · Operate";
+        progressBar.style.width = startedOnce ? "78%" : "68%";
+        if (!startedOnce) {
+            trainTitle.textContent = "3. Energise the drive";
+            trainBody.textContent = "The circuit is complete. Tap the 3D switch to start the motor.";
+            trainWhy.textContent = "Why it matters: the switch is the isolator. The motor should only run when you choose to close it.";
+        } else if (systemRunning) {
+            trainTitle.textContent = "3. Watch the coupled shaft";
+            trainBody.textContent = "The motor and turbine rotate together because they share one shaft. Tap the switch to isolate power.";
+            trainWhy.textContent = "Why it matters: after a test run you isolate the machine before leaving it.";
+        } else {
+            trainTitle.textContent = "3. Power isolated";
+            trainBody.textContent = "The drive is stopped. Continue to the knowledge check.";
+            trainWhy.textContent = "Why it matters: starting and isolating are both part of safe operation.";
+            continueBtn.textContent = "Start knowledge check";
+            setButtonVisible(continueBtn, true);
+        }
+        return;
+    }
+
+    if (phase === "quiz") {
+        const item = QUIZ[quizIndex];
+        trainStep.textContent = "Step 4 of 4 · Check " + (quizIndex + 1) + "/3";
+        progressBar.style.width = (84 + quizIndex * 5) + "%";
+        trainTitle.textContent = "4. Knowledge check";
+        trainBody.textContent = item.question;
+        trainWhy.textContent = "Choose the best answer.";
+        renderQuiz();
+        return;
+    }
+
+    if (phase === "complete") {
+        const passed = trainingPassed();
+        trainStep.textContent = passed ? "Module complete" : "Needs review";
+        progressBar.style.width = "100%";
+        trainTitle.textContent = passed ? "Training complete" : "Review needed";
+        trainBody.textContent = "Knowledge check " + quizCorrect + " / 3. Mistakes: " + mistakes + ".";
+        trainWhy.textContent = passed
+            ? "You identified the parts, assembled in a safe order, ran the coupled drive, and isolated it."
+            : "Score at least 2 / 3 on the knowledge check after you have started and isolated the drive.";
+        completeList.innerHTML =
+            "<li>Identify battery, switch, and coupled drive</li>" +
+            "<li>Assemble power → isolator → load</li>" +
+            "<li>Energise, observe coupling, then isolate</li>";
+        completeList.classList.add("visible");
+        continueBtn.textContent = "Restart module";
+        setButtonVisible(continueBtn, true);
+        if (!passed) {
+            setButtonVisible(retryQuizBtn, true);
+        }
+    }
+
 }
 
 
@@ -813,10 +1456,8 @@ function allPlaced() {
 
 function updateStatus() {
 
-    const count = placedCount();
-
     if (!markerVisible) {
-        info.textContent = "Point the camera at the Hiro marker.";
+        info.textContent = "Point the camera at the Hiro marker to start training.";
         return;
     }
 
@@ -825,45 +1466,72 @@ function updateStatus() {
         return;
     }
 
-    if (systemRunning) {
-        info.textContent = "System running — motor spinning. Tap the switch to stop.";
+    if (phase === "identify") {
+        info.textContent = "Tap the named part on the tray.";
         return;
     }
 
-    if (allPlaced()) {
-        info.textContent = "System assembled — tap the 3D switch to start the motor.";
+    if (phase === "assemble") {
+        info.textContent = "Drag the required part onto its glowing slot.";
         return;
     }
 
-    if (count === 0) {
-        info.textContent = "Drag each part from the tray onto its glowing slot.";
+    if (phase === "operate") {
+        info.textContent = systemRunning
+            ? "Watch the coupled drive, then tap the switch to isolate."
+            : "Tap the 3D switch to start or isolate the motor.";
         return;
     }
 
-    info.textContent = count + " / 3 parts placed — drop the rest onto the matching slots.";
+    if (phase === "quiz" || phase === "complete") {
+        info.textContent = "Use the training panel to finish the module.";
+        return;
+    }
+
+    info.textContent = "Marker detected — follow the training panel.";
 
 }
 
 
 function updateSystemBadge() {
 
-    const count = placedCount();
-
     systemStatus.classList.remove("running", "assembled");
 
     if (systemRunning) {
-        systemStatus.textContent = "SYSTEM RUNNING";
+        systemStatus.textContent = "MOTOR RUNNING";
         systemStatus.classList.add("running");
         return;
     }
 
-    if (allPlaced()) {
-        systemStatus.textContent = "ASSEMBLED · TAP SWITCH";
+    if (phase === "complete") {
+        systemStatus.textContent = trainingPassed() ? "PASSED" : "REVIEW";
         systemStatus.classList.add("assembled");
         return;
     }
 
-    systemStatus.textContent = "SYSTEM OFF · " + count + "/3 PLACED";
+    if (phase === "operate" && allPlaced()) {
+        systemStatus.textContent = "READY TO START";
+        systemStatus.classList.add("assembled");
+        return;
+    }
+
+    if (phase === "assemble") {
+        systemStatus.textContent = "ASSEMBLE " + placedCount() + "/3";
+        return;
+    }
+
+    if (phase === "identify") {
+        systemStatus.textContent = "IDENTIFY " + (identifyIndex + 1) + "/3";
+        return;
+    }
+
+    if (phase === "quiz") {
+        systemStatus.textContent = "KNOWLEDGE CHECK";
+        systemStatus.classList.add("assembled");
+        return;
+    }
+
+    systemStatus.textContent = markerVisible ? "TRAINING" : "SCAN MARKER";
 
 }
 
@@ -890,17 +1558,41 @@ function setTrayVisible(visible) {
 
 function refreshAssemblyLook() {
 
+    const assembleStep = currentAssembleStep();
+    const identifyStep = currentIdentifyStep();
+
     PART_LIST.forEach(function (part) {
-        setSlotVisible(part, !part.placed);
-        part.carryLabel.setAttribute("visible", !part.placed);
+
+        let showSlot = !part.placed;
+
+        if (phase === "identify") {
+            showSlot = identifyStep && part.id === identifyStep.id;
+        } else if (phase === "assemble") {
+            showSlot = assembleStep && part.id === assembleStep.id;
+        } else if (phase === "operate" || phase === "quiz" || phase === "complete") {
+            showSlot = false;
+        }
+
+        setSlotVisible(part, showSlot);
+        part.carryLabel.setAttribute("visible", !part.placed && phase !== "identify");
+
     });
 
-    setTrayVisible(!allPlaced());
+    const showTray = phase === "identify" || phase === "assemble" || phase === "scan";
+    setTrayVisible(showTray && !allPlaced());
 
-    if (allPlaced()) {
-        switchLabel.setAttribute("value", "TAP SWITCH");
-        motorLabel.setAttribute("value", "MOTOR OFF");
-        motorLabel.setAttribute("color", "#ef4444");
+    if (phase === "identify") {
+        trayLabel.setAttribute("value", "TAP TO IDENTIFY");
+    } else if (phase === "assemble") {
+        trayLabel.setAttribute("value", "DRAG ONTO THE GLOWING SLOT");
+    } else {
+        trayLabel.setAttribute("value", "PARTS TRAY");
+    }
+
+    if (allPlaced() && (phase === "operate" || phase === "quiz" || phase === "complete")) {
+        switchLabel.setAttribute("value", systemRunning ? "TAP TO ISOLATE" : "TAP SWITCH");
+        motorLabel.setAttribute("value", systemRunning ? "MOTOR RUNNING" : "MOTOR OFF");
+        motorLabel.setAttribute("color", systemRunning ? "#22c55e" : "#ef4444");
     } else {
         switchLabel.setAttribute("value", "SWITCH");
         motorLabel.setAttribute("value", "MOTOR + TURBINE");
@@ -909,6 +1601,7 @@ function refreshAssemblyLook() {
 
     updateSystemBadge();
     updateStatus();
+    renderCoach();
 
 }
 
@@ -959,11 +1652,32 @@ function setPartPosition(part, x, y, z) {
 
 function snapPart(part) {
 
+    if (phase !== "assemble") {
+        returnToTray(part);
+        return;
+    }
+
+    const required = currentAssembleStep();
+
+    if (!required || part.id !== required.id) {
+        addMistake();
+        returnToTray(part);
+        if (required) {
+            setFeedback("Not yet. Fit the " + required.id + " first.", "bad");
+        }
+        return;
+    }
+
     part.placed = true;
     setPartPosition(part, part.slotPos.x, part.slotPos.y, part.slotPos.z);
     hoverSlotId = null;
     refreshPadColors();
+    setFeedback("Fitted — " + required.why, "ok");
     refreshAssemblyLook();
+
+    if (allPlaced()) {
+        beginOperate();
+    }
 
 }
 
@@ -1018,13 +1732,14 @@ function startSystem() {
     }
 
     systemRunning = true;
+    startedOnce = true;
 
     startSystemSound();
 
     motorLabel.setAttribute("value", "MOTOR RUNNING");
     motorLabel.setAttribute("color", "#22c55e");
 
-    switchLabel.setAttribute("value", "TAP TO STOP");
+    switchLabel.setAttribute("value", "TAP TO ISOLATE");
 
     switchModel.setAttribute("rotation", SWITCH_ON_ROT);
 
@@ -1032,6 +1747,9 @@ function startSystem() {
 
     updateSystemBadge();
     updateStatus();
+    if (phase === "operate") {
+        renderCoach();
+    }
 
 }
 
@@ -1047,6 +1765,10 @@ function stopSystem() {
 
     stopSystemSound();
 
+    if (startedOnce) {
+        stoppedOnce = true;
+    }
+
     motorLabel.setAttribute("value", allPlaced() ? "MOTOR OFF" : "MOTOR + TURBINE");
     motorLabel.setAttribute("color", "#ef4444");
 
@@ -1061,14 +1783,21 @@ function stopSystem() {
 
     updateSystemBadge();
     updateStatus();
+    if (phase === "operate") {
+        renderCoach();
+    }
 
 }
 
 
 function toggleSystem() {
 
+    if (phase !== "operate") {
+        return;
+    }
+
     if (!allPlaced()) {
-        info.textContent = "Place every part on its slot before using the switch.";
+        info.textContent = "Assemble the circuit before using the switch.";
         return;
     }
 
@@ -1199,8 +1928,7 @@ function beginDrag(part, clientX, clientY) {
     }
 
     if (part.placed) {
-        part.placed = false;
-        refreshAssemblyLook();
+        return;
     }
 
     dragging = part;
@@ -1269,14 +1997,27 @@ function endDrag() {
    POINTER EVENTS
 ========================================== */
 
-function isResetTarget(target) {
-    return target === resetBtn || (target && resetBtn.contains(target));
+function isUiTarget(target) {
+    if (!target) {
+        return false;
+    }
+    if (target === resetBtn || resetBtn.contains(target)) {
+        return true;
+    }
+    if (trainPanel && trainPanel.contains(target)) {
+        return true;
+    }
+    const homeBtn = document.getElementById("homeBtn");
+    if (homeBtn && (target === homeBtn || homeBtn.contains(target))) {
+        return true;
+    }
+    return false;
 }
 
 
 function onPointerDown(event) {
 
-    if (isResetTarget(event.target)) {
+    if (isUiTarget(event.target)) {
         return;
     }
 
@@ -1284,32 +2025,28 @@ function onPointerDown(event) {
         return;
     }
 
+    if (phase === "quiz" || phase === "complete" || phase === "scan") {
+        return;
+    }
+
     pointerActive = true;
 
     const part = pickPart(event.clientX, event.clientY);
 
-    if (allPlaced() && !systemRunning) {
-
-        if (part && part.id !== "switch") {
-            beginDrag(part, event.clientX, event.clientY);
-            if (event.pointerType === "touch") {
-                event.preventDefault();
-            }
-            return;
-        }
-
+    if (phase === "identify") {
         return;
     }
 
-    if (systemRunning) {
-        return;
-    }
-
-    if (part) {
+    if (phase === "assemble" && part && !part.placed) {
         beginDrag(part, event.clientX, event.clientY);
         if (event.pointerType === "touch") {
             event.preventDefault();
         }
+        return;
+    }
+
+    if (phase === "operate") {
+        return;
     }
 
 }
@@ -1332,7 +2069,7 @@ function onPointerMove(event) {
 
 function onPointerUp(event) {
 
-    if (isResetTarget(event.target)) {
+    if (isUiTarget(event.target)) {
         pointerActive = false;
         return;
     }
@@ -1343,15 +2080,22 @@ function onPointerUp(event) {
         endDrag();
     }
 
-    const shouldTestSwitch = pointerActive && !wasDragging && markerVisible && modelsReady();
+    const shouldHandleTap = pointerActive && !wasDragging && markerVisible && modelsReady();
 
     pointerActive = false;
 
-    if (!shouldTestSwitch) {
+    if (!shouldHandleTap) {
         return;
     }
 
-    handleSwitchTouch(event.clientX, event.clientY);
+    if (phase === "identify") {
+        handleIdentifyTap(pickPart(event.clientX, event.clientY));
+        return;
+    }
+
+    if (phase === "operate") {
+        handleSwitchTouch(event.clientX, event.clientY);
+    }
 
 }
 
@@ -1365,7 +2109,7 @@ window.addEventListener("pointercancel", onPointerUp, { passive: false });
 
 function handleSwitchTouch(clientX, clientY) {
 
-    if (!markerVisible || !modelsReady()) {
+    if (!markerVisible || !modelsReady() || phase !== "operate") {
         return;
     }
 
@@ -1464,6 +2208,14 @@ function resetTraining() {
     hoverSlotId = null;
     pointerActive = false;
     driveSpin = 0;
+    mistakes = 0;
+    quizIndex = 0;
+    quizCorrect = 0;
+    identifyIndex = 0;
+    identified = { battery: false, switch: false, drive: false };
+    startedOnce = false;
+    stoppedOnce = false;
+    setFeedback("", "");
 
     if (systemRunning) {
         stopSystem();
@@ -1483,12 +2235,12 @@ function resetTraining() {
     dropAnimating = true;
 
     refreshPadColors();
-    refreshAssemblyLook();
 
-    if (markerVisible) {
-        info.textContent = "Training reset — drag the parts onto their slots.";
+    if (markerVisible && modelsReady()) {
+        beginIdentify();
     } else {
-        info.textContent = "Training reset — point the camera at the Hiro marker.";
+        phase = "scan";
+        refreshAssemblyLook();
     }
 
 }
@@ -1511,13 +2263,38 @@ resetBtn.addEventListener("click", function (event) {
 marker.addEventListener("markerFound", function () {
     markerVisible = true;
     maybeStartDrop();
-    updateStatus();
+    if (phase === "scan" && modelsReady()) {
+        beginIdentify();
+    } else {
+        updateStatus();
+        renderCoach();
+    }
 });
 
 
 marker.addEventListener("markerLost", function () {
     markerVisible = false;
     info.textContent = "Marker lost — point the camera at the Hiro marker.";
+});
+
+
+continueBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (phase === "operate" && stoppedOnce) {
+        beginQuiz();
+        return;
+    }
+    if (phase === "complete") {
+        resetTraining();
+    }
+});
+
+
+retryQuizBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    beginQuiz();
 });
 
 
