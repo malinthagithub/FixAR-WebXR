@@ -5,9 +5,12 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1.0,
+      user-scalable=no">
 
-<title>FixAR Machine Wiring Training</title>
+<title>FixAR | Motor Wiring Training</title>
 
 
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -17,137 +20,340 @@
 
 <style>
 
-body{
-    margin:0;
-    overflow:hidden;
-    font-family:Arial,sans-serif;
+* {
+    box-sizing: border-box;
 }
 
 
-.info{
+body {
 
-    position:fixed;
-    top:15px;
-    left:50%;
-    transform:translateX(-50%);
+    margin: 0;
+    overflow: hidden;
 
-    width:90%;
-    max-width:420px;
+    font-family: Arial, sans-serif;
 
-    padding:12px;
-
-    background:rgba(0,0,0,0.8);
-
-    color:white;
-
-    border-radius:10px;
-
-    text-align:center;
-
-    z-index:20;
+    background: #07111f;
 
 }
 
 
+/* =============================
+   TOP INFORMATION
+============================= */
 
-.controls{
+#info {
 
-    position:fixed;
+    position: fixed;
 
-    bottom:20px;
+    top: 12px;
+    left: 50%;
 
-    left:50%;
+    transform: translateX(-50%);
 
-    transform:translateX(-50%);
+    width: calc(100% - 20px);
+    max-width: 460px;
 
-    display:flex;
+    padding: 10px 12px;
 
-    flex-wrap:wrap;
+    background: rgba(0,0,0,0.82);
 
-    justify-content:center;
+    color: white;
 
-    gap:8px;
+    border: 1px solid #38bdf8;
 
-    z-index:20;
+    border-radius: 10px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    z-index: 100;
+}
+
+
+
+/* =============================
+   TRAINING PANEL
+============================= */
+
+#trainingPanel {
+
+    position: fixed;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform: translateX(-50%);
+
+    width: calc(100% - 16px);
+    max-width: 470px;
+
+    padding: 10px;
+
+    background: rgba(7,17,31,0.94);
+
+    border: 1px solid #38bdf8;
+
+    border-radius: 12px;
+
+    z-index: 100;
+}
+
+
+.panel-title {
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    margin-bottom: 7px;
+
+    text-align: center;
+}
+
+
+
+/* =============================
+   WIRE BUTTONS
+============================= */
+
+.wire-buttons {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 6px;
+
+}
+
+
+.wire-buttons button {
+
+    min-height: 38px;
+
+    border-radius: 8px;
+
+    border: 1px solid #64748b;
+
+    background: #111827;
+
+    color: white;
+
+    font-weight: bold;
+
+    font-size: 11px;
+
+}
+
+
+.wire-buttons button.active {
+
+    border: 2px solid white;
+
+    transform: scale(1.03);
+
+}
+
+
+#redBtn {
+    border-color: #ef4444;
+}
+
+
+#blackBtn {
+    border-color: #94a3b8;
+}
+
+
+#greenBtn {
+    border-color: #22c55e;
+}
+
+
+
+/* =============================
+   TERMINAL BUTTONS
+============================= */
+
+.terminal-buttons {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 6px;
+
+    margin-top: 6px;
+
+}
+
+
+.terminal-buttons button {
+
+    min-height: 36px;
+
+    border-radius: 8px;
+
+    background: #1e293b;
+
+    color: white;
+
+    border: 1px solid #475569;
+
+    font-size: 11px;
+
+    font-weight: bold;
 
 }
 
 
 
-button{
+/* =============================
+   POWER
+============================= */
 
-    padding:12px 15px;
+#powerBtn {
 
-    border:none;
+    width: 100%;
 
-    border-radius:10px;
+    margin-top: 7px;
 
-    background:#111827;
+    min-height: 40px;
 
-    color:white;
+    border: none;
 
-    font-weight:bold;
+    border-radius: 8px;
 
-    border:1px solid #38bdf8;
+    background: #991b1b;
+
+    color: white;
+
+    font-weight: bold;
 
 }
 
 
+#powerBtn.running {
 
-.active{
+    background: #16a34a;
 
-    background:#38bdf8;
+}
 
-    color:black;
+
+#progress {
+
+    margin-top: 7px;
+
+    text-align: center;
+
+    color: #cbd5e1;
+
+    font-size: 10px;
 
 }
 
 
 </style>
 
-
 </head>
-
 
 
 <body>
 
 
+<div id="info">
 
-<div class="info" id="info">
-
-Scan Hiro marker
+Scan the Hiro marker to begin motor wiring training.
 
 </div>
 
 
 
+<div id="trainingPanel">
 
-<div class="controls">
+
+<div class="panel-title">
+
+Motor Wiring Training
+
+</div>
+
+
+<div class="wire-buttons">
 
 
 <button id="redBtn">
-Red Wire
+
+🔴 Red Wire
+
 </button>
 
 
 <button id="blackBtn">
-Black Wire
+
+⚫ Black Wire
+
 </button>
 
 
 <button id="greenBtn">
-Ground
-</button>
 
+🟢 Ground
 
-<button id="powerBtn">
-POWER OFF
 </button>
 
 
 </div>
 
+
+
+<div class="terminal-buttons">
+
+
+<button id="L1Btn">
+
+Connect → L1
+
+</button>
+
+
+<button id="L2Btn">
+
+Connect → L2
+
+</button>
+
+
+<button id="GNDBtn">
+
+Connect → GND
+
+</button>
+
+
+</div>
+
+
+
+<button id="powerBtn">
+
+POWER OFF
+
+</button>
+
+
+<div id="progress">
+
+Connections: 0 / 3
+
+</div>
+
+
+</div>
 
 
 
@@ -156,10 +362,9 @@ POWER OFF
 
 embedded
 
-arjs="sourceType:webcam; debugUIEnabled:false;">
+renderer="antialias: true; colorManagement: true;"
 
-
-
+arjs="sourceType: webcam; debugUIEnabled: false;">
 
 
 <a-marker
@@ -170,13 +375,13 @@ preset="hiro">
 
 
 
-
-
-<!-- Machine Model -->
+<!-- ==================================
+     MACHINE / MOTOR MODEL
+=================================== -->
 
 <a-entity
 
-id="machine"
+id="motorModel"
 
 gltf-model="url(models/machine.glb)"
 
@@ -184,89 +389,183 @@ position="0 0 0"
 
 rotation="0 0 0"
 
-scale="0.05 0.05 0.05">
+scale="0.5 0.5 0.5">
 
 </a-entity>
 
 
 
-
-
-
-<!-- Terminals -->
-
-
-<a-sphere
-
-id="L1"
-
-position="0.25 0.25 0.3"
-
-radius="0.04"
-
-color="red">
-
-</a-sphere>
-
-
-
-
-<a-sphere
-
-id="L2"
-
-position="0.25 0.15 0.3"
-
-radius="0.04"
-
-color="black">
-
-</a-sphere>
-
-
-
-
-<a-sphere
-
-id="GND"
-
-position="0.25 0.05 0.3"
-
-radius="0.04"
-
-color="green">
-
-</a-sphere>
-
-
-
-
-
-<!-- Switch -->
-
+<!-- ==================================
+     TERMINAL BOARD
+=================================== -->
 
 <a-box
 
-id="switch"
+position="0.38 0.22 0.35"
 
-position="-0.5 0.3 0"
+width="0.30"
 
-width="0.25"
+height="0.28"
 
-height="0.2"
+depth="0.05"
 
-depth="0.1"
-
-color="red">
+color="#334155">
 
 </a-box>
 
 
 
+<!-- L1 -->
+
+<a-sphere
+
+id="L1"
+
+position="0.30 0.28 0.39"
+
+radius="0.035"
+
+color="#ef4444">
+
+</a-sphere>
+
+
+
+<!-- L2 -->
+
+<a-sphere
+
+id="L2"
+
+position="0.38 0.20 0.39"
+
+radius="0.035"
+
+color="#111827">
+
+</a-sphere>
+
+
+
+<!-- GROUND -->
+
+<a-sphere
+
+id="GND"
+
+position="0.46 0.12 0.39"
+
+radius="0.035"
+
+color="#22c55e">
+
+</a-sphere>
+
+
+
+<!-- ==================================
+     WIRE START POINTS
+=================================== -->
+
+<a-sphere
+position="-0.55 0.30 0.30"
+radius="0.025"
+color="#ef4444">
+</a-sphere>
+
+
+<a-sphere
+position="-0.55 0.20 0.30"
+radius="0.025"
+color="#111827">
+</a-sphere>
+
+
+<a-sphere
+position="-0.55 0.10 0.30"
+radius="0.025"
+color="#22c55e">
+</a-sphere>
+
+
+
+<!-- ==================================
+     WIRES
+
+     Hidden until correct connection.
+=================================== -->
+
+<a-cylinder
+
+id="redWire"
+
+radius="0.018"
+
+height="1"
+
+color="#ef4444"
+
+visible="false">
+
+</a-cylinder>
+
+
+
+<a-cylinder
+
+id="blackWire"
+
+radius="0.018"
+
+height="1"
+
+color="#111827"
+
+visible="false">
+
+</a-cylinder>
+
+
+
+<a-cylinder
+
+id="greenWire"
+
+radius="0.018"
+
+height="1"
+
+color="#22c55e"
+
+visible="false">
+
+</a-cylinder>
+
+
+
+<!-- ==================================
+     MOTOR RUNNING SHAFT INDICATOR
+=================================== -->
+
+<a-cylinder
+
+id="shaft"
+
+position="-0.25 0.20 0.35"
+
+radius="0.06"
+
+height="0.20"
+
+rotation="90 0 0"
+
+color="#cbd5e1">
+
+</a-cylinder>
+
+
 
 </a-marker>
-
-
 
 
 
@@ -278,268 +577,751 @@ color="red">
 
 
 
-
-
 <script>
 
 
+/* ===============================
+   ELEMENTS
+================================ */
+
 const info =
-document.getElementById("info");
-
-
-const machine =
-document.getElementById("machine");
-
+    document.getElementById(
+        "info"
+    );
 
 
 const redBtn =
-document.getElementById("redBtn");
+    document.getElementById(
+        "redBtn"
+    );
 
 
 const blackBtn =
-document.getElementById("blackBtn");
+    document.getElementById(
+        "blackBtn"
+    );
 
 
 const greenBtn =
-document.getElementById("greenBtn");
+    document.getElementById(
+        "greenBtn"
+    );
+
+
+const L1Btn =
+    document.getElementById(
+        "L1Btn"
+    );
+
+
+const L2Btn =
+    document.getElementById(
+        "L2Btn"
+    );
+
+
+const GNDBtn =
+    document.getElementById(
+        "GNDBtn"
+    );
 
 
 const powerBtn =
-document.getElementById("powerBtn");
+    document.getElementById(
+        "powerBtn"
+    );
+
+
+const progress =
+    document.getElementById(
+        "progress"
+    );
+
+
+const marker =
+    document.getElementById(
+        "hiroMarker"
+    );
+
+
+const redWire =
+    document.getElementById(
+        "redWire"
+    );
+
+
+const blackWire =
+    document.getElementById(
+        "blackWire"
+    );
+
+
+const greenWire =
+    document.getElementById(
+        "greenWire"
+    );
+
+
+const shaft =
+    document.getElementById(
+        "shaft"
+    );
 
 
 
-const L1 =
-document.getElementById("L1");
+/* ===============================
+   STATE
+================================ */
+
+let selectedWire =
+    null;
 
 
-const L2 =
-document.getElementById("L2");
+let markerVisible =
+    false;
 
 
-const GND =
-document.getElementById("GND");
+let motorRunning =
+    false;
 
 
+const connections = {
 
-let selectedWire="";
+    red: false,
 
+    black: false,
 
-let connected = {
-
-red:false,
-
-black:false,
-
-green:false
-
-};
-
-
-
-let running=false;
-
-
-
-
-
-
-redBtn.onclick=function(){
-
-selectedWire="red";
-
-info.innerHTML=
-"Red wire selected → connect L1";
-
-};
-
-
-
-
-
-blackBtn.onclick=function(){
-
-selectedWire="black";
-
-info.innerHTML=
-"Black wire selected → connect L2";
-
-};
-
-
-
-
-
-
-greenBtn.onclick=function(){
-
-selectedWire="green";
-
-info.innerHTML=
-"Ground selected → connect GND";
+    green: false
 
 };
 
 
 
+/* ===============================
+   WIRE POSITIONS
+================================ */
+
+const wireData = {
 
 
+    red: {
+
+        start:
+            new THREE.Vector3(
+                -0.55,
+                0.30,
+                0.30
+            ),
+
+        end:
+            new THREE.Vector3(
+                0.30,
+                0.28,
+                0.39
+            ),
+
+        element:
+            redWire
+
+    },
 
 
+    black: {
 
-L1.onclick=function(){
+        start:
+            new THREE.Vector3(
+                -0.55,
+                0.20,
+                0.30
+            ),
 
+        end:
+            new THREE.Vector3(
+                0.38,
+                0.20,
+                0.39
+            ),
 
-if(selectedWire==="red"){
+        element:
+            blackWire
 
-connected.red=true;
-
-info.innerHTML=
-"✓ Red wire connected";
-
-}
-
-else{
-
-info.innerHTML=
-"Wrong wire";
-
-}
-
-
-};
+    },
 
 
+    green: {
 
+        start:
+            new THREE.Vector3(
+                -0.55,
+                0.10,
+                0.30
+            ),
 
+        end:
+            new THREE.Vector3(
+                0.46,
+                0.12,
+                0.39
+            ),
 
+        element:
+            greenWire
 
-
-L2.onclick=function(){
-
-
-if(selectedWire==="black"){
-
-connected.black=true;
-
-info.innerHTML=
-"✓ Black wire connected";
-
-}
-
-else{
-
-info.innerHTML=
-"Wrong wire";
-
-}
-
-
-};
-
-
-
-
-
-
-
-
-GND.onclick=function(){
-
-
-if(selectedWire==="green"){
-
-connected.green=true;
-
-info.innerHTML=
-"✓ Ground connected";
-
-}
-
-else{
-
-info.innerHTML=
-"Wrong wire";
-
-}
-
+    }
 
 };
 
 
 
+/* ===============================
+   SELECT WIRE
+================================ */
+
+function clearWireButtons() {
 
 
+    redBtn.classList.remove(
+        "active"
+    );
 
 
-
-powerBtn.onclick=function(){
-
-
-if(
-connected.red &&
-connected.black &&
-connected.green
-){
+    blackBtn.classList.remove(
+        "active"
+    );
 
 
-running=!running;
-
-
-if(running){
-
-powerBtn.innerHTML=
-"POWER ON";
-
-info.innerHTML=
-"Machine Running";
-
-}
-
-else{
-
-powerBtn.innerHTML=
-"POWER OFF";
-
-info.innerHTML=
-"Machine Stopped";
+    greenBtn.classList.remove(
+        "active"
+    );
 
 }
 
 
+
+redBtn.addEventListener(
+
+    "click",
+
+    function () {
+
+
+        selectedWire =
+            "red";
+
+
+        clearWireButtons();
+
+
+        redBtn.classList.add(
+            "active"
+        );
+
+
+        info.textContent =
+
+            "Red wire selected — connect it to L1.";
+
+    }
+
+);
+
+
+
+blackBtn.addEventListener(
+
+    "click",
+
+    function () {
+
+
+        selectedWire =
+            "black";
+
+
+        clearWireButtons();
+
+
+        blackBtn.classList.add(
+            "active"
+        );
+
+
+        info.textContent =
+
+            "Black wire selected — connect it to L2.";
+
+    }
+
+);
+
+
+
+greenBtn.addEventListener(
+
+    "click",
+
+    function () {
+
+
+        selectedWire =
+            "green";
+
+
+        clearWireButtons();
+
+
+        greenBtn.classList.add(
+            "active"
+        );
+
+
+        info.textContent =
+
+            "Ground wire selected — connect it to GND.";
+
+    }
+
+);
+
+
+
+/* ===============================
+   CREATE VISIBLE WIRE
+================================ */
+
+function placeWire(
+    wireName
+) {
+
+
+    const data =
+        wireData[
+            wireName
+        ];
+
+
+    const start =
+        data.start.clone();
+
+
+    const end =
+        data.end.clone();
+
+
+    const midpoint =
+        start.clone()
+             .add(end)
+             .multiplyScalar(
+                 0.5
+             );
+
+
+    const direction =
+        end.clone()
+           .sub(start);
+
+
+    const length =
+        direction.length();
+
+
+    const wire =
+        data.element;
+
+
+    wire.setAttribute(
+        "visible",
+        true
+    );
+
+
+    wire.object3D.position.copy(
+        midpoint
+    );
+
+
+    wire.setAttribute(
+
+        "height",
+
+        length
+
+    );
+
+
+    /*
+        A-Frame cylinder points
+        along local Y axis.
+    */
+
+    const yAxis =
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        );
+
+
+    direction.normalize();
+
+
+    const quaternion =
+        new THREE.Quaternion();
+
+
+    quaternion.setFromUnitVectors(
+
+        yAxis,
+
+        direction
+
+    );
+
+
+    wire.object3D.quaternion.copy(
+        quaternion
+    );
+
 }
 
-else{
 
 
-info.innerHTML=
-"Complete all connections first";
+/* ===============================
+   UPDATE PROGRESS
+================================ */
 
+function updateProgress() {
+
+
+    let completed =
+        0;
+
+
+    if (
+        connections.red
+    ) {
+
+        completed++;
+
+    }
+
+
+    if (
+        connections.black
+    ) {
+
+        completed++;
+
+    }
+
+
+    if (
+        connections.green
+    ) {
+
+        completed++;
+
+    }
+
+
+    progress.textContent =
+
+        "Connections: "
+        +
+        completed
+        +
+        " / 3";
+
+
+    if (
+        completed === 3
+    ) {
+
+
+        info.textContent =
+
+            "✓ All training connections completed. Power can now be enabled.";
+
+    }
 
 }
 
 
-};
+
+/* ===============================
+   CONNECT L1
+================================ */
+
+L1Btn.addEventListener(
+
+    "click",
+
+    function () {
+
+
+        if (
+            selectedWire ===
+            "red"
+        ) {
+
+
+            connections.red =
+                true;
+
+
+            placeWire(
+                "red"
+            );
+
+
+            info.textContent =
+
+                "✓ Red wire connected to L1.";
+
+
+            selectedWire =
+                null;
+
+
+            clearWireButtons();
+
+
+            updateProgress();
+
+
+        } else {
+
+
+            info.textContent =
+
+                "Incorrect connection. Select the Red Wire for L1.";
+
+        }
+
+    }
+
+);
 
 
 
+/* ===============================
+   CONNECT L2
+================================ */
+
+L2Btn.addEventListener(
+
+    "click",
+
+    function () {
+
+
+        if (
+            selectedWire ===
+            "black"
+        ) {
+
+
+            connections.black =
+                true;
+
+
+            placeWire(
+                "black"
+            );
+
+
+            info.textContent =
+
+                "✓ Black wire connected to L2.";
+
+
+            selectedWire =
+                null;
+
+
+            clearWireButtons();
+
+
+            updateProgress();
+
+
+        } else {
+
+
+            info.textContent =
+
+                "Incorrect connection. Select the Black Wire for L2.";
+
+        }
+
+    }
+
+);
 
 
 
+/* ===============================
+   CONNECT GROUND
+================================ */
+
+GNDBtn.addEventListener(
+
+    "click",
+
+    function () {
 
 
-function animate(){
+        if (
+            selectedWire ===
+            "green"
+        ) {
 
 
-if(running){
-
-machine.object3D.rotation.y +=0.05;
-
-}
+            connections.green =
+                true;
 
 
-requestAnimationFrame(animate);
+            placeWire(
+                "green"
+            );
 
+
+            info.textContent =
+
+                "✓ Ground wire connected to GND.";
+
+
+            selectedWire =
+                null;
+
+
+            clearWireButtons();
+
+
+            updateProgress();
+
+
+        } else {
+
+
+            info.textContent =
+
+                "Incorrect connection. Select Ground for GND.";
+
+        }
+
+    }
+
+);
+
+
+
+/* ===============================
+   POWER SWITCH
+================================ */
+
+powerBtn.addEventListener(
+
+    "click",
+
+    function () {
+
+
+        if (
+
+            !connections.red
+
+            ||
+
+            !connections.black
+
+            ||
+
+            !connections.green
+
+        ) {
+
+
+            info.textContent =
+
+                "Complete all three training connections before switching power on.";
+
+
+            return;
+
+        }
+
+
+
+        motorRunning =
+            !motorRunning;
+
+
+
+        if (
+            motorRunning
+        ) {
+
+
+            powerBtn.textContent =
+                "POWER ON";
+
+
+            powerBtn.classList.add(
+                "running"
+            );
+
+
+            info.textContent =
+
+                "✓ Training circuit complete — motor simulation running.";
+
+
+        } else {
+
+
+            powerBtn.textContent =
+                "POWER OFF";
+
+
+            powerBtn.classList.remove(
+                "running"
+            );
+
+
+            info.textContent =
+
+                "Motor simulation stopped.";
+
+        }
+
+    }
+
+);
+
+
+
+/* ===============================
+   SHAFT ANIMATION
+================================ */
+
+function animate() {
+
+
+    if (
+        motorRunning
+    ) {
+
+
+        shaft.object3D.rotation.z +=
+            0.15;
+
+    }
+
+
+    requestAnimationFrame(
+        animate
+    );
 
 }
 
@@ -548,21 +1330,56 @@ animate();
 
 
 
+/* ===============================
+   MARKER EVENTS
+================================ */
+
+marker.addEventListener(
+
+    "markerFound",
+
+    function () {
 
 
+        markerVisible =
+            true;
 
 
-document.getElementById("hiroMarker")
-.addEventListener(
-"markerFound",
-function(){
+        if (
+            !motorRunning
+        ) {
 
-info.innerHTML=
-"Machine wiring training started";
 
-}
+            info.textContent =
+
+                "Motor detected — select a wire to begin training.";
+
+        }
+
+    }
+
 );
 
+
+
+marker.addEventListener(
+
+    "markerLost",
+
+    function () {
+
+
+        markerVisible =
+            false;
+
+
+        info.textContent =
+
+            "Marker lost — point the camera at the Hiro marker.";
+
+    }
+
+);
 
 
 </script>
