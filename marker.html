@@ -37,6 +37,8 @@
             font-family: Arial, Helvetica, sans-serif;
 
             background: #07111f;
+
+            touch-action: none;
         }
 
 
@@ -93,6 +95,8 @@
             font-weight: bold;
 
             z-index: 1000;
+
+            pointer-events: none;
         }
 
 
@@ -101,6 +105,14 @@
             border-color: #22c55e;
 
             color: #86efac;
+        }
+
+
+        #systemStatus.assembled {
+
+            border-color: #38bdf8;
+
+            color: #bae6fd;
         }
 
 
@@ -143,12 +155,12 @@
 
 <div id="systemStatus">
 
-    SYSTEM OFF
+    SYSTEM OFF · 0/3 PLACED
 
 </div>
 
 
-<button id="resetBtn">
+<button id="resetBtn" type="button">
 
     Reset
 
@@ -161,6 +173,8 @@
     id="scene"
 
     embedded
+
+    vr-mode-ui="enabled: false"
 
     renderer="
         antialias: true;
@@ -179,197 +193,317 @@
 
 
         <!-- ==========================================
-             LAYOUT NOTE
-             Four corners of a rounded square/circle
-             around the marker center (0,0,0):
+             LAYOUT
 
-               switch (back-left)     motor (back-right)
-                        \\              /
-                         \\            /
-               battery (front-left)  turbine (front-right)
+             Empty slots + wires are always visible.
+             Parts start on the front tray and are
+             dragged onto their matching slots.
 
-             All models sit at MODEL_Y = 0.05.
-             Wires run at WIRE_Y = 0.0 (below the
-             models) with a short vertical "drop"
-             segment connecting each model down to
-             the wire, so wires never cross a model's
-             face.
+               switch slot (back-left)
+               battery slot (front-left)
+               motor+turbine (right) — one glued drive
+
+             MODEL_Y = 0.05, WIRE_Y = 0.00
         =========================================== -->
 
 
         <!-- ==========================================
-             BATTERY MODEL — front-left
+             SLOT PADS — drop targets
         =========================================== -->
 
-        <a-entity
+        <a-cylinder
+            id="batteryPad"
+            class="slot-pad"
+            position="-0.50 0.005 0.38"
+            radius="0.16"
+            height="0.012"
+            color="#38bdf8"
+            opacity="0.42"
+            material="shader: flat; transparent: true; opacity: 0.42">
+        </a-cylinder>
 
-            id="batteryModel"
+        <a-ring
+            id="batteryRing"
+            position="-0.50 0.014 0.38"
+            radius-inner="0.16"
+            radius-outer="0.20"
+            rotation="-90 0 0"
+            color="#7dd3fc"
+            opacity="0.85"
+            material="shader: flat; transparent: true; side: double; opacity: 0.85">
+        </a-ring>
 
-            gltf-model="url(models/battery.glb)"
 
-            position="-0.55 0.05 0.4"
+        <a-cylinder
+            id="switchPad"
+            class="slot-pad"
+            position="-0.50 0.005 -0.38"
+            radius="0.16"
+            height="0.012"
+            color="#38bdf8"
+            opacity="0.42"
+            material="shader: flat; transparent: true; opacity: 0.42">
+        </a-cylinder>
 
-            rotation="0 40 0"
+        <a-ring
+            id="switchRing"
+            position="-0.50 0.014 -0.38"
+            radius-inner="0.16"
+            radius-outer="0.20"
+            rotation="-90 0 0"
+            color="#7dd3fc"
+            opacity="0.85"
+            material="shader: flat; transparent: true; side: double; opacity: 0.85">
+        </a-ring>
 
-            scale="0.15 0.15 0.15">
+
+        <a-cylinder
+            id="drivePad"
+            class="slot-pad"
+            position="0.50 0.005 0"
+            radius="0.22"
+            height="0.012"
+            color="#38bdf8"
+            opacity="0.42"
+            material="shader: flat; transparent: true; opacity: 0.42">
+        </a-cylinder>
+
+        <a-ring
+            id="driveRing"
+            position="0.50 0.014 0"
+            radius-inner="0.22"
+            radius-outer="0.27"
+            rotation="-90 0 0"
+            color="#7dd3fc"
+            opacity="0.85"
+            material="shader: flat; transparent: true; side: double; opacity: 0.85">
+        </a-ring>
+
+
+
+        <!-- ==========================================
+             PARTS TRAY — models start here
+        =========================================== -->
+
+        <a-entity id="partsTray">
+
+            <a-box
+                position="0 0.0 0.86"
+                width="1.45"
+                height="0.02"
+                depth="0.42"
+                color="#0f172a"
+                opacity="0.88"
+                material="shader: flat; transparent: true; opacity: 0.88">
+            </a-box>
+
+            <a-box
+                position="0 0.012 0.86"
+                width="1.38"
+                height="0.004"
+                depth="0.36"
+                color="#1e293b"
+                opacity="0.95"
+                material="shader: flat; transparent: true; opacity: 0.95">
+            </a-box>
+
+            <a-text
+                id="trayLabel"
+                value="PARTS TRAY  —  DRAG ONTO SLOTS"
+                position="0 0.10 1.04"
+                scale="0.18 0.18 0.18"
+                align="center"
+                color="#7dd3fc">
+            </a-text>
 
         </a-entity>
 
 
 
         <!-- ==========================================
-             SWITCH MODEL — back-left
+             BATTERY — starts on the tray
         =========================================== -->
 
-        <a-entity
+        <a-entity id="batteryPart" position="-0.46 0.45 0.86">
 
-            id="switchModel"
+            <a-entity
+                id="batteryModel"
+                gltf-model="url(models/battery.glb)"
+                rotation="0 40 0"
+                scale="0.15 0.15 0.15">
+            </a-entity>
 
-            gltf-model="url(models/switch.glb)"
+            <a-box
+                id="batteryHit"
+                width="0.38"
+                height="0.38"
+                depth="0.38"
+                material="transparent: true; opacity: 0.01; depthWrite: false">
+            </a-box>
 
-            position="-0.55 0.05 -0.4"
-
-            rotation="0 -40 0"
-
-            scale="0.15 0.15 0.15">
+            <a-text
+                id="batteryCarryLabel"
+                value="BATTERY"
+                position="0 0.26 0"
+                scale="0.16 0.16 0.16"
+                align="center"
+                color="#ffffff">
+            </a-text>
 
         </a-entity>
 
 
 
         <!-- ==========================================
-             LARGE INVISIBLE TOUCH AREA (switch)
+             SWITCH — starts on the tray
         =========================================== -->
 
-        <a-box
+        <a-entity id="switchPart" position="0 0.45 0.86">
 
-            id="switchHitArea"
+            <a-entity
+                id="switchModel"
+                gltf-model="url(models/switch.glb)"
+                rotation="0 -40 0"
+                scale="0.15 0.15 0.15">
+            </a-entity>
 
-            position="-0.55 0.05 -0.4"
+            <a-box
+                id="switchHit"
+                width="0.38"
+                height="0.38"
+                depth="0.38"
+                material="transparent: true; opacity: 0.01; depthWrite: false">
+            </a-box>
 
-            width="0.55"
-
-            height="0.55"
-
-            depth="0.55"
-
-            material="
-                transparent: true;
-                opacity: 0.01;
-                depthWrite: false;
-            ">
-
-        </a-box>
-
-
-
-        <!-- ==========================================
-             MOTOR MODEL — back-right
-        =========================================== -->
-
-        <a-entity
-
-            id="motorModel"
-
-            gltf-model="url(models/motor.glb)"
-
-            position="0.55 0.05 -0.4"
-
-            rotation="0 -140 0"
-
-            scale="0.3 0.3 0.3">
+            <a-text
+                id="switchCarryLabel"
+                value="SWITCH"
+                position="0 0.26 0"
+                scale="0.16 0.16 0.16"
+                align="center"
+                color="#ffffff">
+            </a-text>
 
         </a-entity>
 
 
 
         <!-- ==========================================
-             TURBINE MODEL — front-right
+             DRIVE UNIT — motor + turbine glued
+             on a shared shaft. Dragged as one part.
         =========================================== -->
 
-        <a-entity
+        <a-entity id="drivePart" position="0.46 0.45 0.86">
 
-            id="turbineModel"
+            <a-entity
+                id="motorModel"
+                gltf-model="url(models/motor.glb)"
+                position="0 0.02 -0.12"
+                rotation="0 90 0"
+                scale="0.3 0.3 0.3">
+            </a-entity>
 
-            gltf-model="url(models/turbine.glb)"
+            <a-entity
+                id="turbineModel"
+                gltf-model="url(models/turbine.glb)"
+                position="0 0.02 0.14"
+                rotation="0 90 0"
+                scale="0.2 0.2 0.2">
+            </a-entity>
 
-            position="0.55 0.05 0.4"
+            <!-- mechanical coupling so they read as one machine -->
+            <a-cylinder
+                id="driveShaft"
+                position="0 0.06 0.01"
+                radius="0.028"
+                height="0.24"
+                rotation="90 0 0"
+                color="#cbd5e1"
+                material="shader: flat; color: #cbd5e1">
+            </a-cylinder>
 
-            rotation="0 140 0"
+            <a-cylinder
+                id="driveCoupling"
+                position="0 0.06 0.01"
+                radius="0.055"
+                height="0.055"
+                rotation="90 0 0"
+                color="#64748b"
+                material="shader: flat; color: #64748b">
+            </a-cylinder>
 
-            scale="0.2 0.2 0.2">
+            <a-box
+                id="driveHit"
+                width="0.48"
+                height="0.42"
+                depth="0.58"
+                material="transparent: true; opacity: 0.01; depthWrite: false">
+            </a-box>
+
+            <a-text
+                id="driveCarryLabel"
+                value="MOTOR + TURBINE"
+                position="0 0.32 0"
+                scale="0.15 0.15 0.15"
+                align="center"
+                color="#ffffff">
+            </a-text>
 
         </a-entity>
 
 
 
         <!-- ==========================================
-             WIRES — drawn lines (not models), routed
-             at WIRE_Y = 0.0, below the models, each
-             side bowed slightly outward so the loop
-             reads as a rounded circuit rather than a
-             stiff square.
+             WIRES — stay on the slots from the start
         =========================================== -->
 
-        <!-- battery -> switch (left side, bows further left) -->
-        <a-entity line="start: -0.55 0 0.4; end: -0.68 0 0; color: #ef4444" id="wireA1"></a-entity>
-        <a-entity line="start: -0.68 0 0; end: -0.55 0 -0.4; color: #ef4444" id="wireA2"></a-entity>
+        <!-- battery -> switch (left) -->
+        <a-entity line="start: -0.50 0 0.38; end: -0.68 0 0; color: #ef4444" id="wireA1"></a-entity>
+        <a-entity line="start: -0.68 0 0; end: -0.50 0 -0.38; color: #ef4444" id="wireA2"></a-entity>
 
-        <!-- switch -> motor (back side, bows further back) -->
-        <a-entity line="start: -0.55 0 -0.4; end: 0 0 -0.55; color: #ef4444" id="wireB1"></a-entity>
-        <a-entity line="start: 0 0 -0.55; end: 0.55 0 -0.4; color: #ef4444" id="wireB2"></a-entity>
+        <!-- switch -> motor end of drive (back) -->
+        <a-entity line="start: -0.50 0 -0.38; end: 0.05 0 -0.50; color: #ef4444" id="wireB1"></a-entity>
+        <a-entity line="start: 0.05 0 -0.50; end: 0.50 0 -0.12; color: #ef4444" id="wireB2"></a-entity>
 
-        <!-- motor -> turbine (right side, bows further right) -->
-        <a-entity line="start: 0.55 0 -0.4; end: 0.68 0 0; color: #ef4444" id="wireC1"></a-entity>
-        <a-entity line="start: 0.68 0 0; end: 0.55 0 0.4; color: #ef4444" id="wireC2"></a-entity>
+        <!-- turbine end of drive -> battery (front return) -->
+        <a-entity line="start: 0.50 0 0.14; end: 0.05 0 0.54; color: #7f1d1d" id="wireD1"></a-entity>
+        <a-entity line="start: 0.05 0 0.54; end: -0.50 0 0.38; color: #7f1d1d" id="wireD2"></a-entity>
 
-        <!-- turbine -> battery (front side, bows further front — return leg) -->
-        <a-entity line="start: 0.55 0 0.4; end: 0 0 0.55; color: #7f1d1d" id="wireD1"></a-entity>
-        <a-entity line="start: 0 0 0.55; end: -0.55 0 0.4; color: #7f1d1d" id="wireD2"></a-entity>
-
-        <!-- short vertical drops connecting each model down to the wire loop -->
-        <a-entity line="start: -0.55 0.05 0.4; end: -0.55 0 0.4; color: #ef4444"></a-entity>
-        <a-entity line="start: -0.55 0.05 -0.4; end: -0.55 0 -0.4; color: #ef4444"></a-entity>
-        <a-entity line="start: 0.55 0.08 -0.4; end: 0.55 0 -0.4; color: #ef4444"></a-entity>
-        <a-entity line="start: 0.55 0.05 0.4; end: 0.55 0 0.4; color: #ef4444"></a-entity>
+        <!-- vertical drops from each slot down to the wire loop -->
+        <a-entity line="start: -0.50 0.05 0.38; end: -0.50 0 0.38; color: #ef4444" id="dropBattery"></a-entity>
+        <a-entity line="start: -0.50 0.05 -0.38; end: -0.50 0 -0.38; color: #ef4444" id="dropSwitch"></a-entity>
+        <a-entity line="start: 0.50 0.08 -0.12; end: 0.50 0 -0.12; color: #ef4444" id="dropMotor"></a-entity>
+        <a-entity line="start: 0.50 0.08 0.14; end: 0.50 0 0.14; color: #ef4444" id="dropTurbine"></a-entity>
 
 
 
         <!-- ==========================================
-             LABELS
+             SLOT LABELS
         =========================================== -->
 
         <a-text
+            id="batterySlotLabel"
             value="BATTERY"
-            position="-0.55 0.30 0.4"
-            scale="0.20 0.20 0.20"
+            position="-0.50 0.30 0.38"
+            scale="0.18 0.18 0.18"
             align="center"
             color="#ffffff">
         </a-text>
 
         <a-text
             id="switchLabel"
-            value="TAP SWITCH"
-            position="-0.55 0.30 -0.4"
-            scale="0.20 0.20 0.20"
+            value="SWITCH"
+            position="-0.50 0.30 -0.38"
+            scale="0.18 0.18 0.18"
             align="center"
             color="#ffffff">
         </a-text>
 
         <a-text
             id="motorLabel"
-            value="MOTOR OFF"
-            position="0.55 0.38 -0.4"
-            scale="0.20 0.20 0.20"
-            align="center"
-            color="#ef4444">
-        </a-text>
-
-        <a-text
-            id="turbineLabel"
-            value="TURBINE OFF"
-            position="0.55 0.32 0.4"
-            scale="0.20 0.20 0.20"
+            value="MOTOR + TURBINE"
+            position="0.50 0.40 0"
+            scale="0.18 0.18 0.18"
             align="center"
             color="#ef4444">
         </a-text>
@@ -401,27 +535,92 @@ const info = document.getElementById("info");
 const systemStatus = document.getElementById("systemStatus");
 const resetBtn = document.getElementById("resetBtn");
 
+const batteryPart = document.getElementById("batteryPart");
+const switchPart = document.getElementById("switchPart");
+const drivePart = document.getElementById("drivePart");
+
 const batteryModel = document.getElementById("batteryModel");
 const switchModel = document.getElementById("switchModel");
-const switchHitArea = document.getElementById("switchHitArea");
 const motorModel = document.getElementById("motorModel");
 const turbineModel = document.getElementById("turbineModel");
 
+const batteryHit = document.getElementById("batteryHit");
+const switchHit = document.getElementById("switchHit");
+const driveHit = document.getElementById("driveHit");
+
+const partsTray = document.getElementById("partsTray");
+
 const switchLabel = document.getElementById("switchLabel");
 const motorLabel = document.getElementById("motorLabel");
-const turbineLabel = document.getElementById("turbineLabel");
 
-const wireIds = ["wireA1", "wireA2", "wireB1", "wireB2", "wireC1", "wireC2"];
-const returnWireIds = ["wireD1", "wireD2"];
+const batteryCarryLabel = document.getElementById("batteryCarryLabel");
+const switchCarryLabel = document.getElementById("switchCarryLabel");
+const driveCarryLabel = document.getElementById("driveCarryLabel");
+
+const batteryPad = document.getElementById("batteryPad");
+const switchPad = document.getElementById("switchPad");
+const drivePad = document.getElementById("drivePad");
+const batteryRing = document.getElementById("batteryRing");
+const switchRing = document.getElementById("switchRing");
+const driveRing = document.getElementById("driveRing");
+
+const wireIds = ["wireA1", "wireA2", "wireB1", "wireB2", "dropBattery", "dropSwitch", "dropMotor"];
+const returnWireIds = ["wireD1", "wireD2", "dropTurbine"];
 
 const ON_WIRE_COLOR = "#22c55e";
 const OFF_WIRE_COLOR = "#ef4444";
 const ON_RETURN_COLOR = "#166534";
 const OFF_RETURN_COLOR = "#7f1d1d";
 
-/* fixed rest positions, reused on reset */
-const MOTOR_REST_POS = { x: 0.55, y: 0.05, z: -0.4 };
-const TURBINE_REST_ROT = { x: 0, y: 140, z: 0 };
+const MODEL_Y = 0.05;
+const DRAG_Y = 0.16;
+const SNAP_DISTANCE = 0.28;
+const MOTOR_BASE_Y = 90;
+const TURBINE_BASE_Y = 90;
+const SWITCH_OFF_ROT = "0 -40 0";
+const SWITCH_ON_ROT = "0 -58 0";
+
+
+const PARTS = {
+    battery: {
+        id: "battery",
+        el: batteryPart,
+        hitEl: batteryHit,
+        modelEl: batteryModel,
+        carryLabel: batteryCarryLabel,
+        pad: batteryPad,
+        ring: batteryRing,
+        trayPos: { x: -0.46, y: MODEL_Y, z: 0.86 },
+        slotPos: { x: -0.50, y: MODEL_Y, z: 0.38 },
+        placed: false
+    },
+    switch: {
+        id: "switch",
+        el: switchPart,
+        hitEl: switchHit,
+        modelEl: switchModel,
+        carryLabel: switchCarryLabel,
+        pad: switchPad,
+        ring: switchRing,
+        trayPos: { x: 0, y: MODEL_Y, z: 0.86 },
+        slotPos: { x: -0.50, y: MODEL_Y, z: -0.38 },
+        placed: false
+    },
+    drive: {
+        id: "drive",
+        el: drivePart,
+        hitEl: driveHit,
+        modelEl: motorModel,
+        carryLabel: driveCarryLabel,
+        pad: drivePad,
+        ring: driveRing,
+        trayPos: { x: 0.46, y: MODEL_Y, z: 0.86 },
+        slotPos: { x: 0.50, y: MODEL_Y, z: 0 },
+        placed: false
+    }
+};
+
+const PART_LIST = [PARTS.battery, PARTS.switch, PARTS.drive];
 
 
 
@@ -437,9 +636,23 @@ let motorLoaded = false;
 let turbineLoaded = false;
 
 let systemRunning = false;
+let dropAnimating = false;
 
-let turbineSpin = 0;
-let motorSpin = 0;
+let driveSpin = 0;
+
+let dragging = null;
+let dragOffsetX = 0;
+let dragOffsetZ = 0;
+let pointerActive = false;
+let hoverSlotId = null;
+
+const touchRaycaster = new THREE.Raycaster();
+const touchPointer = new THREE.Vector2();
+const planeIntersection = new THREE.Vector3();
+const markerQuat = new THREE.Quaternion();
+const markerNormal = new THREE.Vector3();
+const markerPlanePoint = new THREE.Vector3();
+const markerPlane = new THREE.Plane();
 
 
 
@@ -519,6 +732,7 @@ function stopSystemSound() {
 
 batteryModel.addEventListener("model-loaded", function () {
     batteryLoaded = true;
+    maybeStartDrop();
     updateStatus();
 });
 
@@ -529,6 +743,7 @@ batteryModel.addEventListener("model-error", function () {
 
 switchModel.addEventListener("model-loaded", function () {
     switchLoaded = true;
+    maybeStartDrop();
     updateStatus();
 });
 
@@ -539,6 +754,7 @@ switchModel.addEventListener("model-error", function () {
 
 motorModel.addEventListener("model-loaded", function () {
     motorLoaded = true;
+    maybeStartDrop();
     updateStatus();
 });
 
@@ -549,6 +765,7 @@ motorModel.addEventListener("model-error", function () {
 
 turbineModel.addEventListener("model-loaded", function () {
     turbineLoaded = true;
+    maybeStartDrop();
     updateStatus();
 });
 
@@ -557,28 +774,141 @@ turbineModel.addEventListener("model-error", function () {
 });
 
 
+function modelsReady() {
+    return batteryLoaded && switchLoaded && motorLoaded && turbineLoaded;
+}
+
+
+function maybeStartDrop() {
+
+    if (!modelsReady()) {
+        return;
+    }
+
+    PART_LIST.forEach(function (part) {
+        if (!part.placed && dragging !== part) {
+            part.el.object3D.position.set(part.trayPos.x, 0.42, part.trayPos.z);
+        }
+    });
+
+    dropAnimating = true;
+
+}
+
+
 
 /* ==========================================
    STATUS TEXT
 ========================================== */
 
+function placedCount() {
+    return PART_LIST.filter(function (part) { return part.placed; }).length;
+}
+
+
+function allPlaced() {
+    return placedCount() === PART_LIST.length;
+}
+
+
 function updateStatus() {
+
+    const count = placedCount();
 
     if (!markerVisible) {
         info.textContent = "Point the camera at the Hiro marker.";
         return;
     }
 
-    if (!batteryLoaded || !switchLoaded || !motorLoaded || !turbineLoaded) {
+    if (!modelsReady()) {
         info.textContent = "Marker detected — loading system components...";
         return;
     }
 
     if (systemRunning) {
-        info.textContent = "System running — tap the 3D switch to stop.";
-    } else {
-        info.textContent = "System ready — tap directly on the 3D switch.";
+        info.textContent = "System running — motor spinning. Tap the switch to stop.";
+        return;
     }
+
+    if (allPlaced()) {
+        info.textContent = "System assembled — tap the 3D switch to start the motor.";
+        return;
+    }
+
+    if (count === 0) {
+        info.textContent = "Drag each part from the tray onto its glowing slot.";
+        return;
+    }
+
+    info.textContent = count + " / 3 parts placed — drop the rest onto the matching slots.";
+
+}
+
+
+function updateSystemBadge() {
+
+    const count = placedCount();
+
+    systemStatus.classList.remove("running", "assembled");
+
+    if (systemRunning) {
+        systemStatus.textContent = "SYSTEM RUNNING";
+        systemStatus.classList.add("running");
+        return;
+    }
+
+    if (allPlaced()) {
+        systemStatus.textContent = "ASSEMBLED · TAP SWITCH";
+        systemStatus.classList.add("assembled");
+        return;
+    }
+
+    systemStatus.textContent = "SYSTEM OFF · " + count + "/3 PLACED";
+
+}
+
+
+
+/* ==========================================
+   SLOT / TRAY VISIBILITY
+========================================== */
+
+function setSlotVisible(part, visible) {
+
+    part.pad.setAttribute("visible", visible);
+    part.ring.setAttribute("visible", visible);
+
+}
+
+
+function setTrayVisible(visible) {
+
+    partsTray.setAttribute("visible", visible);
+
+}
+
+
+function refreshAssemblyLook() {
+
+    PART_LIST.forEach(function (part) {
+        setSlotVisible(part, !part.placed);
+        part.carryLabel.setAttribute("visible", !part.placed);
+    });
+
+    setTrayVisible(!allPlaced());
+
+    if (allPlaced()) {
+        switchLabel.setAttribute("value", "TAP SWITCH");
+        motorLabel.setAttribute("value", "MOTOR OFF");
+        motorLabel.setAttribute("color", "#ef4444");
+    } else {
+        switchLabel.setAttribute("value", "SWITCH");
+        motorLabel.setAttribute("value", "MOTOR + TURBINE");
+        motorLabel.setAttribute("color", "#ef4444");
+    }
+
+    updateSystemBadge();
+    updateStatus();
 
 }
 
@@ -616,12 +946,74 @@ function setWiresOff() {
 
 
 /* ==========================================
+   PART PLACEMENT
+========================================== */
+
+function setPartPosition(part, x, y, z) {
+
+    part.el.object3D.position.set(x, y, z);
+    part.el.setAttribute("position", x + " " + y + " " + z);
+
+}
+
+
+function snapPart(part) {
+
+    part.placed = true;
+    setPartPosition(part, part.slotPos.x, part.slotPos.y, part.slotPos.z);
+    hoverSlotId = null;
+    refreshPadColors();
+    refreshAssemblyLook();
+
+}
+
+
+function returnToTray(part) {
+
+    part.placed = false;
+    setPartPosition(part, part.trayPos.x, part.trayPos.y, part.trayPos.z);
+    hoverSlotId = null;
+    refreshPadColors();
+    refreshAssemblyLook();
+
+}
+
+
+function distanceToSlot(part, x, z) {
+
+    const dx = x - part.slotPos.x;
+    const dz = z - part.slotPos.z;
+
+    return Math.sqrt(dx * dx + dz * dz);
+
+}
+
+
+function refreshPadColors() {
+
+    PART_LIST.forEach(function (part) {
+
+        const hovering = hoverSlotId === part.id && dragging === part;
+
+        const color = hovering ? "#22c55e" : "#38bdf8";
+        const ringColor = hovering ? "#86efac" : "#7dd3fc";
+
+        part.pad.setAttribute("color", color);
+        part.ring.setAttribute("color", ringColor);
+
+    });
+
+}
+
+
+
+/* ==========================================
    SYSTEM START / STOP
 ========================================== */
 
 function startSystem() {
 
-    if (systemRunning) {
+    if (systemRunning || !allPlaced()) {
         return;
     }
 
@@ -629,22 +1021,17 @@ function startSystem() {
 
     startSystemSound();
 
-    systemStatus.textContent = "SYSTEM RUNNING";
-    systemStatus.classList.add("running");
-
     motorLabel.setAttribute("value", "MOTOR RUNNING");
     motorLabel.setAttribute("color", "#22c55e");
 
-    turbineLabel.setAttribute("value", "TURBINE SPINNING");
-    turbineLabel.setAttribute("color", "#22c55e");
-
     switchLabel.setAttribute("value", "TAP TO STOP");
 
-    switchModel.setAttribute("rotation", "0 -58 0");
+    switchModel.setAttribute("rotation", SWITCH_ON_ROT);
 
     setWiresOn();
 
-    info.textContent = "✓ System running — motor and turbine spinning.";
+    updateSystemBadge();
+    updateStatus();
 
 }
 
@@ -656,36 +1043,34 @@ function stopSystem() {
     }
 
     systemRunning = false;
+    driveSpin = 0;
 
     stopSystemSound();
 
-    systemStatus.textContent = "SYSTEM OFF";
-    systemStatus.classList.remove("running");
-
-    motorLabel.setAttribute("value", "MOTOR OFF");
+    motorLabel.setAttribute("value", allPlaced() ? "MOTOR OFF" : "MOTOR + TURBINE");
     motorLabel.setAttribute("color", "#ef4444");
 
-    turbineLabel.setAttribute("value", "TURBINE OFF");
-    turbineLabel.setAttribute("color", "#ef4444");
+    switchLabel.setAttribute("value", allPlaced() ? "TAP SWITCH" : "SWITCH");
 
-    switchLabel.setAttribute("value", "TAP SWITCH");
+    switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
 
-    switchModel.setAttribute("rotation", "0 -40 0");
+    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(MOTOR_BASE_Y);
+    turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(TURBINE_BASE_Y);
 
     setWiresOff();
 
-    /* restore rest positions/rotations exactly */
-    motorModel.object3D.position.set(MOTOR_REST_POS.x, MOTOR_REST_POS.y, MOTOR_REST_POS.z);
-    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(-140);
-
-    turbineModel.object3D.rotation.set(0, THREE.MathUtils.degToRad(TURBINE_REST_ROT.y), 0);
-
-    info.textContent = "System stopped.";
+    updateSystemBadge();
+    updateStatus();
 
 }
 
 
 function toggleSystem() {
+
+    if (!allPlaced()) {
+        info.textContent = "Place every part on its slot before using the switch.";
+        return;
+    }
 
     if (systemRunning) {
         stopSystem();
@@ -698,29 +1083,15 @@ function toggleSystem() {
 
 
 /* ==========================================
-   MANUAL TOUCH RAYCASTER (switch only)
+   POINTER PICKING / DRAG ON MARKER PLANE
 ========================================== */
 
-const touchRaycaster = new THREE.Raycaster();
-const touchPointer = new THREE.Vector2();
-let lastTouchTime = 0;
-
-
-function handleSwitchTouch(clientX, clientY) {
-
-    if (!markerVisible) {
-        return;
-    }
-
-    if (!batteryLoaded || !switchLoaded || !motorLoaded || !turbineLoaded) {
-        info.textContent = "Wait until all components finish loading.";
-        return;
-    }
+function setRayFromClient(clientX, clientY) {
 
     const canvas = sceneEl.canvas;
 
     if (!canvas) {
-        return;
+        return false;
     }
 
     const rect = canvas.getBoundingClientRect();
@@ -730,9 +1101,285 @@ function handleSwitchTouch(clientX, clientY) {
 
     touchRaycaster.setFromCamera(touchPointer, sceneEl.camera);
 
-    switchHitArea.object3D.updateMatrixWorld(true);
+    return true;
 
-    const hits = touchRaycaster.intersectObject(switchHitArea.object3D, true);
+}
+
+
+function getMarkerPlanePoint(clientX, clientY) {
+
+    if (!setRayFromClient(clientX, clientY)) {
+        return null;
+    }
+
+    const markerObject = marker.object3D;
+
+    markerObject.updateMatrixWorld(true);
+    markerObject.getWorldQuaternion(markerQuat);
+
+    markerNormal.set(0, 1, 0).applyQuaternion(markerQuat);
+    markerPlanePoint.set(0, MODEL_Y, 0).applyMatrix4(markerObject.matrixWorld);
+    markerPlane.setFromNormalAndCoplanarPoint(markerNormal, markerPlanePoint);
+
+    const hit = touchRaycaster.ray.intersectPlane(markerPlane, planeIntersection);
+
+    if (!hit) {
+        return null;
+    }
+
+    return markerObject.worldToLocal(planeIntersection.clone());
+
+}
+
+
+function objectBelongsTo(object, root) {
+
+    let current = object;
+
+    while (current) {
+        if (current === root) {
+            return true;
+        }
+        current = current.parent;
+    }
+
+    return false;
+
+}
+
+
+function pickPart(clientX, clientY) {
+
+    if (!setRayFromClient(clientX, clientY)) {
+        return null;
+    }
+
+    const roots = [];
+
+    PART_LIST.forEach(function (part) {
+        part.el.object3D.updateMatrixWorld(true);
+        part.hitEl.object3D.updateMatrixWorld(true);
+        roots.push(part.el.object3D);
+        roots.push(part.hitEl.object3D);
+    });
+
+    const hits = touchRaycaster.intersectObjects(roots, true);
+
+    if (hits.length === 0) {
+        return null;
+    }
+
+    for (let i = 0; i < hits.length; i += 1) {
+
+        const hitObject = hits[i].object;
+
+        for (let p = 0; p < PART_LIST.length; p += 1) {
+
+            const part = PART_LIST[p];
+
+            if (objectBelongsTo(hitObject, part.el.object3D)) {
+                return part;
+            }
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+function beginDrag(part, clientX, clientY) {
+
+    const localPoint = getMarkerPlanePoint(clientX, clientY);
+
+    if (!localPoint) {
+        return;
+    }
+
+    if (part.placed) {
+        part.placed = false;
+        refreshAssemblyLook();
+    }
+
+    dragging = part;
+    dragOffsetX = part.el.object3D.position.x - localPoint.x;
+    dragOffsetZ = part.el.object3D.position.z - localPoint.z;
+
+    part.el.object3D.position.y = DRAG_Y;
+    part.carryLabel.setAttribute("visible", true);
+
+}
+
+
+function moveDrag(clientX, clientY) {
+
+    if (!dragging) {
+        return;
+    }
+
+    const localPoint = getMarkerPlanePoint(clientX, clientY);
+
+    if (!localPoint) {
+        return;
+    }
+
+    const x = THREE.MathUtils.clamp(localPoint.x + dragOffsetX, -1.15, 1.15);
+    const z = THREE.MathUtils.clamp(localPoint.z + dragOffsetZ, -0.95, 1.25);
+
+    dragging.el.object3D.position.set(x, DRAG_Y, z);
+
+    const nearSlot = distanceToSlot(dragging, x, z) < SNAP_DISTANCE;
+
+    hoverSlotId = nearSlot ? dragging.id : null;
+    refreshPadColors();
+
+}
+
+
+function endDrag() {
+
+    if (!dragging) {
+        return;
+    }
+
+    const part = dragging;
+    const pos = part.el.object3D.position;
+
+    dragging = null;
+    hoverSlotId = null;
+
+    if (distanceToSlot(part, pos.x, pos.z) < SNAP_DISTANCE) {
+        snapPart(part);
+    } else {
+        returnToTray(part);
+        if (markerVisible) {
+            info.textContent = "Drop it on the matching glowing slot.";
+        }
+    }
+
+    refreshPadColors();
+
+}
+
+
+
+/* ==========================================
+   POINTER EVENTS
+========================================== */
+
+function isResetTarget(target) {
+    return target === resetBtn || (target && resetBtn.contains(target));
+}
+
+
+function onPointerDown(event) {
+
+    if (isResetTarget(event.target)) {
+        return;
+    }
+
+    if (!markerVisible || !modelsReady()) {
+        return;
+    }
+
+    pointerActive = true;
+
+    const part = pickPart(event.clientX, event.clientY);
+
+    if (allPlaced() && !systemRunning) {
+
+        if (part && part.id !== "switch") {
+            beginDrag(part, event.clientX, event.clientY);
+            if (event.pointerType === "touch") {
+                event.preventDefault();
+            }
+            return;
+        }
+
+        return;
+    }
+
+    if (systemRunning) {
+        return;
+    }
+
+    if (part) {
+        beginDrag(part, event.clientX, event.clientY);
+        if (event.pointerType === "touch") {
+            event.preventDefault();
+        }
+    }
+
+}
+
+
+function onPointerMove(event) {
+
+    if (!pointerActive || !dragging) {
+        return;
+    }
+
+    moveDrag(event.clientX, event.clientY);
+
+    if (event.pointerType === "touch") {
+        event.preventDefault();
+    }
+
+}
+
+
+function onPointerUp(event) {
+
+    if (isResetTarget(event.target)) {
+        pointerActive = false;
+        return;
+    }
+
+    const wasDragging = Boolean(dragging);
+
+    if (dragging) {
+        endDrag();
+    }
+
+    const shouldTestSwitch = pointerActive && !wasDragging && markerVisible && modelsReady();
+
+    pointerActive = false;
+
+    if (!shouldTestSwitch) {
+        return;
+    }
+
+    handleSwitchTouch(event.clientX, event.clientY);
+
+}
+
+
+window.addEventListener("pointerdown", onPointerDown, { passive: false });
+window.addEventListener("pointermove", onPointerMove, { passive: false });
+window.addEventListener("pointerup", onPointerUp, { passive: false });
+window.addEventListener("pointercancel", onPointerUp, { passive: false });
+
+
+
+function handleSwitchTouch(clientX, clientY) {
+
+    if (!markerVisible || !modelsReady()) {
+        return;
+    }
+
+    if (!allPlaced()) {
+        return;
+    }
+
+    if (!setRayFromClient(clientX, clientY)) {
+        return;
+    }
+
+    switchHit.object3D.updateMatrixWorld(true);
+
+    const hits = touchRaycaster.intersectObject(switchHit.object3D, true);
 
     if (hits.length > 0) {
         toggleSystem();
@@ -743,87 +1390,62 @@ function handleSwitchTouch(clientX, clientY) {
 
 
 /* ==========================================
-   ANDROID TOUCH
-========================================== */
-
-document.addEventListener(
-
-    "touchend",
-
-    function (event) {
-
-        if (event.target === resetBtn) {
-            return;
-        }
-
-        if (event.changedTouches.length === 0) {
-            return;
-        }
-
-        lastTouchTime = Date.now();
-
-        const touch = event.changedTouches[0];
-
-        handleSwitchTouch(touch.clientX, touch.clientY);
-
-    },
-
-    { passive: true }
-
-);
-
-
-
-/* ==========================================
-   DESKTOP / CLICK FALLBACK
-========================================== */
-
-document.addEventListener(
-
-    "click",
-
-    function (event) {
-
-        if (event.target === resetBtn) {
-            return;
-        }
-
-        if (Date.now() - lastTouchTime < 700) {
-            return;
-        }
-
-        handleSwitchTouch(event.clientX, event.clientY);
-
-    }
-
-);
-
-
-
-/* ==========================================
    ANIMATION LOOP
-   - turbine spins continuously while running
-   - motor shaft rotates continuously while running
-     (a real spin, not just vibration, per request)
 ========================================== */
 
 function animate() {
 
     requestAnimationFrame(animate);
 
+    if (dropAnimating && !dragging) {
+
+        let settled = true;
+
+        PART_LIST.forEach(function (part) {
+
+            if (part.placed || part === dragging) {
+                return;
+            }
+
+            const pos = part.el.object3D.position;
+            pos.y += (part.trayPos.y - pos.y) * 0.14;
+
+            if (Math.abs(pos.y - part.trayPos.y) > 0.008) {
+                settled = false;
+            } else {
+                pos.y = part.trayPos.y;
+            }
+
+        });
+
+        if (settled) {
+            dropAnimating = false;
+        }
+
+    }
+
+    const pulse = 0.38 + Math.sin(Date.now() / 220) * 0.16;
+
+    PART_LIST.forEach(function (part) {
+
+        if (part.placed) {
+            return;
+        }
+
+        const opacity = hoverSlotId === part.id ? 0.72 : pulse;
+        part.pad.setAttribute("opacity", opacity);
+        part.pad.setAttribute("material", "opacity", opacity);
+
+    });
+
     if (!systemRunning) {
         return;
     }
 
-    /* Turbine rotation (spins around its own Y axis) */
-    turbineSpin += 6; // degrees per frame — adjust for speed
-    turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(turbineSpin);
+    driveSpin += 10;
 
-    /* Motor shaft rotation — spins around Y axis too.
-       Change to .x or .z if your motor.glb's shaft
-       points a different way. */
-    motorSpin += 10;
-    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(motorSpin - 140);
+    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(MOTOR_BASE_Y + driveSpin);
+    turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(TURBINE_BASE_Y + driveSpin);
 
 }
 
@@ -836,53 +1458,49 @@ animate();
    RESET
 ========================================== */
 
-resetBtn.addEventListener(
+function resetTraining() {
 
-    "click",
+    dragging = null;
+    hoverSlotId = null;
+    pointerActive = false;
+    driveSpin = 0;
 
-    function (event) {
-
-        event.stopPropagation();
-
-        if (systemRunning) {
-
-            stopSystem();
-
-        } else {
-
-            stopSystemSound();
-
-            motorModel.object3D.position.set(MOTOR_REST_POS.x, MOTOR_REST_POS.y, MOTOR_REST_POS.z);
-            motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(-140);
-
-            turbineModel.object3D.rotation.set(0, THREE.MathUtils.degToRad(TURBINE_REST_ROT.y), 0);
-
-            switchModel.setAttribute("rotation", "0 -40 0");
-
-            systemStatus.textContent = "SYSTEM OFF";
-            systemStatus.classList.remove("running");
-
-            motorLabel.setAttribute("value", "MOTOR OFF");
-            motorLabel.setAttribute("color", "#ef4444");
-
-            turbineLabel.setAttribute("value", "TURBINE OFF");
-            turbineLabel.setAttribute("color", "#ef4444");
-
-            switchLabel.setAttribute("value", "TAP SWITCH");
-
-            setWiresOff();
-
-        }
-
-        if (markerVisible) {
-            info.textContent = "Training reset — tap the 3D switch.";
-        } else {
-            info.textContent = "Training reset — point the camera at the Hiro marker.";
-        }
-
+    if (systemRunning) {
+        stopSystem();
+    } else {
+        stopSystemSound();
+        switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
+        motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(MOTOR_BASE_Y);
+        turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(TURBINE_BASE_Y);
+        setWiresOff();
     }
 
-);
+    PART_LIST.forEach(function (part) {
+        part.placed = false;
+        setPartPosition(part, part.trayPos.x, 0.42, part.trayPos.z);
+    });
+
+    dropAnimating = true;
+
+    refreshPadColors();
+    refreshAssemblyLook();
+
+    if (markerVisible) {
+        info.textContent = "Training reset — drag the parts onto their slots.";
+    } else {
+        info.textContent = "Training reset — point the camera at the Hiro marker.";
+    }
+
+}
+
+
+resetBtn.addEventListener("click", function (event) {
+
+    event.preventDefault();
+    event.stopPropagation();
+    resetTraining();
+
+});
 
 
 
@@ -892,6 +1510,7 @@ resetBtn.addEventListener(
 
 marker.addEventListener("markerFound", function () {
     markerVisible = true;
+    maybeStartDrop();
     updateStatus();
 });
 
@@ -900,6 +1519,9 @@ marker.addEventListener("markerLost", function () {
     markerVisible = false;
     info.textContent = "Marker lost — point the camera at the Hiro marker.";
 });
+
+
+refreshAssemblyLook();
 
 
 </script>
