@@ -36,7 +36,7 @@
 
             font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 
-            background: #061018;
+            background: transparent;
 
             touch-action: none;
 
@@ -49,6 +49,11 @@
             inset: 0;
             width: 100%;
             height: 100%;
+            background: transparent !important;
+        }
+
+        canvas.a-canvas {
+            background: transparent !important;
         }
 
 
@@ -349,7 +354,14 @@
 
         #arjs-video,
         video {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            z-index: -2 !important;
             pointer-events: none !important;
+            background: transparent !important;
         }
 
     </style>
@@ -401,7 +413,7 @@
     Point the camera at the target image, then drag each part onto its own pad.
     </p>
 
-    <img id="targetPreview" src="target.png" alt="Scan this target image">
+    <img id="targetPreview" src="target.png" alt="Scan this target image" hidden>
 
     <p id="trainWhy">
         This is a familiarisation module, not a workplace procedure. It trains names, order of assembly, and isolation.
@@ -429,19 +441,18 @@
 
     id="scene"
 
-    embedded
-
     vr-mode-ui="enabled: false"
 
     device-orientation-permission-ui="enabled: false"
 
-    renderer="
-        antialias: true;
-        colorManagement: true;
-    "
+    color-space="sRGB"
+
+    background="transparent: true"
+
+    renderer="antialias: true; colorManagement: true; alpha: true; physicallyCorrectLights: true"
 
     mindar-image="
-        imageTargetSrc: ./target.mind;
+        imageTargetSrc: ./targets.mind;
         autoStart: true;
         uiScanning: no;
         uiLoading: no;
@@ -453,58 +464,27 @@
         look-controls="enabled: false">
     </a-camera>
 
+    <a-entity light="type: ambient; color: #ffffff; intensity: 0.9"></a-entity>
+    <a-entity light="type: directional; color: #ffffff; intensity: 0.65" position="0 1 0.6"></a-entity>
+
 
     <a-entity
         id="hiroMarker"
         mindar-image-target="targetIndex: 0">
 
-
-        <!-- ==========================================
-             LAYOUT
-
-             Empty slots + wires are always visible.
-             Parts start on the front tray and are
-             dragged onto their matching slots.
-
-               switch slot (back-left)
-               battery slot (front-left)
-               motor+turbine (right) — one glued drive
-
-             MODEL_Y = 0.05, WIRE_Y = 0.00
-        =========================================== -->
+        <a-entity id="board" rotation="90 0 0">
 
 
-        <!-- ==========================================
-             SLOT PADS — drop targets
-        =========================================== -->
-
-        <a-cylinder
-            id="batteryPad"
-            class="slot-pad"
-            position="-0.36 0.006 0.28"
-            radius="0.13"
-            height="0.01"
-            color="#38bdf8"
-            opacity="0.35"
-            material="shader: flat; transparent: true; opacity: 0.35">
-        </a-cylinder>
-
-        <a-ring
-            id="batteryRing"
-            visible="false"
-            position="-0.36 0.014 0.28"
-            radius-inner="0.13"
-            radius-outer="0.16"
-            rotation="-90 0 0"
-            color="#7dd3fc">
-        </a-ring>
+        <!-- Map on the printed image, left to right:
+             SWITCH | BATTERY | MOTOR+TURBINE
+             Parts start on the near tray (higher Z). -->
 
 
         <a-cylinder
             id="switchPad"
             class="slot-pad"
-            position="-0.36 0.006 -0.28"
-            radius="0.13"
+            position="-0.38 0.006 0"
+            radius="0.12"
             height="0.01"
             color="#38bdf8"
             opacity="0.35"
@@ -514,9 +494,31 @@
         <a-ring
             id="switchRing"
             visible="false"
-            position="-0.36 0.014 -0.28"
-            radius-inner="0.13"
-            radius-outer="0.16"
+            position="-0.38 0.014 0"
+            radius-inner="0.12"
+            radius-outer="0.15"
+            rotation="-90 0 0"
+            color="#7dd3fc">
+        </a-ring>
+
+
+        <a-cylinder
+            id="batteryPad"
+            class="slot-pad"
+            position="0 0.006 0"
+            radius="0.12"
+            height="0.01"
+            color="#38bdf8"
+            opacity="0.35"
+            material="shader: flat; transparent: true; opacity: 0.35">
+        </a-cylinder>
+
+        <a-ring
+            id="batteryRing"
+            visible="false"
+            position="0 0.014 0"
+            radius-inner="0.12"
+            radius-outer="0.15"
             rotation="-90 0 0"
             color="#7dd3fc">
         </a-ring>
@@ -525,8 +527,8 @@
         <a-cylinder
             id="drivePad"
             class="slot-pad"
-            position="0.38 0.006 0"
-            radius="0.20"
+            position="0.40 0.006 0"
+            radius="0.16"
             height="0.01"
             color="#38bdf8"
             opacity="0.35"
@@ -536,30 +538,26 @@
         <a-ring
             id="driveRing"
             visible="false"
-            position="0.38 0.014 0"
-            radius-inner="0.20"
-            radius-outer="0.24"
+            position="0.40 0.014 0"
+            radius-inner="0.16"
+            radius-outer="0.19"
             rotation="-90 0 0"
             color="#7dd3fc">
         </a-ring>
 
 
 
-        <!-- ==========================================
-             PARTS TRAY — models start here
-        =========================================== -->
-
         <a-entity id="partsTray">
 
-            <a-cylinder position="-0.48 0.003 0.92" radius="0.14" height="0.008" color="#0f172a"></a-cylinder>
-            <a-cylinder position="0 0.003 0.92" radius="0.14" height="0.008" color="#0f172a"></a-cylinder>
-            <a-cylinder position="0.52 0.003 0.92" radius="0.18" height="0.008" color="#0f172a"></a-cylinder>
+            <a-cylinder position="-0.38 0.003 0.48" radius="0.12" height="0.008" color="#0f172a"></a-cylinder>
+            <a-cylinder position="0 0.003 0.48" radius="0.12" height="0.008" color="#0f172a"></a-cylinder>
+            <a-cylinder position="0.40 0.003 0.48" radius="0.16" height="0.008" color="#0f172a"></a-cylinder>
 
             <a-text
                 id="trayLabel"
                 value="PARTS"
-                position="0 0.12 1.08"
-                scale="0.16 0.16 0.16"
+                position="0 0.10 0.62"
+                scale="0.14 0.14 0.14"
                 align="center"
                 color="#7dd3fc">
             </a-text>
@@ -568,32 +566,28 @@
 
 
 
-        <!-- ==========================================
-             BATTERY — starts on the tray
-        =========================================== -->
-
-        <a-entity id="batteryPart" position="-0.48 0.45 0.92">
+        <a-entity id="batteryPart" position="0 0.45 0.48">
 
             <a-entity
                 id="batteryModel"
                 gltf-model="url(models/battery.glb)"
                 rotation="0 0 0"
-                scale="0.16 0.16 0.16">
+                scale="0.12 0.12 0.12">
             </a-entity>
 
             <a-box
                 id="batteryHit"
-                width="0.32"
-                height="0.32"
-                depth="0.32"
+                width="0.26"
+                height="0.26"
+                depth="0.26"
                 material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
             <a-text
                 id="batteryCarryLabel"
                 value="BATTERY"
-                position="0 0.26 0"
-                scale="0.16 0.16 0.16"
+                position="0 0.20 0"
+                scale="0.13 0.13 0.13"
                 align="center"
                 color="#ffffff">
             </a-text>
@@ -602,32 +596,28 @@
 
 
 
-        <!-- ==========================================
-             SWITCH — starts on the tray
-        =========================================== -->
-
-        <a-entity id="switchPart" position="0 0.45 0.92">
+        <a-entity id="switchPart" position="-0.38 0.45 0.48">
 
             <a-entity
                 id="switchModel"
                 gltf-model="url(models/switch.glb)"
                 rotation="0 0 0"
-                scale="0.16 0.16 0.16">
+                scale="0.12 0.12 0.12">
             </a-entity>
 
             <a-box
                 id="switchHit"
-                width="0.32"
-                height="0.32"
-                depth="0.32"
+                width="0.26"
+                height="0.26"
+                depth="0.26"
                 material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
             <a-text
                 id="switchCarryLabel"
                 value="SWITCH"
-                position="0 0.26 0"
-                scale="0.16 0.16 0.16"
+                position="0 0.20 0"
+                scale="0.13 0.13 0.13"
                 align="center"
                 color="#ffffff">
             </a-text>
@@ -636,36 +626,31 @@
 
 
 
-        <!-- ==========================================
-             DRIVE UNIT — motor + turbine glued
-             on a shared shaft. Dragged as one part.
-        =========================================== -->
-
-        <a-entity id="drivePart" position="0.52 0.45 0.92">
+        <a-entity id="drivePart" position="0.40 0.45 0.48">
 
             <a-entity
                 id="motorModel"
                 gltf-model="url(models/motor.glb)"
-                position="-0.10 0.06 0"
+                position="-0.08 0.05 0"
                 rotation="0 90 0"
-                scale="0.42 0.42 0.42">
+                scale="0.32 0.32 0.32">
             </a-entity>
 
-            <a-entity id="turbineSpinner" position="0.12 0.06 0">
+            <a-entity id="turbineSpinner" position="0.10 0.05 0">
                 <a-entity
                     id="turbineModel"
                     gltf-model="url(models/turbine.glb)"
                     position="0 0 0"
                     rotation="0 90 0"
-                    scale="0.36 0.36 0.36">
+                    scale="0.28 0.28 0.28">
                 </a-entity>
             </a-entity>
 
             <a-cylinder
                 id="driveShaft"
-                position="0.01 0.06 0"
-                radius="0.02"
-                height="0.18"
+                position="0.01 0.05 0"
+                radius="0.016"
+                height="0.14"
                 rotation="0 0 90"
                 color="#cbd5e1"
                 material="shader: flat; color: #cbd5e1">
@@ -673,9 +658,9 @@
 
             <a-cylinder
                 id="driveCoupling"
-                position="0.01 0.06 0"
-                radius="0.04"
-                height="0.045"
+                position="0.01 0.05 0"
+                radius="0.03"
+                height="0.036"
                 rotation="0 0 90"
                 color="#64748b"
                 material="shader: flat; color: #64748b">
@@ -683,17 +668,17 @@
 
             <a-box
                 id="driveHit"
-                width="0.42"
-                height="0.32"
-                depth="0.32"
+                width="0.36"
+                height="0.26"
+                depth="0.26"
                 material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
             <a-text
                 id="driveCarryLabel"
                 value="MOTOR + TURBINE"
-                position="0 0.32 0"
-                scale="0.15 0.15 0.15"
+                position="0 0.24 0"
+                scale="0.12 0.12 0.12"
                 align="center"
                 color="#ffffff">
             </a-text>
@@ -702,45 +687,36 @@
 
 
 
-        <!-- ==========================================
-             WIRES — stay on the slots from the start
-        =========================================== -->
+        <a-entity line="start: -0.38 0 0; end: 0 0 0; color: #ef4444" id="wireA1"></a-entity>
+        <a-entity line="start: 0 0 0; end: 0 0 0; color: #ef4444" id="wireA2"></a-entity>
 
-        <!-- battery -> switch (left) -->
-        <a-entity line="start: -0.36 0 0.28; end: -0.50 0 0; color: #ef4444" id="wireA1"></a-entity>
-        <a-entity line="start: -0.50 0 0; end: -0.36 0 -0.28; color: #ef4444" id="wireA2"></a-entity>
+        <a-entity line="start: 0 0 0; end: 0.40 0 0; color: #ef4444" id="wireB1"></a-entity>
+        <a-entity line="start: 0.40 0 0; end: 0.40 0 0; color: #ef4444" id="wireB2"></a-entity>
 
-        <a-entity line="start: -0.36 0 -0.28; end: 0.02 0 -0.40; color: #ef4444" id="wireB1"></a-entity>
-        <a-entity line="start: 0.02 0 -0.40; end: 0.38 0 0; color: #ef4444" id="wireB2"></a-entity>
+        <a-entity line="start: 0.40 0 0; end: 0.20 0 0.18; color: #7f1d1d" id="wireD1"></a-entity>
+        <a-entity line="start: 0.20 0 0.18; end: -0.38 0 0; color: #7f1d1d" id="wireD2"></a-entity>
 
-        <a-entity line="start: 0.38 0 0; end: 0.02 0 0.40; color: #7f1d1d" id="wireD1"></a-entity>
-        <a-entity line="start: 0.02 0 0.40; end: -0.36 0 0.28; color: #7f1d1d" id="wireD2"></a-entity>
-
-        <a-entity line="start: -0.36 0.05 0.28; end: -0.36 0 0.28; color: #ef4444" id="dropBattery"></a-entity>
-        <a-entity line="start: -0.36 0.05 -0.28; end: -0.36 0 -0.28; color: #ef4444" id="dropSwitch"></a-entity>
-        <a-entity line="start: 0.38 0.06 0; end: 0.38 0 0; color: #ef4444" id="dropMotor"></a-entity>
-        <a-entity line="start: 0.38 0.06 0; end: 0.38 0 0; color: #ef4444" id="dropTurbine"></a-entity>
+        <a-entity line="start: 0 0.05 0; end: 0 0 0; color: #ef4444" id="dropBattery"></a-entity>
+        <a-entity line="start: -0.38 0.05 0; end: -0.38 0 0; color: #ef4444" id="dropSwitch"></a-entity>
+        <a-entity line="start: 0.40 0.05 0; end: 0.40 0 0; color: #ef4444" id="dropMotor"></a-entity>
+        <a-entity line="start: 0.40 0.05 0; end: 0.40 0 0; color: #ef4444" id="dropTurbine"></a-entity>
 
 
-
-        <!-- ==========================================
-             SLOT LABELS
-        =========================================== -->
 
         <a-text
-            id="batterySlotLabel"
-            value="BATTERY"
-            position="-0.36 0.26 0.28"
-            scale="0.18 0.18 0.18"
+            id="switchLabel"
+            value="SWITCH"
+            position="-0.38 0.20 0"
+            scale="0.13 0.13 0.13"
             align="center"
             color="#ffffff">
         </a-text>
 
         <a-text
-            id="switchLabel"
-            value="SWITCH"
-            position="-0.36 0.24 -0.28"
-            scale="0.15 0.15 0.15"
+            id="batterySlotLabel"
+            value="BATTERY"
+            position="0 0.20 0"
+            scale="0.13 0.13 0.13"
             align="center"
             color="#ffffff">
         </a-text>
@@ -748,11 +724,14 @@
         <a-text
             id="motorLabel"
             value="MOTOR + TURBINE"
-            position="0.38 0.28 0"
-            scale="0.15 0.15 0.15"
+            position="0.40 0.22 0"
+            scale="0.12 0.12 0.12"
             align="center"
             color="#ef4444">
         </a-text>
+
+
+        </a-entity>
 
 
     </a-entity>
@@ -771,6 +750,7 @@
 
 const sceneEl = document.getElementById("scene");
 const marker = document.getElementById("hiroMarker");
+const board = document.getElementById("board");
 const info = document.getElementById("info");
 const systemStatus = document.getElementById("systemStatus");
 const resetBtn = document.getElementById("resetBtn");
@@ -829,8 +809,8 @@ const ON_RETURN_COLOR = "#166534";
 const OFF_RETURN_COLOR = "#7f1d1d";
 
 const MODEL_Y = 0.05;
-const DRAG_Y = 0.22;
-const SNAP_DISTANCE = 0.38;
+const DRAG_Y = 0.20;
+const SNAP_DISTANCE = 0.18;
 const SWITCH_OFF_ROT = "0 0 0";
 const SWITCH_ON_ROT = "0 -28 0";
 
@@ -844,8 +824,8 @@ const PARTS = {
         carryLabel: batteryCarryLabel,
         pad: batteryPad,
         ring: batteryRing,
-        trayPos: { x: -0.48, y: MODEL_Y, z: 0.92 },
-        slotPos: { x: -0.36, y: MODEL_Y, z: 0.28 },
+        trayPos: { x: 0, y: MODEL_Y, z: 0.48 },
+        slotPos: { x: 0, y: MODEL_Y, z: 0 },
         placed: false
     },
     switch: {
@@ -856,8 +836,8 @@ const PARTS = {
         carryLabel: switchCarryLabel,
         pad: switchPad,
         ring: switchRing,
-        trayPos: { x: 0, y: MODEL_Y, z: 0.92 },
-        slotPos: { x: -0.36, y: MODEL_Y, z: -0.28 },
+        trayPos: { x: -0.38, y: MODEL_Y, z: 0.48 },
+        slotPos: { x: -0.38, y: MODEL_Y, z: 0 },
         placed: false
     },
     drive: {
@@ -868,8 +848,8 @@ const PARTS = {
         carryLabel: driveCarryLabel,
         pad: drivePad,
         ring: driveRing,
-        trayPos: { x: 0.52, y: MODEL_Y, z: 0.92 },
-        slotPos: { x: 0.38, y: MODEL_Y, z: 0 },
+        trayPos: { x: 0.40, y: MODEL_Y, z: 0.48 },
+        slotPos: { x: 0.40, y: MODEL_Y, z: 0 },
         placed: false
     }
 };
@@ -1382,7 +1362,7 @@ function renderCoach() {
     trainScore.textContent = "Mistakes " + mistakes;
 
     if (targetPreview) {
-        targetPreview.classList.toggle("visible", phase === "scan");
+        targetPreview.classList.remove("visible");
     }
 
     if (phase === "scan") {
@@ -1879,9 +1859,10 @@ function worldToScreen(worldVec) {
 
 function markerLocalToScreen(x, y, z) {
 
-    marker.object3D.updateMatrixWorld(true);
+    const space = board && board.object3D ? board.object3D : marker.object3D;
+    space.updateMatrixWorld(true);
     worldScratch.set(x, y, z);
-    marker.object3D.localToWorld(worldScratch);
+    space.localToWorld(worldScratch);
 
     return worldToScreen(worldScratch);
 
@@ -1976,8 +1957,8 @@ function moveDrag(clientX, clientY) {
         clientY - dragStartScreenY
     );
 
-    const x = THREE.MathUtils.clamp(dragStartPosX + delta.x, -1.2, 1.2);
-    const z = THREE.MathUtils.clamp(dragStartPosZ + delta.z, -1.0, 1.1);
+    const x = THREE.MathUtils.clamp(dragStartPosX + delta.x, -0.7, 0.7);
+    const z = THREE.MathUtils.clamp(dragStartPosZ + delta.z, -0.25, 0.7);
 
     dragging.el.object3D.position.set(x, DRAG_Y, z);
 
@@ -2284,7 +2265,7 @@ marker.addEventListener("targetLost", function () {
 });
 
 sceneEl.addEventListener("arError", function () {
-    trainBody.textContent = "Could not load target.mind. Put your compiled MindAR file in the project folder and refresh.";
+    trainBody.textContent = "Could not load targets.mind. Put your compiled MindAR file in the project folder and refresh.";
 });
 
 
