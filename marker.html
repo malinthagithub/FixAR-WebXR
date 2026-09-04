@@ -3,149 +3,130 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width,
+          initial-scale=1.0,
+          user-scalable=no">
 
-<title>FixAR | Motor Operation Training</title>
+    <title>FixAR | Motor Operation Training</title>
 
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-<!-- A-Frame -->
-<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
-<!-- AR.js -->
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+    <style>
 
+        * {
+            box-sizing: border-box;
+        }
 
-<style>
+        html,
+        body {
 
-*{
-    box-sizing:border-box;
-}
+            margin: 0;
 
+            width: 100%;
+            height: 100%;
 
-html,
-body{
+            overflow: hidden;
 
-    margin:0;
+            font-family: Arial, Helvetica, sans-serif;
 
-    width:100%;
-    height:100%;
-
-    overflow:hidden;
-
-    font-family:Arial,sans-serif;
-
-    background:#07111f;
-}
+            background: #07111f;
+        }
 
 
-/* =========================
-   TOP MESSAGE
-========================= */
+        #info {
 
-#info{
+            position: fixed;
 
-    position:fixed;
+            top: 12px;
+            left: 50%;
 
-    top:12px;
-    left:50%;
+            transform: translateX(-50%);
 
-    transform:translateX(-50%);
+            width: calc(100% - 20px);
+            max-width: 470px;
 
-    width:calc(100% - 20px);
+            padding: 11px 13px;
 
-    max-width:470px;
+            background: rgba(0, 0, 0, 0.84);
 
-    padding:11px 13px;
+            border: 1px solid #38bdf8;
+            border-radius: 10px;
 
-    background:rgba(0,0,0,0.84);
+            color: white;
 
-    border:1px solid #38bdf8;
+            text-align: center;
 
-    border-radius:10px;
+            font-size: 13px;
 
-    color:white;
+            line-height: 1.35;
 
-    text-align:center;
+            z-index: 1000;
 
-    font-size:13px;
-
-    z-index:1000;
-
-    pointer-events:none;
-}
+            pointer-events: none;
+        }
 
 
-/* =========================
-   MOTOR STATUS
-========================= */
+        #motorStatus {
 
-#motorStatus{
+            position: fixed;
 
-    position:fixed;
+            left: 15px;
+            bottom: 18px;
 
-    left:15px;
-    bottom:18px;
+            padding: 10px 14px;
 
-    padding:10px 14px;
+            background: rgba(7, 17, 31, 0.95);
 
-    background:rgba(7,17,31,0.95);
+            border: 1px solid #ef4444;
+            border-radius: 9px;
 
-    border:1px solid #ef4444;
+            color: #fecaca;
 
-    border-radius:9px;
+            font-size: 11px;
+            font-weight: bold;
 
-    color:#fecaca;
-
-    font-size:11px;
-
-    font-weight:bold;
-
-    z-index:1000;
-}
+            z-index: 1000;
+        }
 
 
-#motorStatus.running{
+        #motorStatus.running {
 
-    border-color:#22c55e;
+            border-color: #22c55e;
 
-    color:#86efac;
-}
+            color: #86efac;
+        }
 
 
-/* =========================
-   RESET BUTTON
-========================= */
+        #resetBtn {
 
-#resetBtn{
+            position: fixed;
 
-    position:fixed;
+            right: 15px;
+            bottom: 18px;
 
-    right:15px;
-    bottom:18px;
+            padding: 10px 14px;
 
-    padding:10px 14px;
+            border: 1px solid #38bdf8;
+            border-radius: 9px;
 
-    border:1px solid #38bdf8;
+            background: rgba(7, 17, 31, 0.95);
 
-    border-radius:9px;
+            color: white;
 
-    background:rgba(7,17,31,0.95);
+            font-size: 11px;
+            font-weight: bold;
 
-    color:white;
+            z-index: 1000;
+        }
 
-    font-size:11px;
-
-    font-weight:bold;
-
-    z-index:1000;
-}
-
-</style>
+    </style>
 
 </head>
 
@@ -155,21 +136,21 @@ body{
 
 <div id="info">
 
-Point the camera at the Hiro marker.
+    Point the camera at the Hiro marker.
 
 </div>
 
 
 <div id="motorStatus">
 
-MOTOR OFF
+    MOTOR OFF
 
 </div>
 
 
 <button id="resetBtn">
 
-Reset
+    Reset
 
 </button>
 
@@ -177,160 +158,142 @@ Reset
 
 <a-scene
 
-embedded
+    id="scene"
 
-renderer="
-antialias:true;
-colorManagement:true;
-"
+    embedded
 
-arjs="
-sourceType:webcam;
-debugUIEnabled:false;
-">
+    renderer="
+        antialias: true;
+        colorManagement: true;
+    "
 
+    arjs="
+        sourceType: webcam;
+        debugUIEnabled: false;
+    ">
 
 
-<a-marker
-id="hiroMarker"
-preset="hiro">
+    <a-marker
+        id="hiroMarker"
+        preset="hiro">
 
 
+        <!-- ==========================================
+             MOTOR MODEL
+        =========================================== -->
 
-<!-- =========================
-     MOTOR MODEL
-========================= -->
+        <a-entity
 
-<a-entity
+            id="motorModel"
 
-id="motorModel"
+            gltf-model="url(models/machine.glb)"
 
-gltf-model="url(models/machine.glb)"
+            position="0.15 0 0"
 
-position="0.15 0 0"
+            rotation="0 0 0"
 
-rotation="0 0 0"
+            scale="0.5 0.5 0.5">
 
-scale="0.5 0.5 0.5">
+        </a-entity>
 
-</a-entity>
 
 
+        <!-- ==========================================
+             SWITCH MODEL
+        =========================================== -->
 
-<!-- =========================
-     SWITCH MODEL
-========================= -->
+        <a-entity
 
-<a-entity
+            id="switchModel"
 
-id="switchModel"
+            gltf-model="url(models/switch.glb)"
 
-gltf-model="url(models/switch.glb)"
+            position="-0.55 0.10 0.18"
 
-position="-0.55 0.10 0.18"
+            rotation="0 0 0"
 
-rotation="0 0 0"
+            scale="0.15 0.15 0.15">
 
-scale="0.15 0.15 0.15">
+        </a-entity>
 
-</a-entity>
 
 
+        <!-- ==========================================
+             LARGE INVISIBLE TOUCH AREA
+        =========================================== -->
 
-<!-- =========================
-     INVISIBLE SWITCH TOUCH AREA
-========================= -->
+        <a-box
 
-<a-box
+            id="switchHitArea"
 
-id="switchHitArea"
+            position="-0.55 0.10 0.18"
 
-class="clickable"
+            width="0.80"
 
-position="-0.55 0.10 0.18"
+            height="0.70"
 
-width="0.60"
+            depth="0.70"
 
-height="0.55"
+            material="
+                transparent: true;
+                opacity: 0.01;
+                depthWrite: false;
+            ">
 
-depth="0.55"
+        </a-box>
 
-material="
-transparent:true;
-opacity:0.01;
-depthWrite:false;
-">
 
-</a-box>
 
+        <!-- ==========================================
+             SWITCH LABEL
+        =========================================== -->
 
+        <a-text
 
-<!-- =========================
-     SWITCH LABEL
-========================= -->
+            id="switchLabel"
 
-<a-text
+            value="TAP SWITCH"
 
-id="switchLabel"
+            position="-0.55 0.42 0.25"
 
-value="TAP SWITCH"
+            scale="0.30 0.30 0.30"
 
-position="-0.55 0.38 0.22"
+            align="center"
 
-scale="0.30 0.30 0.30"
+            color="#ffffff">
 
-align="center"
+        </a-text>
 
-color="#ffffff">
 
-</a-text>
 
+        <!-- ==========================================
+             MOTOR STATUS LABEL
+        =========================================== -->
 
+        <a-text
 
-<!-- =========================
-     MOTOR STATUS LABEL
-========================= -->
+            id="motorLabel"
 
-<a-text
+            value="MOTOR OFF"
 
-id="motorLabel"
+            position="0.15 0.45 0.25"
 
-value="MOTOR OFF"
+            scale="0.32 0.32 0.32"
 
-position="0.15 0.42 0.22"
+            align="center"
 
-scale="0.32 0.32 0.32"
+            color="#ef4444">
 
-align="center"
+        </a-text>
 
-color="#ef4444">
 
-</a-text>
+    </a-marker>
 
 
 
-</a-marker>
+    <!-- CAMERA -->
 
-
-
-<!-- =========================
-     CAMERA + CLICK SUPPORT
-========================= -->
-
-<a-entity
-
-camera
-
-cursor="
-rayOrigin:mouse;
-fuse:false;
-"
-
-raycaster="
-objects:.clickable;
-">
-
-</a-entity>
+    <a-entity camera></a-entity>
 
 
 </a-scene>
@@ -340,133 +303,139 @@ objects:.clickable;
 <script>
 
 
-/* =========================
+/* ==========================================
    ELEMENTS
-========================= */
+========================================== */
 
-const info =
-document.getElementById(
-"info"
-);
-
-
-const motorStatus =
-document.getElementById(
-"motorStatus"
-);
-
-
-const resetBtn =
-document.getElementById(
-"resetBtn"
-);
+const sceneEl =
+    document.getElementById(
+        "scene"
+    );
 
 
 const marker =
-document.getElementById(
-"hiroMarker"
-);
+    document.getElementById(
+        "hiroMarker"
+    );
+
+
+const info =
+    document.getElementById(
+        "info"
+    );
+
+
+const motorStatus =
+    document.getElementById(
+        "motorStatus"
+    );
+
+
+const resetBtn =
+    document.getElementById(
+        "resetBtn"
+    );
 
 
 const motorModel =
-document.getElementById(
-"motorModel"
-);
+    document.getElementById(
+        "motorModel"
+    );
 
 
 const switchModel =
-document.getElementById(
-"switchModel"
-);
+    document.getElementById(
+        "switchModel"
+    );
 
 
 const switchHitArea =
-document.getElementById(
-"switchHitArea"
-);
+    document.getElementById(
+        "switchHitArea"
+    );
 
 
 const switchLabel =
-document.getElementById(
-"switchLabel"
-);
+    document.getElementById(
+        "switchLabel"
+    );
 
 
 const motorLabel =
-document.getElementById(
-"motorLabel"
-);
+    document.getElementById(
+        "motorLabel"
+    );
 
 
 
-/* =========================
+/* ==========================================
    STATE
-========================= */
+========================================== */
 
 let markerVisible =
-false;
+    false;
 
 
 let motorLoaded =
-false;
+    false;
 
 
 let switchLoaded =
-false;
+    false;
 
 
 let motorRunning =
-false;
+    false;
 
 
 let animationTime =
-0;
+    0;
 
 
 
-/* =========================
-   AUDIO
-========================= */
+/* ==========================================
+   MOTOR SOUND
+========================================== */
 
 let audioContext =
-null;
+    null;
 
 
 let oscillator1 =
-null;
+    null;
 
 
 let oscillator2 =
-null;
+    null;
 
 
 let masterGain =
-null;
+    null;
 
 
 
-function startMotorSound(){
+function startMotorSound() {
 
 
-    if(
+    if (
         !audioContext
-    ){
+    ) {
 
 
         audioContext =
-        new (
-            window.AudioContext
-            ||
-            window.webkitAudioContext
-        )();
+            new (
+                window.AudioContext
+                ||
+                window.webkitAudioContext
+            )();
 
     }
 
 
-    if(
+    if (
         audioContext.state ===
         "suspended"
-    ){
+    ) {
 
 
         audioContext.resume();
@@ -474,9 +443,10 @@ function startMotorSound(){
     }
 
 
-    if(
+    if (
         oscillator1
-    ){
+    ) {
+
 
         return;
 
@@ -492,7 +462,7 @@ function startMotorSound(){
 
 
 
-    /* Main low motor hum */
+    /* Main motor hum */
 
     oscillator1 =
         audioContext.createOscillator();
@@ -503,11 +473,11 @@ function startMotorSound(){
 
 
     oscillator1.frequency.value =
-        90;
+        95;
 
 
 
-    /* Secondary motor tone */
+    /* Second tone */
 
     oscillator2 =
         audioContext.createOscillator();
@@ -518,7 +488,7 @@ function startMotorSound(){
 
 
     oscillator2.frequency.value =
-        180;
+        190;
 
 
 
@@ -527,8 +497,7 @@ function startMotorSound(){
 
 
     secondGain.gain.value =
-        0.20;
-
+        0.18;
 
 
     oscillator1.connect(
@@ -560,24 +529,23 @@ function startMotorSound(){
 
 
 
-/* =========================
-   STOP SOUND
-========================= */
+/* ==========================================
+   STOP MOTOR SOUND
+========================================== */
 
-function stopMotorSound(){
+function stopMotorSound() {
 
 
-    if(
+    if (
         oscillator1
-    ){
+    ) {
 
 
-        try{
+        try {
 
             oscillator1.stop();
 
-        }
-        catch(error){}
+        } catch (error) {}
 
 
         oscillator1 =
@@ -586,17 +554,16 @@ function stopMotorSound(){
     }
 
 
-    if(
+    if (
         oscillator2
-    ){
+    ) {
 
 
-        try{
+        try {
 
             oscillator2.stop();
 
-        }
-        catch(error){}
+        } catch (error) {}
 
 
         oscillator2 =
@@ -605,17 +572,16 @@ function stopMotorSound(){
     }
 
 
-    if(
+    if (
         masterGain
-    ){
+    ) {
 
 
-        try{
+        try {
 
             masterGain.disconnect();
 
-        }
-        catch(error){}
+        } catch (error) {}
 
 
         masterGain =
@@ -627,63 +593,44 @@ function stopMotorSound(){
 
 
 
-/* =========================
-   MOTOR MODEL LOAD
-========================= */
+/* ==========================================
+   MODEL LOAD
+========================================== */
 
 motorModel.addEventListener(
 
-"model-loaded",
+    "model-loaded",
 
-function(){
-
-
-    motorLoaded =
-        true;
+    function () {
 
 
-    updateStatus();
+        motorLoaded =
+            true;
 
-}
+
+        console.log(
+            "Motor loaded"
+        );
+
+
+        updateStatus();
+
+    }
 
 );
 
 
-
 motorModel.addEventListener(
 
-"model-error",
+    "model-error",
 
-function(){
-
-
-    info.textContent =
-        "Motor model failed to load.";
-
-}
-
-);
+    function () {
 
 
+        info.textContent =
+            "Motor model failed to load.";
 
-/* =========================
-   SWITCH LOAD
-========================= */
-
-switchModel.addEventListener(
-
-"model-loaded",
-
-function(){
-
-
-    switchLoaded =
-        true;
-
-
-    updateStatus();
-
-}
+    }
 
 );
 
@@ -691,30 +638,53 @@ function(){
 
 switchModel.addEventListener(
 
-"model-error",
+    "model-loaded",
 
-function(){
+    function () {
 
 
-    info.textContent =
-        "Switch model failed to load.";
+        switchLoaded =
+            true;
 
-}
+
+        console.log(
+            "Switch loaded"
+        );
+
+
+        updateStatus();
+
+    }
+
+);
+
+
+switchModel.addEventListener(
+
+    "model-error",
+
+    function () {
+
+
+        info.textContent =
+            "Switch model failed to load.";
+
+    }
 
 );
 
 
 
-/* =========================
+/* ==========================================
    STATUS
-========================= */
+========================================== */
 
-function updateStatus(){
+function updateStatus() {
 
 
-    if(
+    if (
         !markerVisible
-    ){
+    ) {
 
 
         info.textContent =
@@ -726,13 +696,13 @@ function updateStatus(){
     }
 
 
-    if(
+    if (
         !motorLoaded
-    ){
+    ) {
 
 
         info.textContent =
-            "Loading motor...";
+            "Marker detected — loading motor...";
 
 
         return;
@@ -740,13 +710,13 @@ function updateStatus(){
     }
 
 
-    if(
+    if (
         !switchLoaded
-    ){
+    ) {
 
 
         info.textContent =
-            "Loading switch...";
+            "Motor loaded — loading switch...";
 
 
         return;
@@ -754,21 +724,20 @@ function updateStatus(){
     }
 
 
-    if(
+    if (
         motorRunning
-    ){
+    ) {
 
 
         info.textContent =
-            "Motor running — tap the switch to stop.";
+            "Motor running — tap the 3D switch to stop.";
 
 
-    }
-    else{
+    } else {
 
 
         info.textContent =
-            "Motor ready — tap the 3D switch to start.";
+            "Motor ready — tap directly on the 3D switch.";
 
     }
 
@@ -776,11 +745,21 @@ function updateStatus(){
 
 
 
-/* =========================
-   START MOTOR
-========================= */
+/* ==========================================
+   MOTOR START
+========================================== */
 
-function startMotor(){
+function startMotor() {
+
+
+    if (
+        motorRunning
+    ) {
+
+
+        return;
+
+    }
 
 
     motorRunning =
@@ -788,13 +767,11 @@ function startMotor(){
 
 
 
-    /* SOUND */
+    /* Start sound */
 
     startMotorSound();
 
 
-
-    /* UI */
 
     motorStatus.textContent =
         "MOTOR RUNNING";
@@ -823,10 +800,9 @@ function startMotor(){
     );
 
 
-
     /*
-      Switch visually moves
-      to ON position.
+       Switch visually moves
+       to ON state.
     */
 
     switchModel.setAttribute(
@@ -842,11 +818,21 @@ function startMotor(){
 
 
 
-/* =========================
-   STOP MOTOR
-========================= */
+/* ==========================================
+   MOTOR STOP
+========================================== */
 
-function stopMotor(){
+function stopMotor() {
+
+
+    if (
+        !motorRunning
+    ) {
+
+
+        return;
+
+    }
 
 
     motorRunning =
@@ -891,10 +877,8 @@ function stopMotor(){
     );
 
 
-
     /*
-       Return motor to exact
-       original position.
+       Restore motor position
     */
 
     motorModel.object3D.position.set(
@@ -911,53 +895,22 @@ function stopMotor(){
 
 
 
-/* =========================
-   SWITCH TAP
-========================= */
+/* ==========================================
+   TOGGLE
+========================================== */
 
-switchHitArea.addEventListener(
-
-"click",
-
-function(){
+function toggleMotor() {
 
 
-    if(
-        !markerVisible
-    ){
-
-        return;
-
-    }
-
-
-    if(
-        !motorLoaded
-        ||
-        !switchLoaded
-    ){
-
-
-        info.textContent =
-            "Wait until the models finish loading.";
-
-
-        return;
-
-    }
-
-
-
-    if(
+    if (
         motorRunning
-    ){
+    ) {
 
 
         stopMotor();
 
 
-    }
-    else{
+    } else {
 
 
         startMotor();
@@ -966,15 +919,283 @@ function(){
 
 }
 
+
+
+/* ==========================================
+   MANUAL TOUCH RAYCASTER
+========================================== */
+
+const touchRaycaster =
+    new THREE.Raycaster();
+
+
+const touchPointer =
+    new THREE.Vector2();
+
+
+let lastTouchTime =
+    0;
+
+
+
+function handleSwitchTouch(
+    clientX,
+    clientY
+) {
+
+
+    if (
+        !markerVisible
+    ) {
+
+
+        return;
+
+    }
+
+
+    if (
+        !motorLoaded
+        ||
+        !switchLoaded
+    ) {
+
+
+        info.textContent =
+            "Wait until the motor and switch finish loading.";
+
+
+        return;
+
+    }
+
+
+    const canvas =
+        sceneEl.canvas;
+
+
+    if (
+        !canvas
+    ) {
+
+
+        return;
+
+    }
+
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    touchPointer.x =
+
+        (
+            (
+                clientX
+                -
+                rect.left
+            )
+            /
+            rect.width
+        )
+        *
+        2
+        -
+        1;
+
+
+    touchPointer.y =
+
+        -
+        (
+            (
+                clientY
+                -
+                rect.top
+            )
+            /
+            rect.height
+        )
+        *
+        2
+        +
+        1;
+
+
+    touchRaycaster.setFromCamera(
+
+        touchPointer,
+
+        sceneEl.camera
+
+    );
+
+
+    /*
+       Ensure latest world transform
+       before raycasting.
+    */
+
+    switchHitArea.object3D.updateMatrixWorld(
+        true
+    );
+
+
+    const hits =
+        touchRaycaster.intersectObject(
+
+            switchHitArea.object3D,
+
+            true
+
+        );
+
+
+    if (
+        hits.length > 0
+    ) {
+
+
+        toggleMotor();
+
+    }
+
+}
+
+
+
+/* ==========================================
+   ANDROID TOUCH
+========================================== */
+
+document.addEventListener(
+
+    "touchend",
+
+    function (
+        event
+    ) {
+
+
+        /*
+           Do not treat RESET as
+           a switch touch.
+        */
+
+        if (
+            event.target ===
+            resetBtn
+        ) {
+
+
+            return;
+
+        }
+
+
+        if (
+            event.changedTouches.length === 0
+        ) {
+
+
+            return;
+
+        }
+
+
+        lastTouchTime =
+            Date.now();
+
+
+        const touch =
+            event.changedTouches[
+                0
+            ];
+
+
+        handleSwitchTouch(
+
+            touch.clientX,
+
+            touch.clientY
+
+        );
+
+    },
+
+    {
+        passive: true
+    }
+
 );
 
 
 
-/* =========================
-   MOTOR RUNNING ANIMATION
-========================= */
+/* ==========================================
+   DESKTOP / CLICK FALLBACK
+========================================== */
 
-function animate(){
+document.addEventListener(
+
+    "click",
+
+    function (
+        event
+    ) {
+
+
+        if (
+            event.target ===
+            resetBtn
+        ) {
+
+
+            return;
+
+        }
+
+
+        /*
+           Mobile browser may generate a
+           click immediately after touchend.
+           Ignore it so motor does not
+           toggle twice.
+        */
+
+        if (
+            Date.now()
+            -
+            lastTouchTime
+            <
+            700
+        ) {
+
+
+            return;
+
+        }
+
+
+        handleSwitchTouch(
+
+            event.clientX,
+
+            event.clientY
+
+        );
+
+    }
+
+);
+
+
+
+/* ==========================================
+   MOTOR RUNNING ANIMATION
+========================================== */
+
+function animate() {
 
 
     requestAnimationFrame(
@@ -982,9 +1203,10 @@ function animate(){
     );
 
 
-    if(
+    if (
         !motorRunning
-    ){
+    ) {
+
 
         return;
 
@@ -995,21 +1217,21 @@ function animate(){
         0.20;
 
 
-
     /*
-       Small vibration effect.
+       Small motor vibration.
     */
 
     motorModel.object3D.position.x =
 
         0.15
+
         +
+
         Math.sin(
             animationTime
         )
         *
         0.004;
-
 
 
     motorModel.object3D.position.z =
@@ -1027,86 +1249,143 @@ animate();
 
 
 
-/* =========================
+/* ==========================================
    RESET
-========================= */
+========================================== */
 
 resetBtn.addEventListener(
 
-"click",
+    "click",
 
-function(){
-
-
-    stopMotor();
-
-
-    if(
-        markerVisible
-    ){
+    function (
+        event
+    ) {
 
 
-        info.textContent =
-            "Training reset — tap the 3D switch.";
+        event.stopPropagation();
 
+
+        if (
+            motorRunning
+        ) {
+
+
+            stopMotor();
+
+
+        } else {
+
+
+            stopMotorSound();
+
+
+            motorModel.object3D.position.set(
+                0.15,
+                0,
+                0
+            );
+
+
+            switchModel.setAttribute(
+                "rotation",
+                "0 0 0"
+            );
+
+
+            motorStatus.textContent =
+                "MOTOR OFF";
+
+
+            motorStatus.classList.remove(
+                "running"
+            );
+
+
+            motorLabel.setAttribute(
+                "value",
+                "MOTOR OFF"
+            );
+
+
+            motorLabel.setAttribute(
+                "color",
+                "#ef4444"
+            );
+
+
+            switchLabel.setAttribute(
+                "value",
+                "TAP SWITCH"
+            );
+
+        }
+
+
+        if (
+            markerVisible
+        ) {
+
+
+            info.textContent =
+                "Training reset — tap the 3D switch.";
+
+
+        } else {
+
+
+            info.textContent =
+                "Training reset — point the camera at the Hiro marker.";
+
+        }
 
     }
-    else{
-
-
-        info.textContent =
-            "Training reset — point the camera at the Hiro marker.";
-
-    }
-
-}
 
 );
 
 
 
-/* =========================
+/* ==========================================
    MARKER FOUND
-========================= */
+========================================== */
 
 marker.addEventListener(
 
-"markerFound",
+    "markerFound",
 
-function(){
-
-
-    markerVisible =
-        true;
+    function () {
 
 
-    updateStatus();
+        markerVisible =
+            true;
 
-}
+
+        updateStatus();
+
+    }
 
 );
 
 
 
-/* =========================
+/* ==========================================
    MARKER LOST
-========================= */
+========================================== */
 
 marker.addEventListener(
 
-"markerLost",
+    "markerLost",
 
-function(){
-
-
-    markerVisible =
-        false;
+    function () {
 
 
-    info.textContent =
-        "Marker lost — point the camera at the Hiro marker.";
+        markerVisible =
+            false;
 
-}
+
+        info.textContent =
+            "Marker lost — point the camera at the Hiro marker.";
+
+    }
 
 );
 
