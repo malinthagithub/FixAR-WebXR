@@ -497,7 +497,7 @@
             id="drivePad"
             class="slot-pad"
             position="0.50 0.005 0"
-            radius="0.22"
+            radius="0.28"
             height="0.012"
             color="#38bdf8"
             opacity="0.42"
@@ -507,8 +507,8 @@
         <a-ring
             id="driveRing"
             position="0.50 0.014 0"
-            radius-inner="0.22"
-            radius-outer="0.27"
+            radius-inner="0.28"
+            radius-outer="0.33"
             rotation="-90 0 0"
             color="#7dd3fc"
             opacity="0.85"
@@ -560,21 +560,21 @@
              BATTERY — starts on the tray
         =========================================== -->
 
-        <a-entity id="batteryPart" position="-0.42 0.45 0.58">
+        <a-entity id="batteryPart" position="-0.50 0.45 0.58">
 
             <a-entity
                 id="batteryModel"
                 gltf-model="url(models/battery.glb)"
-                rotation="0 40 0"
-                scale="0.15 0.15 0.15">
+                rotation="0 0 0"
+                scale="0.12 0.12 0.12">
             </a-entity>
 
             <a-box
                 id="batteryHit"
-                width="0.52"
-                height="0.46"
-                depth="0.52"
-                material="transparent: true; opacity: 0.22; color: #38bdf8; depthWrite: false">
+                width="0.32"
+                height="0.32"
+                depth="0.32"
+                material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
             <a-text
@@ -599,16 +599,16 @@
             <a-entity
                 id="switchModel"
                 gltf-model="url(models/switch.glb)"
-                rotation="0 -40 0"
-                scale="0.15 0.15 0.15">
+                rotation="0 0 0"
+                scale="0.12 0.12 0.12">
             </a-entity>
 
             <a-box
                 id="switchHit"
-                width="0.52"
-                height="0.46"
-                depth="0.52"
-                material="transparent: true; opacity: 0.22; color: #38bdf8; depthWrite: false">
+                width="0.32"
+                height="0.32"
+                depth="0.32"
+                material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
             <a-text
@@ -629,51 +629,50 @@
              on a shared shaft. Dragged as one part.
         =========================================== -->
 
-        <a-entity id="drivePart" position="0.42 0.45 0.58">
+        <a-entity id="drivePart" position="0.48 0.45 0.58">
 
             <a-entity
                 id="motorModel"
                 gltf-model="url(models/motor.glb)"
-                position="0 0.02 -0.12"
+                position="-0.16 0.08 0"
                 rotation="0 90 0"
-                scale="0.3 0.3 0.3">
+                scale="0.72 0.72 0.72">
             </a-entity>
 
             <a-entity
                 id="turbineModel"
                 gltf-model="url(models/turbine.glb)"
-                position="0 0.02 0.14"
+                position="0.18 0.08 0"
                 rotation="0 90 0"
-                scale="0.2 0.2 0.2">
+                scale="0.62 0.62 0.62">
             </a-entity>
 
-            <!-- mechanical coupling so they read as one machine -->
             <a-cylinder
                 id="driveShaft"
-                position="0 0.06 0.01"
-                radius="0.028"
-                height="0.24"
-                rotation="90 0 0"
+                position="0.01 0.08 0"
+                radius="0.03"
+                height="0.28"
+                rotation="0 0 90"
                 color="#cbd5e1"
                 material="shader: flat; color: #cbd5e1">
             </a-cylinder>
 
             <a-cylinder
                 id="driveCoupling"
-                position="0 0.06 0.01"
+                position="0.01 0.08 0"
                 radius="0.055"
-                height="0.055"
-                rotation="90 0 0"
+                height="0.06"
+                rotation="0 0 90"
                 color="#64748b"
                 material="shader: flat; color: #64748b">
             </a-cylinder>
 
             <a-box
                 id="driveHit"
-                width="0.58"
-                height="0.48"
-                depth="0.64"
-                material="transparent: true; opacity: 0.22; color: #38bdf8; depthWrite: false">
+                width="0.62"
+                height="0.40"
+                depth="0.42"
+                material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
             <a-text
@@ -825,10 +824,8 @@ const OFF_RETURN_COLOR = "#7f1d1d";
 const MODEL_Y = 0.05;
 const DRAG_Y = 0.22;
 const SNAP_DISTANCE = 0.38;
-const MOTOR_BASE_Y = 90;
-const TURBINE_BASE_Y = 90;
-const SWITCH_OFF_ROT = "0 -40 0";
-const SWITCH_ON_ROT = "0 -58 0";
+const SWITCH_OFF_ROT = "0 0 0";
+const SWITCH_ON_ROT = "0 -28 0";
 
 
 const PARTS = {
@@ -840,7 +837,7 @@ const PARTS = {
         carryLabel: batteryCarryLabel,
         pad: batteryPad,
         ring: batteryRing,
-        trayPos: { x: -0.42, y: MODEL_Y, z: 0.58 },
+        trayPos: { x: -0.50, y: MODEL_Y, z: 0.58 },
         slotPos: { x: -0.50, y: MODEL_Y, z: 0.38 },
         placed: false
     },
@@ -864,7 +861,7 @@ const PARTS = {
         carryLabel: driveCarryLabel,
         pad: drivePad,
         ring: driveRing,
-        trayPos: { x: 0.42, y: MODEL_Y, z: 0.58 },
+        trayPos: { x: 0.48, y: MODEL_Y, z: 0.58 },
         slotPos: { x: 0.50, y: MODEL_Y, z: 0 },
         placed: false
     }
@@ -979,6 +976,7 @@ let audioContext = null;
 let oscillator1 = null;
 let oscillator2 = null;
 let masterGain = null;
+let noiseSource = null;
 
 
 function startSystemSound() {
@@ -996,26 +994,49 @@ function startSystemSound() {
     }
 
     masterGain = audioContext.createGain();
-    masterGain.gain.value = 0.05;
+    masterGain.gain.value = 0;
+    masterGain.connect(audioContext.destination);
+    masterGain.gain.linearRampToValueAtTime(0.28, audioContext.currentTime + 0.12);
+
+    const filter = audioContext.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 900;
+    filter.connect(masterGain);
 
     oscillator1 = audioContext.createOscillator();
-    oscillator1.type = "sine";
-    oscillator1.frequency.value = 110;
+    oscillator1.type = "sawtooth";
+    oscillator1.frequency.value = 68;
+    oscillator1.connect(filter);
 
     oscillator2 = audioContext.createOscillator();
     oscillator2.type = "triangle";
-    oscillator2.frequency.value = 220;
+    oscillator2.frequency.value = 136;
 
-    const secondGain = audioContext.createGain();
-    secondGain.gain.value = 0.18;
+    const whirGain = audioContext.createGain();
+    whirGain.gain.value = 0.35;
+    oscillator2.connect(whirGain);
+    whirGain.connect(masterGain);
 
-    oscillator1.connect(masterGain);
-    oscillator2.connect(secondGain);
-    secondGain.connect(masterGain);
-    masterGain.connect(audioContext.destination);
+    const bufferSize = audioContext.sampleRate * 1.5;
+    const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i += 1) {
+        data[i] = (Math.random() * 2 - 1) * 0.18;
+    }
+
+    noiseSource = audioContext.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    noiseSource.loop = true;
+
+    const noiseGain = audioContext.createGain();
+    noiseGain.gain.value = 0.22;
+    noiseSource.connect(noiseGain);
+    noiseGain.connect(filter);
 
     oscillator1.start();
     oscillator2.start();
+    noiseSource.start();
 
 }
 
@@ -1030,6 +1051,11 @@ function stopSystemSound() {
     if (oscillator2) {
         try { oscillator2.stop(); } catch (error) {}
         oscillator2 = null;
+    }
+
+    if (noiseSource) {
+        try { noiseSource.stop(); } catch (error) {}
+        noiseSource = null;
     }
 
     if (masterGain) {
@@ -1311,13 +1337,13 @@ function renderCoach() {
         progressBar.style.width = startedOnce ? "78%" : "68%";
         if (!startedOnce) {
             trainTitle.textContent = "2. Start the motor";
-            trainBody.textContent = "All parts are in place. Press Start motor.";
+            trainBody.textContent = "All parts are in place. Press Start motor — you should hear the drive and see the rotor spin.";
             trainWhy.textContent = "The switch sends power from the battery to the coupled drive.";
             startMotorBtn.textContent = "Start motor";
             setButtonVisible(startMotorBtn, true);
         } else if (systemRunning) {
             trainTitle.textContent = "2. Motor running";
-            trainBody.textContent = "Watch the motor and turbine spin together. Press Stop motor to isolate power.";
+            trainBody.textContent = "The rotor is spinning and the motor is humming. Press Stop motor to isolate power.";
             trainWhy.textContent = "They share one shaft, so both rotate together.";
             startMotorBtn.textContent = "Stop motor";
             startMotorBtn.classList.add("running");
@@ -1681,8 +1707,7 @@ function stopSystem() {
 
     switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
 
-    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(MOTOR_BASE_Y);
-    turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(TURBINE_BASE_Y);
+    turbineModel.object3D.rotation.x = 0;
 
     setWiresOff();
 
@@ -2086,10 +2111,8 @@ function animate() {
         return;
     }
 
-    driveSpin += 10;
-
-    motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(MOTOR_BASE_Y + driveSpin);
-    turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(TURBINE_BASE_Y + driveSpin);
+    driveSpin += 16;
+    turbineModel.object3D.rotation.x = THREE.MathUtils.degToRad(driveSpin);
 
 }
 
@@ -2120,8 +2143,7 @@ function resetTraining() {
     } else {
         stopSystemSound();
         switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
-        motorModel.object3D.rotation.y = THREE.MathUtils.degToRad(MOTOR_BASE_Y);
-        turbineModel.object3D.rotation.y = THREE.MathUtils.degToRad(TURBINE_BASE_Y);
+        turbineModel.object3D.rotation.x = 0;
         setWiresOff();
     }
 
@@ -2193,6 +2215,12 @@ startMotorBtn.addEventListener("click", function (event) {
     event.preventDefault();
     event.stopPropagation();
     if (phase === "operate") {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
         toggleSystem();
     }
 });
