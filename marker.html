@@ -2,148 +2,776 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>FixAR | Equipment Preview</title> <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script> <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
+<meta charset="UTF-8">
 
-        .instruction {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 420px;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.78);
-            color: white;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
-            z-index: 20;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-        .controls {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            z-index: 20;
-        }
+<title>FixAR | Equipment Preview</title>
 
-        .controls button {
-            border: none;
-            border-radius: 10px;
-            padding: 13px 20px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            background: rgba(15, 23, 42, 0.9);
-            color: white;
-            border: 1px solid #38bdf8;
-        }
 
-        .controls button.active {
-            background: #38bdf8;
-            color: #07111f;
-        }
-    </style>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+
+
+<style>
+
+body{
+
+    margin:0;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+
+}
+
+
+.instruction{
+
+    position:fixed;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:calc(100% - 40px);
+    max-width:420px;
+
+    padding:12px 16px;
+
+    background:rgba(0,0,0,0.78);
+    color:white;
+
+    border-radius:10px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    z-index:20;
+
+}
+
+
+
+.controls{
+
+    position:fixed;
+
+    bottom:20px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    z-index:20;
+
+}
+
+
+
+.controls button{
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:12px 15px;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    background:rgba(15,23,42,0.9);
+
+    color:white;
+
+    border:1px solid #38bdf8;
+
+}
+
+
+
+.controls button.active{
+
+    background:#38bdf8;
+
+    color:#07111f;
+
+}
+
+
+</style>
+
+
 </head>
 
+
+
 <body>
-    <div class="instruction" id="instruction"> Point the camera at the Hiro marker </div>
-    <div class="controls"> <button id="conveyorBtn" class="active" type="button"> Conveyor </button> <button
-            id="machineBtn" type="button"> Machine </button> </div> <a-scene embedded
-        arjs="sourceType: webcam; debugUIEnabled: false;"> <a-marker id="hiroMarker" preset="hiro"> <!-- Conveyor -->
-            <a-entity id="conveyorModel" gltf-model="url(models/conveyor.glb)" position="0 0 0" rotation="0 0 0"
-                scale="0.5 0.5 0.5" visible="true"> </a-entity> <!-- Machine --> <a-entity id="machineModel"
-                gltf-model="url(models/machine.glb)" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5"
-                visible="false"> </a-entity> </a-marker> <a-entity camera></a-entity> </a-scene>
-    <script>
-    const conveyorModel = document.getElementById("conveyorModel");
-    const machineModel = document.getElementById("machineModel");
-
-    const conveyorBtn = document.getElementById("conveyorBtn");
-    const machineBtn = document.getElementById("machineBtn");
-
-    const instruction = document.getElementById("instruction");
-    const hiroMarker = document.getElementById("hiroMarker");
-
-    let selectedEquipment = "Conveyor";
-    let markerVisible = false;
 
 
-    function updateStatus() {
 
-        if (markerVisible) {
-            instruction.textContent =
-                "Marker detected - Selected Equipment: " + selectedEquipment;
-        } else {
-            instruction.textContent =
-                "Point the camera at the Hiro marker";
-        }
+<div class="instruction" id="instruction">
+
+Point the camera at the Hiro marker
+
+</div>
+
+
+
+<div class="controls">
+
+
+<button id="conveyorBtn" class="active">
+Conveyor
+</button>
+
+
+<button id="machineBtn">
+Water Pump
+</button>
+
+
+<button id="motorBtn">
+Motor
+</button>
+
+
+<button id="wireBtn">
+Connect Wire
+</button>
+
+
+<button id="powerBtn">
+POWER ON
+</button>
+
+
+</div>
+
+
+
+
+
+<a-scene
+
+embedded
+
+arjs="sourceType:webcam; debugUIEnabled:false;">
+
+
+
+<a-marker
+
+id="hiroMarker"
+
+preset="hiro">
+
+
+
+<!-- Conveyor -->
+
+<a-entity
+
+id="conveyorModel"
+
+gltf-model="url(models/conveyor.glb)"
+
+position="0 0 0"
+
+rotation="0 0 0"
+
+scale="0.5 0.5 0.5"
+
+visible="true">
+
+</a-entity>
+
+
+
+
+<!-- Water Pump -->
+
+<a-entity
+
+id="machineModel"
+
+gltf-model="url(models/machine.glb)"
+
+position="0 0 0"
+
+rotation="0 0 0"
+
+scale="0.5 0.5 0.5"
+
+visible="false">
+
+</a-entity>
+
+
+
+
+<!-- Motor -->
+
+<a-entity
+
+id="motorModel"
+
+gltf-model="url(models/motor.glb)"
+
+position="0 0 0"
+
+rotation="0 0 0"
+
+scale="0.5 0.5 0.5"
+
+visible="false">
+
+</a-entity>
+
+
+
+
+<!-- Motor Terminals -->
+
+<a-sphere
+
+id="terminalL1"
+
+position="0.25 0.35 0.15"
+
+radius="0.04"
+
+color="red"
+
+visible="false">
+
+</a-sphere>
+
+
+
+<a-sphere
+
+id="terminalL2"
+
+position="0.25 0.25 0.15"
+
+radius="0.04"
+
+color="black"
+
+visible="false">
+
+</a-sphere>
+
+
+
+<a-sphere
+
+id="terminalGround"
+
+position="0.25 0.15 0.15"
+
+radius="0.04"
+
+color="green"
+
+visible="false">
+
+</a-sphere>
+
+
+
+</a-marker>
+
+
+
+
+<a-entity camera></a-entity>
+
+
+</a-scene>
+
+
+
+<script>
+    const conveyorModel =
+document.getElementById("conveyorModel");
+
+
+const machineModel =
+document.getElementById("machineModel");
+
+
+const motorModel =
+document.getElementById("motorModel");
+
+
+
+const conveyorBtn =
+document.getElementById("conveyorBtn");
+
+
+const machineBtn =
+document.getElementById("machineBtn");
+
+
+const motorBtn =
+document.getElementById("motorBtn");
+
+
+
+const wireBtn =
+document.getElementById("wireBtn");
+
+
+const powerBtn =
+document.getElementById("powerBtn");
+
+
+
+const terminalL1 =
+document.getElementById("terminalL1");
+
+
+const terminalL2 =
+document.getElementById("terminalL2");
+
+
+const terminalGround =
+document.getElementById("terminalGround");
+
+
+
+const instruction =
+document.getElementById("instruction");
+
+
+const hiroMarker =
+document.getElementById("hiroMarker");
+
+
+
+let selectedEquipment =
+"Conveyor";
+
+
+let markerVisible =
+false;
+
+
+
+
+
+function hideAllModels(){
+
+
+    conveyorModel.setAttribute(
+        "visible",
+        false
+    );
+
+
+    machineModel.setAttribute(
+        "visible",
+        false
+    );
+
+
+    motorModel.setAttribute(
+        "visible",
+        false
+    );
+
+
+    terminalL1.setAttribute(
+        "visible",
+        false
+    );
+
+
+    terminalL2.setAttribute(
+        "visible",
+        false
+    );
+
+
+    terminalGround.setAttribute(
+        "visible",
+        false
+    );
+
+
+}
+
+
+
+
+
+
+function showMotorTerminals(){
+
+
+    terminalL1.setAttribute(
+        "visible",
+        true
+    );
+
+
+    terminalL2.setAttribute(
+        "visible",
+        true
+    );
+
+
+    terminalGround.setAttribute(
+        "visible",
+        true
+    );
+
+
+}
+
+
+
+
+
+
+function updateStatus(){
+
+
+    if(markerVisible){
+
+
+        instruction.textContent =
+
+        "Marker detected - "
+        +
+        selectedEquipment;
+
 
     }
 
-    // Conveyor Button
-    conveyorBtn.addEventListener("click", function () {
+    else{
 
-        conveyorModel.setAttribute("visible", true);
-        machineModel.setAttribute("visible", false);
-
-        conveyorBtn.classList.add("active");
-        machineBtn.classList.remove("active");
-
-        selectedEquipment = "Conveyor";
-
-        updateStatus(); 
-    });
-
-
-    // Machine Button
-    machineBtn.addEventListener("click", function () {
-
-        conveyorModel.setAttribute("visible", false);
-        machineModel.setAttribute("visible", true);
-
-        machineBtn.classList.add("active");
-        conveyorBtn.classList.remove("active");
-
-        selectedEquipment = "Machine";
-
-        updateStatus();
-    });
-
-
-    // Marker Detected
-    hiroMarker.addEventListener("markerFound", function () {
-
-        markerVisible = true;
-
-        updateStatus();
-    });
-
-
-    // Marker Lost
-    hiroMarker.addEventListener("markerLost", function () {
-
-        markerVisible = false;
 
         instruction.textContent =
-            "Marker lost - point the camera at the Hiro marker";
-    });
 
-</script>
-</body>
+        "Point the camera at the Hiro marker";
 
-</html>
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+// Conveyor button
+
+
+conveyorBtn.addEventListener(
+
+"click",
+
+function(){
+
+
+    hideAllModels();
+
+
+    conveyorModel.setAttribute(
+        "visible",
+        true
+    );
+
+
+    selectedEquipment =
+    "Conveyor";
+
+
+
+    conveyorBtn.classList.add(
+        "active"
+    );
+
+
+    machineBtn.classList.remove(
+        "active"
+    );
+
+
+    motorBtn.classList.remove(
+        "active"
+    );
+
+
+    updateStatus();
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+// Water Pump button
+
+
+machineBtn.addEventListener(
+
+"click",
+
+function(){
+
+
+    hideAllModels();
+
+
+    machineModel.setAttribute(
+        "visible",
+        true
+    );
+
+
+    selectedEquipment =
+    "Water Pump";
+
+
+
+    machineBtn.classList.add(
+        "active"
+    );
+
+
+    conveyorBtn.classList.remove(
+        "active"
+    );
+
+
+    motorBtn.classList.remove(
+        "active"
+    );
+
+
+    updateStatus();
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+
+// Motor button
+
+
+motorBtn.addEventListener(
+
+"click",
+
+function(){
+
+
+    hideAllModels();
+
+
+    motorModel.setAttribute(
+        "visible",
+        true
+    );
+
+
+    showMotorTerminals();
+
+
+    selectedEquipment =
+    "Motor";
+
+
+
+    motorBtn.classList.add(
+        "active"
+    );
+
+
+    conveyorBtn.classList.remove(
+        "active"
+    );
+
+
+    machineBtn.classList.remove(
+        "active"
+    );
+
+
+    updateStatus();
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// Connect Wire button
+
+
+wireBtn.addEventListener(
+
+"click",
+
+function(){
+
+
+    if(selectedEquipment !== "Motor"){
+
+
+        instruction.textContent =
+        "Select Motor first";
+
+
+        return;
+
+    }
+
+
+
+    instruction.textContent =
+    "Connect wires to motor terminals";
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// Power button
+
+
+powerBtn.addEventListener(
+
+"click",
+
+function(){
+
+
+    if(selectedEquipment === "Motor"){
+
+
+        instruction.textContent =
+        "Motor power simulation ready";
+
+
+    }
+
+    else{
+
+
+        instruction.textContent =
+        "Select Motor first";
+
+
+    }
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// Marker found
+
+
+hiroMarker.addEventListener(
+
+"markerFound",
+
+function(){
+
+
+    markerVisible =
+    true;
+
+
+    updateStatus();
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// Marker lost
+
+
+hiroMarker.addEventListener(
+
+"markerLost",
+
+function(){
+
+
+    markerVisible =
+    false;
+
+
+    instruction.textContent =
+    "Marker lost - point the camera at the Hiro marker";
+
+
+}
+
+);
