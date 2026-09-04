@@ -276,6 +276,45 @@
       pointer-events: none !important;
     }
   </style>
+
+  <script>
+    AFRAME.registerComponent('fit-model', {
+      schema: {
+        size: {type: 'number', default: 0.36}
+      },
+      init: function () {
+        this.el.addEventListener('model-loaded', () => {
+          const mesh = this.el.getObject3D('mesh');
+          if (!mesh) return;
+
+          // Start from the model's natural size and normalize it automatically.
+          mesh.scale.set(1, 1, 1);
+          mesh.position.set(0, 0, 0);
+          mesh.updateMatrixWorld(true);
+
+          let box = new THREE.Box3().setFromObject(mesh);
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          const maxDim = Math.max(size.x, size.y, size.z);
+          if (!isFinite(maxDim) || maxDim <= 0) return;
+
+          const factor = this.data.size / maxDim;
+          mesh.scale.multiplyScalar(factor);
+          mesh.updateMatrixWorld(true);
+
+          // Center the downloaded model inside its A-Frame entity.
+          box = new THREE.Box3().setFromObject(mesh);
+          const centerWorld = new THREE.Vector3();
+          box.getCenter(centerWorld);
+          const centerLocal = centerWorld.clone();
+          this.el.object3D.worldToLocal(centerLocal);
+          mesh.position.sub(centerLocal);
+          mesh.updateMatrixWorld(true);
+        });
+      }
+    });
+  </script>
+
 </head>
 
 <body>
@@ -325,6 +364,8 @@
 
     <a-entity id="markerRoot" mindar-image-target="targetIndex: 0">
 
+      <a-entity id="contentRoot" rotation="-90 0 0" scale="1.28 1.28 1.28">
+
       <!-- ===========================
            MACHINE WORK AREA
       ============================ -->
@@ -365,7 +406,7 @@
       <a-cylinder id="pumpPad" position="0.58 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
       <a-ring id="pumpRing" position="0.58 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-text id="motorSlotLabel" value="MOTOR" position="-0.58 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="motorSlotLabel" value="MOTOR" position="-0.58 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
       <a-text id="pumpSlotLabel" value="PUMP" position="0.58 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
@@ -380,27 +421,27 @@
       <!-- ===========================
            MOTOR PART (REAL MODEL)
       ============================ -->
-      <a-entity id="motorPart" position="-0.58 0.08 0.78" scale="1 1 1">
-        <a-box position="0 0.012 0" width="0.34" height="0.03" depth="0.24" color="#334155"></a-box>
+      <a-entity id="motorPart" position="-0.58 0.12 0.78" scale="1 1 1">
+        <a-box position="0 0.012 0" width="0.42" height="0.035" depth="0.30" color="#1e293b"></a-box>
         <a-entity id="motorFan" position="0 0.06 0">
           <a-entity gltf-model="url(models/motor.glb)"
+                    fit-model="size: 0.42"
                     position="0 0 0"
-                    rotation="0 90 0"
-                    scale="0.18 0.18 0.18"></a-entity>
+                    rotation="0 90 0"></a-entity>
         </a-entity>
         <a-box id="motorHit" width="0.40" height="0.34" depth="0.40" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.29 0" scale="0.16 0.16 0.16" align="center" color="#ffffff"></a-text>
+        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.29 0" scale="0.19 0.19 0.19" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
            COUPLING PART (REAL MODEL)
       ============================ -->
-      <a-entity id="couplingPart" position="0 0.08 0.78" scale="1 1 1">
+      <a-entity id="couplingPart" position="0 0.12 0.78" scale="1 1 1">
         <a-entity id="couplingVisual" position="0 0.06 0">
           <a-entity gltf-model="url(models/coupling.glb)"
+                    fit-model="size: 0.27"
                     position="0 0 0"
-                    rotation="0 90 0"
-                    scale="0.16 0.16 0.16"></a-entity>
+                    rotation="0 90 0"></a-entity>
         </a-entity>
         <a-box id="couplingHit" width="0.34" height="0.32" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
         <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.28 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
@@ -409,16 +450,16 @@
       <!-- ===========================
            PUMP PART (REAL MODEL)
       ============================ -->
-      <a-entity id="pumpPart" position="0.58 0.08 0.78" scale="1 1 1">
-        <a-box position="0 0.012 0" width="0.34" height="0.03" depth="0.24" color="#334155"></a-box>
+      <a-entity id="pumpPart" position="0.58 0.12 0.78" scale="1 1 1">
+        <a-box position="0 0.012 0" width="0.42" height="0.035" depth="0.30" color="#1e293b"></a-box>
         <a-entity id="pumpImpeller" position="0 0.07 0">
           <a-entity gltf-model="url(models/pump.glb)"
+                    fit-model="size: 0.44"
                     position="0 0 0"
-                    rotation="0 90 0"
-                    scale="0.18 0.18 0.18"></a-entity>
+                    rotation="0 90 0"></a-entity>
         </a-entity>
         <a-box id="pumpHit" width="0.42" height="0.38" depth="0.42" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.32 0" scale="0.15 0.15 0.15" align="center" color="#ffffff"></a-text>
+        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.32 0" scale="0.18 0.18 0.18" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
@@ -466,9 +507,10 @@
         <a-text value="MAINTENANCE TRAINING COMPLETE" position="0 0.03 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#bbf7d0"></a-text>
       </a-entity>
 
-      <a-light type="ambient" intensity="1.2" color="#ffffff"></a-light>
-      <a-light type="directional" intensity="1.0" position="0.5 1 0.5"></a-light>
+      <a-light type="ambient" intensity="1.45" color="#ffffff"></a-light>
+      <a-light type="directional" intensity="1.25" position="0.5 1 0.5"></a-light>
 
+      </a-entity>
     </a-entity>
   </a-scene>
 
@@ -478,6 +520,7 @@
     ====================================================== */
     const sceneEl = document.getElementById("scene");
     const marker = document.getElementById("markerRoot");
+    const contentRoot = document.getElementById("contentRoot");
 
     const statusBadge = document.getElementById("statusBadge");
     const resetBtn = document.getElementById("resetBtn");
@@ -1038,9 +1081,9 @@
     }
 
     function markerLocalToScreen(x, y, z) {
-      marker.object3D.updateMatrixWorld(true);
+      contentRoot.object3D.updateMatrixWorld(true);
       worldScratch.set(x, y, z);
-      marker.object3D.localToWorld(worldScratch);
+      contentRoot.object3D.localToWorld(worldScratch);
       return worldToScreen(worldScratch);
     }
 
@@ -1277,9 +1320,9 @@
       // Machine running animation.
       if (machineRunning) {
         const speed = THREE.MathUtils.degToRad(14);
-        if (motorFan && motorFan.object3D) motorFan.object3D.rotation.y += speed * 0.55;
         if (couplingVisual && couplingVisual.object3D) couplingVisual.object3D.rotation.x += speed * 0.9;
-        if (pumpImpeller && pumpImpeller.object3D) pumpImpeller.object3D.rotation.y += speed * 0.65;
+        if (motorFan && motorFan.object3D) motorFan.object3D.position.y = 0.06 + Math.sin(Date.now() / 45) * 0.003;
+        if (pumpImpeller && pumpImpeller.object3D) pumpImpeller.object3D.position.y = 0.07 + Math.sin(Date.now() / 50) * 0.002;
       }
 
       // Coupling correction animation.
@@ -1352,7 +1395,9 @@
       couplingVisual.object3D.position.set(0, 0, 0);
       couplingVisual.object3D.rotation.set(0, 0, 0);
       motorFan.object3D.rotation.set(0, 0, 0);
+      motorFan.object3D.position.y = 0.06;
       pumpImpeller.object3D.rotation.set(0, 0, 0);
+      pumpImpeller.object3D.position.y = 0.07;
 
       setVisible(faultIndicator, false);
       setVisible(actionTray, false);
@@ -1368,6 +1413,7 @@
     ====================================================== */
     marker.addEventListener("targetFound", () => {
       markerVisible = true;
+      if (contentRoot) contentRoot.setAttribute("visible", true);
 
       if (phase === "scan") {
         phase = "assemble";
@@ -1379,6 +1425,7 @@
 
     marker.addEventListener("targetLost", () => {
       markerVisible = false;
+      if (contentRoot) contentRoot.setAttribute("visible", false);
       setStatus("MARKER LOST", "warning");
       setFeedback("Marker lost. Point the camera back at the target image.", "bad");
     });
@@ -1391,6 +1438,7 @@
 
     // Initial state
     resetTraining();
+    if (contentRoot) contentRoot.setAttribute("visible", false);
   </script>
 </body>
 </html>
