@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-<title>FixAR Motor Wiring Training</title>
+<title>FixAR Machine Wiring Training</title>
 
 
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -15,41 +15,36 @@
 <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
 
-
 <style>
 
 body{
-
-margin:0;
-overflow:hidden;
-font-family:Arial,sans-serif;
-
+    margin:0;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
 }
 
 
 .info{
 
-position:fixed;
+    position:fixed;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
 
-top:15px;
+    width:90%;
+    max-width:420px;
 
-left:50%;
+    padding:12px;
 
-transform:translateX(-50%);
+    background:rgba(0,0,0,0.8);
 
-background:rgba(0,0,0,0.8);
+    color:white;
 
-color:white;
+    border-radius:10px;
 
-padding:12px;
+    text-align:center;
 
-border-radius:10px;
-
-width:90%;
-
-text-align:center;
-
-z-index:20;
+    z-index:20;
 
 }
 
@@ -57,23 +52,23 @@ z-index:20;
 
 .controls{
 
-position:fixed;
+    position:fixed;
 
-bottom:20px;
+    bottom:20px;
 
-left:50%;
+    left:50%;
 
-transform:translateX(-50%);
+    transform:translateX(-50%);
 
-display:flex;
+    display:flex;
 
-flex-wrap:wrap;
+    flex-wrap:wrap;
 
-justify-content:center;
+    justify-content:center;
 
-gap:8px;
+    gap:8px;
 
-z-index:20;
+    z-index:20;
 
 }
 
@@ -81,17 +76,19 @@ z-index:20;
 
 button{
 
-padding:12px;
+    padding:12px 15px;
 
-border-radius:10px;
+    border:none;
 
-border:none;
+    border-radius:10px;
 
-background:#111827;
+    background:#111827;
 
-color:white;
+    color:white;
 
-font-weight:bold;
+    font-weight:bold;
+
+    border:1px solid #38bdf8;
 
 }
 
@@ -99,12 +96,11 @@ font-weight:bold;
 
 .active{
 
-background:#38bdf8;
+    background:#38bdf8;
 
-color:black;
+    color:black;
 
 }
-
 
 
 </style>
@@ -117,11 +113,13 @@ color:black;
 <body>
 
 
+
 <div class="info" id="info">
 
 Scan Hiro marker
 
 </div>
+
 
 
 
@@ -143,13 +141,12 @@ Ground
 </button>
 
 
-<button id="switchBtn">
+<button id="powerBtn">
 POWER OFF
 </button>
 
 
 </div>
-
 
 
 
@@ -163,9 +160,11 @@ arjs="sourceType:webcam; debugUIEnabled:false;">
 
 
 
+
+
 <a-marker
 
-id="marker"
+id="hiroMarker"
 
 preset="hiro">
 
@@ -173,19 +172,22 @@ preset="hiro">
 
 
 
-<!-- Motor -->
+<!-- Machine Model -->
 
 <a-entity
 
-id="motor"
+id="machine"
 
-gltf-model="url(models/motor.glb)"
+gltf-model="url(models/machine.glb)"
 
-scale="0.02 0.02 0.02"
+position="0 0 0"
 
-position="0 0 0">
+rotation="0 0 0"
+
+scale="0.05 0.05 0.05">
 
 </a-entity>
+
 
 
 
@@ -198,7 +200,7 @@ position="0 0 0">
 
 id="L1"
 
-position="0.2 0.3 0.2"
+position="0.25 0.25 0.3"
 
 radius="0.04"
 
@@ -208,11 +210,12 @@ color="red">
 
 
 
+
 <a-sphere
 
 id="L2"
 
-position="0.2 0.2 0.2"
+position="0.25 0.15 0.3"
 
 radius="0.04"
 
@@ -222,11 +225,12 @@ color="black">
 
 
 
+
 <a-sphere
 
 id="GND"
 
-position="0.2 0.1 0.2"
+position="0.25 0.05 0.3"
 
 radius="0.04"
 
@@ -238,9 +242,8 @@ color="green">
 
 
 
-
-
 <!-- Switch -->
+
 
 <a-box
 
@@ -248,11 +251,11 @@ id="switch"
 
 position="-0.5 0.3 0"
 
-depth="0.1"
+width="0.25"
 
 height="0.2"
 
-width="0.3"
+depth="0.1"
 
 color="red">
 
@@ -261,9 +264,9 @@ color="red">
 
 
 
-
-
 </a-marker>
+
+
 
 
 
@@ -276,6 +279,7 @@ color="red">
 
 
 
+
 <script>
 
 
@@ -283,8 +287,8 @@ const info =
 document.getElementById("info");
 
 
-const motor =
-document.getElementById("motor");
+const machine =
+document.getElementById("machine");
 
 
 
@@ -300,12 +304,26 @@ const greenBtn =
 document.getElementById("greenBtn");
 
 
-const switchBtn =
-document.getElementById("switchBtn");
+const powerBtn =
+document.getElementById("powerBtn");
 
 
 
-let selectedWire = "";
+const L1 =
+document.getElementById("L1");
+
+
+const L2 =
+document.getElementById("L2");
+
+
+const GND =
+document.getElementById("GND");
+
+
+
+let selectedWire="";
+
 
 let connected = {
 
@@ -318,7 +336,9 @@ green:false
 };
 
 
+
 let running=false;
+
 
 
 
@@ -329,9 +349,10 @@ redBtn.onclick=function(){
 selectedWire="red";
 
 info.innerHTML=
-"Red wire selected - connect to L1";
+"Red wire selected → connect L1";
 
-}
+};
+
 
 
 
@@ -341,9 +362,11 @@ blackBtn.onclick=function(){
 selectedWire="black";
 
 info.innerHTML=
-"Black wire selected - connect to L2";
+"Black wire selected → connect L2";
 
-}
+};
+
+
 
 
 
@@ -353,17 +376,19 @@ greenBtn.onclick=function(){
 selectedWire="green";
 
 info.innerHTML=
-"Ground wire selected - connect to GND";
+"Ground selected → connect GND";
 
-}
-
-
+};
 
 
 
 
 
-document.getElementById("L1").onclick=function(){
+
+
+
+L1.onclick=function(){
+
 
 if(selectedWire==="red"){
 
@@ -377,18 +402,21 @@ info.innerHTML=
 else{
 
 info.innerHTML=
-"Wrong wire for L1";
+"Wrong wire";
 
 }
 
-}
+
+};
 
 
 
 
 
 
-document.getElementById("L2").onclick=function(){
+
+L2.onclick=function(){
+
 
 if(selectedWire==="black"){
 
@@ -402,11 +430,12 @@ info.innerHTML=
 else{
 
 info.innerHTML=
-"Wrong wire for L2";
+"Wrong wire";
 
 }
 
-}
+
+};
 
 
 
@@ -414,7 +443,9 @@ info.innerHTML=
 
 
 
-document.getElementById("GND").onclick=function(){
+
+GND.onclick=function(){
+
 
 if(selectedWire==="green"){
 
@@ -428,11 +459,12 @@ info.innerHTML=
 else{
 
 info.innerHTML=
-"Wrong wire for GND";
+"Wrong wire";
 
 }
 
-}
+
+};
 
 
 
@@ -440,7 +472,8 @@ info.innerHTML=
 
 
 
-switchBtn.onclick=function(){
+
+powerBtn.onclick=function(){
 
 
 if(
@@ -455,31 +488,23 @@ running=!running;
 
 if(running){
 
-switchBtn.innerHTML=
+powerBtn.innerHTML=
 "POWER ON";
 
-
-switchBtn.classList.add("active");
-
-
 info.innerHTML=
-"Motor Running";
+"Machine Running";
 
 }
 
 else{
 
-
-switchBtn.innerHTML=
+powerBtn.innerHTML=
 "POWER OFF";
 
-
 info.innerHTML=
-"Motor Stopped";
-
+"Machine Stopped";
 
 }
-
 
 
 }
@@ -488,12 +513,16 @@ else{
 
 
 info.innerHTML=
-"Complete all wire connections first";
-
-}
+"Complete all connections first";
 
 
 }
+
+
+};
+
+
+
 
 
 
@@ -504,7 +533,7 @@ function animate(){
 
 if(running){
 
-motor.object3D.rotation.y +=0.05;
+machine.object3D.rotation.y +=0.05;
 
 }
 
@@ -522,22 +551,21 @@ animate();
 
 
 
-document.getElementById("marker")
+
+document.getElementById("hiroMarker")
 .addEventListener(
 "markerFound",
 function(){
 
 info.innerHTML=
-"Motor Training Started";
+"Machine wiring training started";
 
 }
-
 );
 
 
 
 </script>
-
 
 
 </body>
