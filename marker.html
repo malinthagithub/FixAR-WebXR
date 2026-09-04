@@ -34,11 +34,21 @@
 
             overflow: hidden;
 
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 
-            background: #07111f;
+            background: #061018;
 
             touch-action: none;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        a-scene {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
         }
 
 
@@ -47,111 +57,109 @@
         }
 
 
-        #trainPanel {
+        #systemStatus,
+        #homeBtn,
+        #resetBtn {
 
             position: fixed;
 
-            left: 50%;
-            top: 52px;
+            z-index: 1200;
 
-            transform: translateX(-50%);
+            height: 36px;
 
-            width: calc(100% - 20px);
-            max-width: 470px;
+            padding: 0 12px;
 
-            padding: 8px 12px 7px;
+            border-radius: 8px;
 
-            background: rgba(7, 17, 31, 0.94);
+            font-size: 11px;
+            font-weight: 700;
 
-            border: 1px solid #38bdf8;
-            border-radius: 12px;
+            letter-spacing: 0.04em;
 
-            color: white;
+            display: flex;
+            align-items: center;
 
-            z-index: 1100;
-
-            pointer-events: none;
-
-            max-height: 22vh;
-
-            overflow-y: auto;
+            text-decoration: none;
         }
 
 
         #systemStatus {
 
-            position: fixed;
+            left: 12px;
+            top: 10px;
 
-            left: 15px;
-            top: 12px;
+            background: rgba(8, 18, 32, 0.88);
 
-            padding: 10px 14px;
-
-            background: rgba(7, 17, 31, 0.95);
-
-            border: 1px solid #ef4444;
-            border-radius: 9px;
+            border: 1px solid rgba(248, 113, 113, 0.7);
 
             color: #fecaca;
-
-            font-size: 11px;
-            font-weight: bold;
-
-            z-index: 1000;
 
             pointer-events: none;
         }
 
 
         #systemStatus.running {
-
-            border-color: #22c55e;
-
-            color: #86efac;
+            border-color: #4ade80;
+            color: #bbf7d0;
         }
 
 
         #systemStatus.assembled {
-
             border-color: #38bdf8;
-
             color: #bae6fd;
         }
 
 
-        #resetBtn,
         #homeBtn {
-
-            position: fixed;
-
-            padding: 10px 14px;
-
-            border: 1px solid #38bdf8;
-            border-radius: 9px;
-
-            background: rgba(7, 17, 31, 0.95);
-
-            color: white;
-
-            font-size: 11px;
-            font-weight: bold;
-
-            z-index: 1100;
-
-            text-decoration: none;
-        }
-
-
-        #homeBtn {
-            right: 15px;
-            top: 12px;
+            right: 12px;
+            top: 10px;
+            background: rgba(8, 18, 32, 0.88);
+            border: 1px solid rgba(56, 189, 248, 0.55);
+            color: #e2e8f0;
         }
 
 
         #resetBtn {
-            right: 15px;
-            bottom: 18px;
+            right: 12px;
+            bottom: 14px;
             top: auto;
+            background: rgba(8, 18, 32, 0.88);
+            border: 1px solid rgba(56, 189, 248, 0.55);
+            color: #e2e8f0;
+        }
+
+
+        #trainPanel {
+
+            position: fixed;
+
+            left: 12px;
+            right: 12px;
+            top: 54px;
+
+            transform: none;
+
+            width: auto;
+            max-width: none;
+
+            padding: 10px 12px;
+
+            background: rgba(8, 18, 32, 0.9);
+
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+
+            color: #f8fafc;
+
+            z-index: 1100;
+
+            pointer-events: none;
+
+            max-height: none;
+
+            overflow: visible;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         }
 
 
@@ -165,39 +173,43 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 7px;
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             color: #7dd3fc;
         }
 
 
         #trainTitle {
-            margin: 0 0 6px;
-            font-size: 15px;
+            margin: 0 0 4px;
+            font-size: 16px;
             line-height: 1.25;
+            font-weight: 700;
         }
 
 
-        #trainBody,
-        #trainWhy,
-        #trainFeedback {
-            margin: 0 0 7px;
+        #trainBody {
+            margin: 0;
             font-size: 13px;
             line-height: 1.4;
+            color: #e2e8f0;
         }
 
 
-        #trainWhy {
-            color: #cbd5e1;
+        #trainWhy,
+        #trainNotice,
+        #trainFeedback:empty {
+            display: none;
         }
 
 
         #trainFeedback {
-            min-height: 1.2em;
+            margin: 6px 0 0;
+            font-size: 12px;
+            font-weight: 700;
             color: #fde68a;
-            font-weight: bold;
         }
 
 
@@ -212,8 +224,8 @@
 
 
         #progressTrack {
-            height: 5px;
-            margin: 4px 0 10px;
+            height: 4px;
+            margin: 0 0 8px;
             background: #1e293b;
             border-radius: 99px;
             overflow: hidden;
@@ -223,7 +235,7 @@
         #progressBar {
             width: 8%;
             height: 100%;
-            background: #38bdf8;
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
         }
 
 
@@ -231,7 +243,7 @@
             display: none;
             flex-direction: column;
             gap: 7px;
-            margin: 8px 0;
+            margin: 8px 0 0;
         }
 
 
@@ -245,19 +257,20 @@
         #retryQuizBtn,
         #startMotorBtn {
             width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
+            padding: 11px 12px;
+            border-radius: 10px;
+            border: 0;
             background: #0f172a;
             color: white;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
         }
 
 
-        .quiz-btn:disabled {
-            opacity: 0.7;
+        .quiz-btn {
+            text-align: left;
+            border: 1px solid #334155;
         }
 
 
@@ -277,24 +290,20 @@
         #retryQuizBtn,
         #startMotorBtn {
             display: none;
-            margin-top: 6px;
-            text-align: center;
-            border-color: #38bdf8;
+            margin-top: 8px;
             background: #38bdf8;
             color: #07111f;
         }
 
 
         #startMotorBtn {
-            border-color: #22c55e;
             background: #22c55e;
-            font-size: 16px;
-            min-height: 48px;
+            min-height: 46px;
+            font-size: 15px;
         }
 
 
         #startMotorBtn.running {
-            border-color: #ef4444;
             background: #ef4444;
             color: white;
         }
@@ -304,13 +313,6 @@
         #retryQuizBtn.visible,
         #startMotorBtn.visible {
             display: block;
-        }
-
-
-        #trainNotice {
-            margin-top: 8px;
-            font-size: 10px;
-            color: #94a3b8;
         }
 
 
@@ -379,7 +381,7 @@
     <h2 id="trainTitle">Battery-powered turbine trainer</h2>
 
     <p id="trainBody">
-    Scan the Hiro marker, then drag each part from the tray onto its glowing slot.
+    Scan the Hiro marker, then drag each part onto its own pad.
     </p>
 
     <p id="trainWhy">
@@ -450,69 +452,66 @@
         <a-cylinder
             id="batteryPad"
             class="slot-pad"
-            position="-0.50 0.005 0.38"
-            radius="0.16"
-            height="0.012"
+            position="-0.36 0.006 0.28"
+            radius="0.13"
+            height="0.01"
             color="#38bdf8"
-            opacity="0.42"
-            material="shader: flat; transparent: true; opacity: 0.42">
+            opacity="0.35"
+            material="shader: flat; transparent: true; opacity: 0.35">
         </a-cylinder>
 
         <a-ring
             id="batteryRing"
-            position="-0.50 0.014 0.38"
-            radius-inner="0.16"
-            radius-outer="0.20"
+            visible="false"
+            position="-0.36 0.014 0.28"
+            radius-inner="0.13"
+            radius-outer="0.16"
             rotation="-90 0 0"
-            color="#7dd3fc"
-            opacity="0.85"
-            material="shader: flat; transparent: true; side: double; opacity: 0.85">
+            color="#7dd3fc">
         </a-ring>
 
 
         <a-cylinder
             id="switchPad"
             class="slot-pad"
-            position="-0.50 0.005 -0.38"
-            radius="0.16"
-            height="0.012"
+            position="-0.36 0.006 -0.28"
+            radius="0.13"
+            height="0.01"
             color="#38bdf8"
-            opacity="0.42"
-            material="shader: flat; transparent: true; opacity: 0.42">
+            opacity="0.35"
+            material="shader: flat; transparent: true; opacity: 0.35">
         </a-cylinder>
 
         <a-ring
             id="switchRing"
-            position="-0.50 0.014 -0.38"
-            radius-inner="0.16"
-            radius-outer="0.20"
+            visible="false"
+            position="-0.36 0.014 -0.28"
+            radius-inner="0.13"
+            radius-outer="0.16"
             rotation="-90 0 0"
-            color="#7dd3fc"
-            opacity="0.85"
-            material="shader: flat; transparent: true; side: double; opacity: 0.85">
+            color="#7dd3fc">
         </a-ring>
 
 
         <a-cylinder
             id="drivePad"
             class="slot-pad"
-            position="0.50 0.005 0"
-            radius="0.28"
-            height="0.012"
+            position="0.38 0.006 0"
+            radius="0.20"
+            height="0.01"
             color="#38bdf8"
-            opacity="0.42"
-            material="shader: flat; transparent: true; opacity: 0.42">
+            opacity="0.35"
+            material="shader: flat; transparent: true; opacity: 0.35">
         </a-cylinder>
 
         <a-ring
             id="driveRing"
-            position="0.50 0.014 0"
-            radius-inner="0.28"
-            radius-outer="0.33"
+            visible="false"
+            position="0.38 0.014 0"
+            radius-inner="0.20"
+            radius-outer="0.24"
             rotation="-90 0 0"
-            color="#7dd3fc"
-            opacity="0.85"
-            material="shader: flat; transparent: true; side: double; opacity: 0.85">
+            color="#7dd3fc">
         </a-ring>
 
 
@@ -523,31 +522,15 @@
 
         <a-entity id="partsTray">
 
-            <a-box
-                position="0 0.0 0.58"
-                width="1.35"
-                height="0.02"
-                depth="0.38"
-                color="#0f172a"
-                opacity="0.88"
-                material="shader: flat; transparent: true; opacity: 0.88">
-            </a-box>
-
-            <a-box
-                position="0 0.012 0.58"
-                width="1.28"
-                height="0.004"
-                depth="0.32"
-                color="#1e293b"
-                opacity="0.95"
-                material="shader: flat; transparent: true; opacity: 0.95">
-            </a-box>
+            <a-cylinder position="-0.48 0.003 0.92" radius="0.14" height="0.008" color="#0f172a"></a-cylinder>
+            <a-cylinder position="0 0.003 0.92" radius="0.14" height="0.008" color="#0f172a"></a-cylinder>
+            <a-cylinder position="0.52 0.003 0.92" radius="0.18" height="0.008" color="#0f172a"></a-cylinder>
 
             <a-text
                 id="trayLabel"
-                value="PARTS TRAY"
-                position="0 0.10 0.76"
-                scale="0.18 0.18 0.18"
+                value="PARTS"
+                position="0 0.12 1.08"
+                scale="0.16 0.16 0.16"
                 align="center"
                 color="#7dd3fc">
             </a-text>
@@ -560,13 +543,13 @@
              BATTERY — starts on the tray
         =========================================== -->
 
-        <a-entity id="batteryPart" position="-0.50 0.45 0.58">
+        <a-entity id="batteryPart" position="-0.48 0.45 0.92">
 
             <a-entity
                 id="batteryModel"
                 gltf-model="url(models/battery.glb)"
                 rotation="0 0 0"
-                scale="0.12 0.12 0.12">
+                scale="0.16 0.16 0.16">
             </a-entity>
 
             <a-box
@@ -594,13 +577,13 @@
              SWITCH — starts on the tray
         =========================================== -->
 
-        <a-entity id="switchPart" position="0 0.45 0.58">
+        <a-entity id="switchPart" position="0 0.45 0.92">
 
             <a-entity
                 id="switchModel"
                 gltf-model="url(models/switch.glb)"
                 rotation="0 0 0"
-                scale="0.12 0.12 0.12">
+                scale="0.16 0.16 0.16">
             </a-entity>
 
             <a-box
@@ -629,29 +612,29 @@
              on a shared shaft. Dragged as one part.
         =========================================== -->
 
-        <a-entity id="drivePart" position="0.48 0.45 0.58">
+        <a-entity id="drivePart" position="0.52 0.45 0.92">
 
             <a-entity
                 id="motorModel"
                 gltf-model="url(models/motor.glb)"
-                position="-0.16 0.08 0"
+                position="-0.10 0.06 0"
                 rotation="0 90 0"
-                scale="0.72 0.72 0.72">
+                scale="0.42 0.42 0.42">
             </a-entity>
 
             <a-entity
                 id="turbineModel"
                 gltf-model="url(models/turbine.glb)"
-                position="0.18 0.08 0"
+                position="0.12 0.06 0"
                 rotation="0 90 0"
-                scale="0.62 0.62 0.62">
+                scale="0.36 0.36 0.36">
             </a-entity>
 
             <a-cylinder
                 id="driveShaft"
-                position="0.01 0.08 0"
-                radius="0.03"
-                height="0.28"
+                position="0.01 0.06 0"
+                radius="0.02"
+                height="0.18"
                 rotation="0 0 90"
                 color="#cbd5e1"
                 material="shader: flat; color: #cbd5e1">
@@ -659,9 +642,9 @@
 
             <a-cylinder
                 id="driveCoupling"
-                position="0.01 0.08 0"
-                radius="0.055"
-                height="0.06"
+                position="0.01 0.06 0"
+                radius="0.04"
+                height="0.045"
                 rotation="0 0 90"
                 color="#64748b"
                 material="shader: flat; color: #64748b">
@@ -669,9 +652,9 @@
 
             <a-box
                 id="driveHit"
-                width="0.62"
-                height="0.40"
-                depth="0.42"
+                width="0.42"
+                height="0.32"
+                depth="0.32"
                 material="transparent: true; opacity: 0.01; depthWrite: false">
             </a-box>
 
@@ -693,22 +676,19 @@
         =========================================== -->
 
         <!-- battery -> switch (left) -->
-        <a-entity line="start: -0.50 0 0.38; end: -0.68 0 0; color: #ef4444" id="wireA1"></a-entity>
-        <a-entity line="start: -0.68 0 0; end: -0.50 0 -0.38; color: #ef4444" id="wireA2"></a-entity>
+        <a-entity line="start: -0.36 0 0.28; end: -0.50 0 0; color: #ef4444" id="wireA1"></a-entity>
+        <a-entity line="start: -0.50 0 0; end: -0.36 0 -0.28; color: #ef4444" id="wireA2"></a-entity>
 
-        <!-- switch -> motor end of drive (back) -->
-        <a-entity line="start: -0.50 0 -0.38; end: 0.05 0 -0.50; color: #ef4444" id="wireB1"></a-entity>
-        <a-entity line="start: 0.05 0 -0.50; end: 0.50 0 -0.12; color: #ef4444" id="wireB2"></a-entity>
+        <a-entity line="start: -0.36 0 -0.28; end: 0.02 0 -0.40; color: #ef4444" id="wireB1"></a-entity>
+        <a-entity line="start: 0.02 0 -0.40; end: 0.38 0 0; color: #ef4444" id="wireB2"></a-entity>
 
-        <!-- turbine end of drive -> battery (front return) -->
-        <a-entity line="start: 0.50 0 0.14; end: 0.05 0 0.54; color: #7f1d1d" id="wireD1"></a-entity>
-        <a-entity line="start: 0.05 0 0.54; end: -0.50 0 0.38; color: #7f1d1d" id="wireD2"></a-entity>
+        <a-entity line="start: 0.38 0 0; end: 0.02 0 0.40; color: #7f1d1d" id="wireD1"></a-entity>
+        <a-entity line="start: 0.02 0 0.40; end: -0.36 0 0.28; color: #7f1d1d" id="wireD2"></a-entity>
 
-        <!-- vertical drops from each slot down to the wire loop -->
-        <a-entity line="start: -0.50 0.05 0.38; end: -0.50 0 0.38; color: #ef4444" id="dropBattery"></a-entity>
-        <a-entity line="start: -0.50 0.05 -0.38; end: -0.50 0 -0.38; color: #ef4444" id="dropSwitch"></a-entity>
-        <a-entity line="start: 0.50 0.08 -0.12; end: 0.50 0 -0.12; color: #ef4444" id="dropMotor"></a-entity>
-        <a-entity line="start: 0.50 0.08 0.14; end: 0.50 0 0.14; color: #ef4444" id="dropTurbine"></a-entity>
+        <a-entity line="start: -0.36 0.05 0.28; end: -0.36 0 0.28; color: #ef4444" id="dropBattery"></a-entity>
+        <a-entity line="start: -0.36 0.05 -0.28; end: -0.36 0 -0.28; color: #ef4444" id="dropSwitch"></a-entity>
+        <a-entity line="start: 0.38 0.06 0; end: 0.38 0 0; color: #ef4444" id="dropMotor"></a-entity>
+        <a-entity line="start: 0.38 0.06 0; end: 0.38 0 0; color: #ef4444" id="dropTurbine"></a-entity>
 
 
 
@@ -719,7 +699,7 @@
         <a-text
             id="batterySlotLabel"
             value="BATTERY"
-            position="-0.50 0.30 0.38"
+            position="-0.36 0.26 0.28"
             scale="0.18 0.18 0.18"
             align="center"
             color="#ffffff">
@@ -728,8 +708,8 @@
         <a-text
             id="switchLabel"
             value="SWITCH"
-            position="-0.50 0.30 -0.38"
-            scale="0.18 0.18 0.18"
+            position="-0.36 0.24 -0.28"
+            scale="0.15 0.15 0.15"
             align="center"
             color="#ffffff">
         </a-text>
@@ -737,8 +717,8 @@
         <a-text
             id="motorLabel"
             value="MOTOR + TURBINE"
-            position="0.50 0.40 0"
-            scale="0.18 0.18 0.18"
+            position="0.38 0.28 0"
+            scale="0.15 0.15 0.15"
             align="center"
             color="#ef4444">
         </a-text>
@@ -837,8 +817,8 @@ const PARTS = {
         carryLabel: batteryCarryLabel,
         pad: batteryPad,
         ring: batteryRing,
-        trayPos: { x: -0.50, y: MODEL_Y, z: 0.58 },
-        slotPos: { x: -0.50, y: MODEL_Y, z: 0.38 },
+        trayPos: { x: -0.48, y: MODEL_Y, z: 0.92 },
+        slotPos: { x: -0.36, y: MODEL_Y, z: 0.28 },
         placed: false
     },
     switch: {
@@ -849,8 +829,8 @@ const PARTS = {
         carryLabel: switchCarryLabel,
         pad: switchPad,
         ring: switchRing,
-        trayPos: { x: 0, y: MODEL_Y, z: 0.58 },
-        slotPos: { x: -0.50, y: MODEL_Y, z: -0.38 },
+        trayPos: { x: 0, y: MODEL_Y, z: 0.92 },
+        slotPos: { x: -0.36, y: MODEL_Y, z: -0.28 },
         placed: false
     },
     drive: {
@@ -861,8 +841,8 @@ const PARTS = {
         carryLabel: driveCarryLabel,
         pad: drivePad,
         ring: driveRing,
-        trayPos: { x: 0.48, y: MODEL_Y, z: 0.58 },
-        slotPos: { x: 0.50, y: MODEL_Y, z: 0 },
+        trayPos: { x: 0.52, y: MODEL_Y, z: 0.92 },
+        slotPos: { x: 0.38, y: MODEL_Y, z: 0 },
         placed: false
     }
 };
@@ -874,19 +854,19 @@ const ASSEMBLE_STEPS = [
     {
         id: "battery",
         title: "1. Drag the battery",
-        body: "Hold the glowing battery box and drop it on the battery slot.",
+        body: "Drag the battery onto its pad.",
         why: "Fit the supply first so the rest of the circuit has a power source."
     },
     {
         id: "switch",
         title: "1. Drag the switch",
-        body: "Hold the switch and drop it on the glowing switch slot.",
+        body: "Drag the switch onto its pad.",
         why: "The switch sits between the battery and the motor so you can isolate the drive."
     },
     {
         id: "drive",
-        title: "1. Drag the motor-turbine",
-        body: "Hold the coupled drive and drop it on the glowing drive slot.",
+        title: "1. Drag the motor",
+        body: "Drag the motor and rotor onto the right pad.",
         why: "The load goes on last. The circuit is then complete, but still isolated until you use the switch."
     }
 ];
@@ -969,7 +949,7 @@ const markerPlane = new THREE.Plane();
 
 
 /* ==========================================
-   SYSTEM SOUND (simple hum)
+   MOTOR SOUND
 ========================================== */
 
 let audioContext = null;
@@ -977,9 +957,52 @@ let oscillator1 = null;
 let oscillator2 = null;
 let masterGain = null;
 let noiseSource = null;
+let motorAudio = null;
+let audioUnlocked = false;
 
 
-function startSystemSound() {
+function makeMotorWavUrl() {
+
+    const sampleRate = 22050;
+    const n = sampleRate;
+    const dataSize = n * 2;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+
+    function writeStr(offset, text) {
+        for (let i = 0; i < text.length; i += 1) {
+            view.setUint8(offset + i, text.charCodeAt(i));
+        }
+    }
+
+    writeStr(0, "RIFF");
+    view.setUint32(4, 36 + dataSize, true);
+    writeStr(8, "WAVE");
+    writeStr(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, "data");
+    view.setUint32(40, dataSize, true);
+
+    for (let i = 0; i < n; i += 1) {
+        const t = i / sampleRate;
+        const sample = Math.sin(2 * Math.PI * 78 * t) * 0.5
+            + Math.sin(2 * Math.PI * 156 * t) * 0.25
+            + Math.sin(2 * Math.PI * 39 * t) * 0.15;
+        view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, sample)) * 30000, true);
+    }
+
+    return URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
+
+}
+
+
+function unlockAudio() {
 
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -989,59 +1012,82 @@ function startSystemSound() {
         audioContext.resume();
     }
 
-    if (oscillator1) {
+    if (!motorAudio) {
+        motorAudio = new Audio(makeMotorWavUrl());
+        motorAudio.loop = true;
+        motorAudio.volume = 0.8;
+        motorAudio.setAttribute("playsinline", "true");
+    }
+
+    const playPromise = motorAudio.play();
+
+    if (playPromise && playPromise.then) {
+        playPromise.then(function () {
+            if (!systemRunning) {
+                motorAudio.pause();
+                motorAudio.currentTime = 0;
+            }
+            audioUnlocked = true;
+        }).catch(function () {});
+    }
+
+}
+
+
+function startOscillators() {
+
+    if (!audioContext || oscillator1) {
         return;
     }
 
     masterGain = audioContext.createGain();
-    masterGain.gain.value = 0;
+    masterGain.gain.value = 0.32;
     masterGain.connect(audioContext.destination);
-    masterGain.gain.linearRampToValueAtTime(0.28, audioContext.currentTime + 0.12);
-
-    const filter = audioContext.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = 900;
-    filter.connect(masterGain);
 
     oscillator1 = audioContext.createOscillator();
     oscillator1.type = "sawtooth";
-    oscillator1.frequency.value = 68;
-    oscillator1.connect(filter);
+    oscillator1.frequency.value = 72;
+    oscillator1.connect(masterGain);
 
     oscillator2 = audioContext.createOscillator();
     oscillator2.type = "triangle";
-    oscillator2.frequency.value = 136;
+    oscillator2.frequency.value = 144;
 
     const whirGain = audioContext.createGain();
-    whirGain.gain.value = 0.35;
+    whirGain.gain.value = 0.4;
     oscillator2.connect(whirGain);
     whirGain.connect(masterGain);
 
-    const bufferSize = audioContext.sampleRate * 1.5;
-    const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-
-    for (let i = 0; i < bufferSize; i += 1) {
-        data[i] = (Math.random() * 2 - 1) * 0.18;
-    }
-
-    noiseSource = audioContext.createBufferSource();
-    noiseSource.buffer = noiseBuffer;
-    noiseSource.loop = true;
-
-    const noiseGain = audioContext.createGain();
-    noiseGain.gain.value = 0.22;
-    noiseSource.connect(noiseGain);
-    noiseGain.connect(filter);
-
     oscillator1.start();
     oscillator2.start();
-    noiseSource.start();
+
+}
+
+
+function startSystemSound() {
+
+    unlockAudio();
+
+    if (motorAudio) {
+        motorAudio.currentTime = 0;
+        motorAudio.play().catch(function () {});
+    }
+
+    if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume().then(startOscillators);
+    } else {
+        startOscillators();
+    }
 
 }
 
 
 function stopSystemSound() {
+
+    if (motorAudio) {
+        motorAudio.pause();
+        motorAudio.currentTime = 0;
+    }
 
     if (oscillator1) {
         try { oscillator1.stop(); } catch (error) {}
@@ -1314,7 +1360,7 @@ function renderCoach() {
         trainStep.textContent = "Step 0 of 3";
         progressBar.style.width = "6%";
         trainTitle.textContent = "Battery-powered turbine trainer";
-        trainBody.textContent = "Scan the Hiro marker. Drag each part from the tray onto its glowing slot, then start and isolate the drive.";
+        trainBody.textContent = "Scan the Hiro marker, then drag each part onto its own pad.";
         trainWhy.textContent = "This is a familiarisation module, not a workplace procedure.";
         return;
     }
@@ -1487,7 +1533,9 @@ function updateSystemBadge() {
 function setSlotVisible(part, visible) {
 
     part.pad.setAttribute("visible", visible);
-    part.ring.setAttribute("visible", visible);
+    if (part.ring) {
+        part.ring.setAttribute("visible", false);
+    }
 
 }
 
@@ -1516,7 +1564,7 @@ function refreshAssemblyLook() {
     setTrayVisible(phase === "assemble" || phase === "scan" ? !allPlaced() : false);
 
     if (phase === "assemble") {
-        trayLabel.setAttribute("value", "DRAG ONTO THE GLOWING SLOT");
+        trayLabel.setAttribute("value", "DRAG TO A PAD");
     } else {
         trayLabel.setAttribute("value", "PARTS TRAY");
     }
@@ -1950,6 +1998,8 @@ function isUiTarget(target) {
 
 function onPointerDown(event) {
 
+    unlockAudio();
+
     if (isUiTarget(event.target)) {
         return;
     }
@@ -2214,13 +2264,8 @@ continueBtn.addEventListener("click", function (event) {
 startMotorBtn.addEventListener("click", function (event) {
     event.preventDefault();
     event.stopPropagation();
+    unlockAudio();
     if (phase === "operate") {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioContext.state === "suspended") {
-            audioContext.resume();
-        }
         toggleSystem();
     }
 });
