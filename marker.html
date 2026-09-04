@@ -415,18 +415,18 @@
       <!-- ===========================
            DROP PADS
       ============================ -->
-      <a-cylinder id="motorPad" position="-0.58 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="motorRing" position="-0.58 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="motorPad" position="-0.40 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="motorRing" position="-0.40 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
 
       <a-cylinder id="couplingPad" position="0 0.008 -0.18" radius="0.18" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
       <a-ring id="couplingRing" position="0 0.017 -0.18" rotation="-90 0 0" radius-inner="0.18" radius-outer="0.215" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-cylinder id="pumpPad" position="0.58 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="pumpRing" position="0.58 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="pumpPad" position="0.40 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="pumpRing" position="0.40 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-text id="motorSlotLabel" value="MOTOR" position="-0.58 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
+      <a-text id="motorSlotLabel" value="MOTOR" position="-0.40 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
-      <a-text id="pumpSlotLabel" value="PUMP" position="0.58 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="pumpSlotLabel" value="PUMP" position="0.40 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
       <!-- ===========================
            PARTS TRAY
@@ -456,22 +456,67 @@
       </a-entity>
 
       <!-- ===========================
-           COUPLING PART (REAL MODEL)
+           COUPLING PART (CODED MECHANICAL COUPLING)
+           No external coupling.glb is required.
       ============================ -->
       <a-entity id="couplingPart" position="0 0.12 0.78" scale="1 1 1">
-        <a-entity id="couplingVisual" position="0 0.045 0">
-          <a-entity id="couplingOrientation" rotation="0 90 0">
-            <a-entity id="couplingFallback">
-              <a-cylinder position="-0.05 0.06 0" rotation="0 0 90" radius="0.06" height="0.08" color="#f59e0b"></a-cylinder>
-              <a-cylinder position="0.05 0.06 0" rotation="0 0 90" radius="0.06" height="0.08" color="#f59e0b"></a-cylinder>
-              <a-cylinder position="0 0.06 0" rotation="0 0 90" radius="0.026" height="0.20" color="#fde68a"></a-cylinder>
-            </a-entity>
-            <a-entity id="couplingRealModel" gltf-model="url(models/coupling.glb)"
-                      normalize-local-model="size: 0.19; lift: 0.008"></a-entity>
-          </a-entity>
+        <a-entity id="couplingVisual" position="0 0.095 0">
+          <!-- common shaft through the coupling -->
+          <a-cylinder position="0 0 0" rotation="0 0 90"
+                      radius="0.024" height="0.30" color="#cbd5e1"
+                      material="metalness: 0.75; roughness: 0.25"></a-cylinder>
+
+          <!-- left hub -->
+          <a-cylinder position="-0.070 0 0" rotation="0 0 90"
+                      radius="0.072" height="0.085" color="#f59e0b"
+                      material="metalness: 0.55; roughness: 0.32"></a-cylinder>
+          <a-cylinder position="-0.118 0 0" rotation="0 0 90"
+                      radius="0.045" height="0.028" color="#64748b"
+                      material="metalness: 0.8; roughness: 0.22"></a-cylinder>
+
+          <!-- flexible centre insert -->
+          <a-cylinder position="0 0 0" rotation="0 0 90"
+                      radius="0.060" height="0.050" color="#111827"
+                      material="metalness: 0.15; roughness: 0.65"></a-cylinder>
+          <a-torus position="0 0 0" rotation="0 90 0"
+                   radius="0.052" radius-tubular="0.014"
+                   color="#fde047"
+                   material="metalness: 0.25; roughness: 0.48"></a-torus>
+
+          <!-- right hub -->
+          <a-cylinder position="0.070 0 0" rotation="0 0 90"
+                      radius="0.072" height="0.085" color="#f59e0b"
+                      material="metalness: 0.55; roughness: 0.32"></a-cylinder>
+          <a-cylinder position="0.118 0 0" rotation="0 0 90"
+                      radius="0.045" height="0.028" color="#64748b"
+                      material="metalness: 0.8; roughness: 0.22"></a-cylinder>
+
+          <!-- small bolt heads for a more mechanical look -->
+          <a-sphere position="-0.045 0.052 0" radius="0.012" color="#e2e8f0"></a-sphere>
+          <a-sphere position="-0.045 -0.052 0" radius="0.012" color="#e2e8f0"></a-sphere>
+          <a-sphere position="0.045 0.052 0" radius="0.012" color="#e2e8f0"></a-sphere>
+          <a-sphere position="0.045 -0.052 0" radius="0.012" color="#e2e8f0"></a-sphere>
         </a-entity>
-        <a-box id="couplingHit" width="0.34" height="0.30" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.27 0" scale="0.13 0.13 0.13" align="center" color="#ffffff"></a-text>
+        <a-box id="couplingHit" width="0.36" height="0.32" depth="0.34"
+               material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.29 0"
+                scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      </a-entity>
+
+      <!-- Visible mechanical shafts connecting all three units after assembly -->
+      <a-entity id="driveShafts" visible="false">
+        <a-cylinder position="-0.205 0.195 -0.18" rotation="0 0 90"
+                    radius="0.022" height="0.185" color="#94a3b8"
+                    material="metalness: 0.85; roughness: 0.20"></a-cylinder>
+        <a-cylinder position="0.205 0.195 -0.18" rotation="0 0 90"
+                    radius="0.022" height="0.185" color="#94a3b8"
+                    material="metalness: 0.85; roughness: 0.20"></a-cylinder>
+        <a-cylinder position="-0.305 0.195 -0.18" rotation="0 0 90"
+                    radius="0.032" height="0.055" color="#475569"
+                    material="metalness: 0.75; roughness: 0.25"></a-cylinder>
+        <a-cylinder position="0.305 0.195 -0.18" rotation="0 0 90"
+                    radius="0.032" height="0.055" color="#475569"
+                    material="metalness: 0.75; roughness: 0.25"></a-cylinder>
       </a-entity>
 
       <!-- ===========================
@@ -594,16 +639,14 @@
     const couplingVisual = document.getElementById("couplingVisual");
     const pumpImpeller = document.getElementById("pumpImpeller");
     const motorRealModel = document.getElementById("motorRealModel");
-    const couplingRealModel = document.getElementById("couplingRealModel");
     const pumpRealModel = document.getElementById("pumpRealModel");
     const motorFallback = document.getElementById("motorFallback");
-    const couplingFallback = document.getElementById("couplingFallback");
     const pumpFallback = document.getElementById("pumpFallback");
+    const driveShafts = document.getElementById("driveShafts");
 
     // Real-model load diagnostics. If a file/path is wrong, the app says exactly which one.
     [
       [motorRealModel, motorFallback, "Motor", "models/motor.glb"],
-      [couplingRealModel, couplingFallback, "Coupling", "models/coupling.glb"],
       [pumpRealModel, pumpFallback, "Pump", "models/pump.glb"]
     ].forEach(([el, fallback, name, path]) => {
       if (!el) return;
@@ -646,7 +689,7 @@
         ring: motorRing,
         carryLabel: motorCarryLabel,
         trayPos: { x: -0.58, y: MODEL_Y, z: 0.78 },
-        slotPos: { x: -0.58, y: MODEL_Y, z: -0.18 },
+        slotPos: { x: -0.40, y: MODEL_Y, z: -0.18 },
         why: "The motor provides rotational power to the pump drive.",
         placed: false
       },
@@ -670,7 +713,7 @@
         ring: pumpRing,
         carryLabel: pumpCarryLabel,
         trayPos: { x: 0.58, y: MODEL_Y, z: 0.78 },
-        slotPos: { x: 0.58, y: MODEL_Y, z: -0.18 },
+        slotPos: { x: 0.40, y: MODEL_Y, z: -0.18 },
         why: "The pump is the driven equipment that moves the fluid.",
         placed: false
       }
@@ -759,6 +802,7 @@
     function addMistake() {
       mistakes += 1;
       scoreText.textContent = "Mistakes " + mistakes;
+      setVisible(driveShafts, allPartsPlaced() && phase !== "scan");
     }
 
     function markerIsTracked() {
@@ -879,8 +923,8 @@
         stepText.textContent = "Step 2 of 6 · Test";
         progressBar.style.width = "55%";
         coachTitle.textContent = "Machine assembled";
-        coachBody.textContent = "Start the machine test. Observe the motor, coupling and pump rotation.";
-        coachWhy.textContent = "A coupled drive should transmit rotation smoothly from the motor to the pump.";
+        coachBody.textContent = "The motor, coded shaft coupling and pump are now mechanically connected. Start the machine test.";
+        coachWhy.textContent = "The visible shafts and coupling show how torque is transmitted from the motor to the pump.";
         setStatus("READY TO TEST", "ready");
         controlArea.classList.add("visible");
         startTestBtn.style.display = "block";
@@ -1026,8 +1070,8 @@
       faultIntroduced = true;
 
       // Visually misalign the coupling slightly.
-      couplingVisual.object3D.position.z = 0.08;
-      couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(14);
+      couplingVisual.object3D.position.z = 0.075;
+      couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(12);
 
       setVisible(faultIndicator, true);
       showDiagnosisActions(true);
@@ -1386,9 +1430,9 @@
         correctionProgress = Math.min(1, correctionProgress + 0.025);
         const t = 1 - Math.pow(1 - correctionProgress, 3);
 
-        couplingVisual.object3D.position.z = THREE.MathUtils.lerp(0.105, 0, t);
+        couplingVisual.object3D.position.z = THREE.MathUtils.lerp(0.075, 0, t);
         couplingVisual.object3D.rotation.y = THREE.MathUtils.lerp(
-          THREE.MathUtils.degToRad(10),
+          THREE.MathUtils.degToRad(12),
           0,
           t
         );
