@@ -592,7 +592,7 @@
         );
 
 
-        window.addEventListener(
+        window.addEventListener(   //Promise catch unhandled error
             "unhandledrejection",
             function (event) {
 
@@ -624,32 +624,32 @@
     </script>
 
 
-    <script type="module">
+    <script type="module"> // say javascript to import this model 
 
-        import * as THREE from
+        import * as THREE from //
             "https://esm.sh/three@0.164.1";
 
 
-        import { ARButton } from
+        import { ARButton } from  // get ARButton from three.js examples to add AR button to the page ready made code 
             "https://esm.sh/three@0.164.1/examples/jsm/webxr/ARButton.js";
 
 
-        import { GLTFLoader } from
+        import { GLTFLoader } from // use load GLB/GLTF 3D model file wed site
             "https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js";
 
 
         /* ==============================
            THREE
         ============================== */
-
+        // declare variable for three.js scene, camera, renderer, controller, reticle
         let scene;
         let camera;
         let renderer;
-        let controller;
+        let controller;//User touch/select action handle  XR controller
         let reticle;
 
 
-        let hitTestSource =
+        let hitTestSource = // vr can keep real world place select scource
             null;
 
 
@@ -669,7 +669,7 @@
             null;
 
 
-        let conveyorReady =
+        let conveyorReady = // check model load ready when its load come true 
             false;
 
 
@@ -681,7 +681,7 @@
            PLACED MODELS
         ============================== */
 
-        let placedConveyor =
+        let placedConveyor = // this are ue keep memoery in now real word place model 
             null;
 
 
@@ -706,7 +706,7 @@
            APP STATE
         ============================== */
 
-        let placementMode =
+        let placementMode = // first use can place becouse place mode on  other inscpion this are false becouse without place model can do other
             true;
 
 
@@ -742,7 +742,7 @@
             0;
 
 
-        let currentHotspot =
+        let currentHotspot = // in this inspection time want rezise use 
             null;
 
 
@@ -884,7 +884,7 @@
            SCALE
         ============================== */
 
-        const CONVEYOR_DEFAULT_SCALE =
+        const CONVEYOR_DEFAULT_SCALE = // this are the model size 
     0.45;
 
 
@@ -1076,7 +1076,7 @@
            MODEL URLS
         ============================== */
 
-        const CONVEYOR_URL =
+        const CONVEYOR_URL =  // this are model link 
             new URL(
                 "./models/conveyor.glb",
                 window.location.href
@@ -1095,20 +1095,20 @@
 
         /* ==============================
            INITIALISE
-        ============================== */
+         */
 
         async function init() {
+// say browes to wite thisfunction have more work to do 
 
-
-            info.textContent =
+            info.textContent = // this use async say wite this have do lot of thing say wite 
                 "Loading equipment models...";
 
 
-            scene =
+            scene = // this are use three.js scene to add model and light and camera
                 new THREE.Scene();
 
 
-            camera =
+            camera = // them make the camera to fix pohne screen 
                 new THREE.PerspectiveCamera(
                     70,
                     window.innerWidth /
@@ -1118,28 +1118,28 @@
                 );
 
 
-            renderer =
+            renderer = // Create the Three.js WebGL renderer
                 new THREE.WebGLRenderer({
-                    antialias: true,
-                    alpha: true
+                    antialias: true,// make model smooth edges
+                    alpha: true // allow transparent background
                 });
 
 
             renderer.setPixelRatio(
-                Math.min(  // set qulity based on device pixel ratio
+                Math.min(  // set qulity based on device pixel ratio pohne scern qulty base make render qulity
                     window.devicePixelRatio,
                     2
                 )
             );
 
 
-            renderer.setSize(
+            renderer.setSize( // say use full screen size to render model
                 window.innerWidth,
                 window.innerHeight
             );
 
 
-            renderer.xr.enabled =
+            renderer.xr.enabled = // give render to permssion to setup ar session
                 true;
 
 
@@ -1196,7 +1196,7 @@
                 );
 
 
-            reticleGeometry.rotateX(
+            reticleGeometry.rotateX( // this are use ring without keep vertical make horizontal
                 -Math.PI / 2
             );
 
@@ -1234,7 +1234,7 @@
                 );
 
 
-            controller.addEventListener(
+            controller.addEventListener( // in this controller add event listner when user tap the screen this are call onSelect function
                 "select",
                 onSelect
             );
@@ -1248,7 +1248,7 @@
             await loadModels();
 
 
-            const arButton =
+            const arButton = // make the AR button to start AR session and add to the page
                 ARButton.createButton(
                     renderer,
                     {
@@ -1257,7 +1257,7 @@
                         ],
 
                         optionalFeatures: [
-                            "dom-overlay"
+                            "dom-overlay" // support ar disply in page 
                         ],
 
                         domOverlay: {
@@ -1275,17 +1275,17 @@
 
             /* SESSION START */
 
-            renderer.xr.addEventListener(
+            renderer.xr.addEventListener( // run this function whne use clike sart 
                 "sessionstart",
                 function () {
 
 
-                    arPanel.style.display =
+                    arPanel.style.display = // ar button hide
                         "flex";
 
 
                     equipmentSelector.style.display =
-                        "grid";
+                        "grid"; // disply two model     
 
 
                     controls.style.display =
@@ -1300,19 +1300,19 @@
                         "none";
 
 
-                    selectedEquipment =
+                    selectedEquipment = // this are default model select
                         "conveyor";
 
 
-                    selectedObject =
+                    selectedObject = 
                         null;
 
 
-                    placementMode =
+                    placementMode = // now place mode on user can place model in real world
                         true;
 
 
-                    repositionMode =
+                    repositionMode = // cant move becouse user not place model yet
                         false;
 
 
@@ -1328,7 +1328,7 @@
                         null;
 
 
-                    conveyorButton.classList.add(
+                    conveyorButton.classList.add(  // add css class to show conveyois selecte 
                         "active"
                     );
 
@@ -1347,7 +1347,7 @@
 
             /* SESSION END */
 
-            renderer.xr.addEventListener(
+            renderer.xr.addEventListener( // this so whne ar session close run this function and remove all
                 "sessionend",
                 function () {
 
@@ -1441,7 +1441,7 @@
             );
 
 
-            renderer.setAnimationLoop(
+            renderer.setAnimationLoop( // in this say run this function every frame to update the 3D scene  then see camer 
                 render
             );
 
@@ -1452,14 +1452,14 @@
            LOAD MODELS
         ============================== */
 
-        async function loadModels() {
+        async function loadModels() {// hree.js GLTFLoader to load GLB 3D models.
 
 
-            const loader =
+            const loader =  // load the 3D model using GLTFLoader from three.js examples
                 new GLTFLoader();
 
 
-            const conveyorPromise =
+            const conveyorPromise = // say load conveyor model and return promise when load complete or error
                 new Promise(
                     function (
                         resolve,
@@ -1467,13 +1467,13 @@
                     ) {
 
 
-                        loader.load(
+                        loader.load(  // say get this url file 
                             CONVEYOR_URL,
 
-                            function (gltf) {
+                            function (gltf) { // whn model load complete this function run and get the gltf object
 
                                 conveyorTemplate =
-                                    gltf.scene;
+                                    gltf.scene;  // save the loaded model scene to conveyorTemplate
 
 
                                 prepareModel(
@@ -1488,7 +1488,7 @@
                                 resolve();
                             },
 
-                            undefined,
+                            undefined, // callback for progress (not used here)
 
                             reject
                         );
@@ -1500,8 +1500,8 @@
             const machinePromise =
                 new Promise(
                     function (
-                        resolve,
-                        reject
+                        resolve,  // done 
+                        reject// fail  
                     ) {
 
 
@@ -1538,7 +1538,7 @@
             try {
 
 
-                await Promise.all([
+                await Promise.all([ // say wait for both model load complete or error
                     conveyorPromise,
                     machinePromise
                 ]);
@@ -1561,14 +1561,14 @@
             }
 
         }
-
+ // ready to befor use 
 
         function prepareModel(
             model
         ) {
 
 
-            model.traverse(
+            model.traverse( // say check ever part model 
                 function (child) {
 
 
@@ -1576,7 +1576,7 @@
                         child.isMesh
                     ) {
 
-
+// remove frustum culling to ensure the model is always rendered in AR, even if it is outside the camera's view frustum.
                         child.frustumCulled =
                             false;
                     }
@@ -1600,7 +1600,7 @@
 
 
                 return conveyorTemplate.clone(
-                    true
+                    true   // use make copy becouse orinala model cant be chngethen chngeonly place model 
                 );
             }
 
@@ -1622,13 +1622,13 @@
 
         }
 
-
+// this work is give startin size
         function getDefaultScale(
             type
         ) {
 
 
-            return (
+            return ( // if condtion 
                 type === "conveyor"
                 ?
                 CONVEYOR_DEFAULT_SCALE
@@ -1644,7 +1644,7 @@
         ============================== */
 
         conveyorButton.addEventListener(
-            "click",
+            "click",  // user clike  this button run this function 
             function () {
 
 
@@ -1665,7 +1665,7 @@
 
                 conveyorButton.classList.add(
                     "active"
-                );
+                );  // css class add
 
 
                 machineButton.classList.remove(
@@ -1818,7 +1818,7 @@
         /* ==============================
            XR TAP
         ============================== */
-
+// user tap what happen 
         function onSelect() {
 
 
@@ -1841,14 +1841,14 @@
             /* MOVE */
 
             if (
-                repositionMode
+                repositionMode // yes object seelect and user want move object in real world
                 &&
                 selectedObject
             ) {
 
 
                 if (
-                    !reticle.visible
+                    !reticle.visible   // floor surface not detect yet ring not visisbla 
                 ) {
 
 
@@ -1864,12 +1864,12 @@
                     new THREE.Vector3();
 
 
-                position.setFromMatrixPosition(
+                position.setFromMatrixPosition( // use to get the location of the reticle in 3D space and store it in the position vector.
                     reticle.matrix
                 );
 
 
-                selectedObject.position.copy(
+                selectedObject.position.copy( // move the selected object to the new
                     position
                 );
 
@@ -1887,7 +1887,7 @@
 
 
                 controls.style.display =
-                    "grid";
+                    "grid"; // disply button
 
 
                 info.textContent =
@@ -1926,7 +1926,7 @@
             }
 
 
-            const newObject =
+            const newObject = // new model create based on the selected equipment type (conveyor or machine) using the createModel function.
                 createModel(
                     selectedEquipment
                 );
@@ -1936,7 +1936,7 @@
                 !newObject
             ) {
 
-
+// when we load one time agin move modl want load 
                 info.textContent =
                     "Selected equipment is not ready";
 
@@ -2047,19 +2047,19 @@
         ============================== */
 
         function rotateSelected(
-            degrees
+            degrees // give direction and how much degree want rotate
         ) {
 
 
             if (
-                !selectedObject
+                !selectedObject // say check user select object or not if not return any thing 
             ) {
                 return;
             }
 
 
             selectedObject.rotation.y +=
-
+// rotaed 0+15 
                 THREE.MathUtils.degToRad(
                     degrees
                 );
@@ -2075,14 +2075,14 @@
 
         }
 
-
+// too resize 
         function resizeSelected(
             amount
         ) {
 
 
             if (
-                !selectedObject
+                !selectedObject // check user select object or not if not return any thing
             ) {
                 return;
             }
@@ -2090,7 +2090,7 @@
 
             let scale =
                 selectedObject
-                    .userData
+                    .userData // three.js we can save our data in this save current size 
                     .currentScale;
 
 
@@ -2131,14 +2131,14 @@
                 : "Size: "
                   +
                   Math.round(
-                      scale * 100
+                      scale * 100  // limt size 15% to 80% user can resize
                   )
                   +
                   "%";
 
         }
 
-
+// whne this function run if clike this buuton 
         rotateLeft.addEventListener(
             "click",
             function () {
@@ -2149,7 +2149,7 @@
 
 
                 if (
-                    !repositionMode
+                    !repositionMode // check user not move object if user want move object this function not run
                 ) {
 
 
@@ -2302,7 +2302,7 @@
         /* ==============================
            MOVE
         ============================== */
-
+// move button click this function run and user can move model in real world
         moveButton.addEventListener(
             "click",
             function () {
@@ -2345,13 +2345,13 @@
         /* ==============================
            REMOVE
         ============================== */
-
+// remove button click this function run and user can remove model in real world
         removeButton.addEventListener(
             "click",
             function () {
 
 
-                ignoreSelectUntil =
+                ignoreSelectUntil = //// Ignore selection events for 600ms to prevent duplicate/accidental selection
                     performance.now() + 600;
 
 
@@ -2456,7 +2456,7 @@
         /* ==============================
            FOCUS INSPECTION
         ============================== */
-
+// ispsection time other model disply hide use this
         function hideOtherEquipmentForInspection() {
 
 
@@ -2503,7 +2503,7 @@
 
         }
 
-
+// whne inscption after restored other model also 
         function restoreOtherEquipmentAfterInspection() {
 
 
@@ -2526,7 +2526,7 @@
         /* ==============================
            RESTART
         ============================== */
-
+// whne click resart button this function run and user can restart the training
         resetButton.addEventListener(
             "click",
             function () {
@@ -2640,7 +2640,7 @@
         /* ==============================
            START INSPECTION
         ============================== */
-
+// when clikck start button call this function 
         inspectionButton.addEventListener(
             "click",
             function () {
@@ -2651,7 +2651,7 @@
 
 
                 if (
-                    !selectedObject
+                    !selectedObject // check user select object or not if not return any thing
                 ) {
                     return;
                 }
@@ -2715,7 +2715,7 @@
             }
         );
 
-
+// use this function to get the inspection steps based on the selected equipment type (conveyor or machine). It returns the appropriate array of inspection steps for the current equipment.
         function getInspectionSteps() {
 
 
@@ -2734,61 +2734,61 @@
         /* ==============================
            LOCAL BOUNDING BOX
         ============================== */
-
+// in this function we calculate the bounding box of a 3D object and its children in local space. It traverses the object's hierarchy, computes the bounding boxes of meshes, and combines them to get the overall bounding box for the entire object. If no meshes are found, it returns a default bounding box.
         function getLocalBoundingBox(
-            root
+            root // model 
         ) {
 
 
             const result =
-                new THREE.Box3();
+                new THREE.Box3();// make 3d box 
 
 
             result.makeEmpty();
 
 
             root.updateMatrixWorld(
-                true
+                true  // Update the world matrix postion size
             );
 
 
-            const inverseRoot =
+            const inverseRoot = 
                 root.matrixWorld
                     .clone()
                     .invert();
 
 
-            root.traverse(
+            root.traverse( // say check every part in model
                 function (child) {
 
 
-                    if (
-                        !child.isMesh
+                    if (   // ask this 3d shpe 
+                        !child.isMesh 
                         ||
-                        !child.geometry
+                        !child.geometry // have shpa data  or not then skip 
                     ) {
                         return;
                     }
 
 
                     if (
-                        !child.geometry.boundingBox
+                        !child.geometry.boundingBox // chekc have box 
                     ) {
 
 
-                        child.geometry
+                        child.geometry // not make box 
                             .computeBoundingBox();
                     }
 
 
-                    const childBox =
+                    const childBox = // copy orinagla box cant chnge it 
                         child.geometry
                             .boundingBox
                             .clone();
 
 
                     const childToRoot =
-                        new THREE.Matrix4()
+                        new THREE.Matrix4() 
                             .multiplyMatrices(
                                 inverseRoot,
                                 child.matrixWorld
@@ -2796,12 +2796,12 @@
 
 
                     childBox.applyMatrix4(
-                        childToRoot
+                        childToRoot //move box corect position
                     );
 
 
                     result.union(
-                        childBox
+                        childBox  // combine all box to one box
                     );
 
                 }
@@ -2810,10 +2810,10 @@
 
             if (
                 result.isEmpty()
-            ) {
+            ) {  // check box meet 
 
 
-                result.set(
+                result.set( // not put normal box 
                     new THREE.Vector3(
                         -0.5,
                         -0.5,
@@ -2837,14 +2837,14 @@
         /* ==============================
            PROFESSIONAL MARKER
         ============================== */
-
+// in this use to make maker setp number in under model and user can see which step is this
         function createHotspotSprite(
             stepNumber
         ) {
 
 
             const canvas =
-                document.createElement(
+                document.createElement( // this like paper and we can draw on it using 2D context
                     "canvas"
                 );
 
@@ -2863,7 +2863,7 @@
                 );
 
 
-            context.clearRect(
+            context.clearRect( //circle clear and draw new circle
                 0,
                 0,
                 128,
@@ -2945,7 +2945,7 @@
             );
 
 
-            const texture =
+            const texture = // conver 2d in to 3d 
                 new THREE.CanvasTexture(
                     canvas
                 );
@@ -2955,7 +2955,7 @@
                 THREE.SRGBColorSpace;
 
 
-            const material =
+            const material = // add marker in to image
                 new THREE.SpriteMaterial({
                     map: texture,
                     transparent: true,
@@ -2970,7 +2970,7 @@
                 );
 
 
-            sprite.renderOrder =
+            sprite.renderOrder =  // not hide by other model
                 1000;
 
 
@@ -2978,7 +2978,7 @@
 
         }
 
-
+// use to reomve marker when user click next button and move to next step
         function removeInspectionHotspot() {
 
 
@@ -3043,22 +3043,22 @@
 
 
             const steps =
-                getInspectionSteps();
+                getInspectionSteps(); // get inscption list based on user select model
 
 
-            const stepData =
+            const stepData = // get current setp 
                 steps[
                     inspectionStep
                 ];
 
-
+// get matchin size 
             const box =
                 getLocalBoundingBox(
                     selectedObject
                 );
 
 
-            const center =
+            const center = // get center of the box
                 new THREE.Vector3();
 
 
@@ -3080,7 +3080,7 @@
                 stepData.offset;
 
 
-            const position =
+            const position = // where the keep marker 
                 new THREE.Vector3(
 
                     center.x
@@ -3105,7 +3105,7 @@
 
 
             currentHotspot =
-                createHotspotSprite(
+                createHotspotSprite( // put setp 0 to number 1 
                     inspectionStep + 1
                 );
 
@@ -3142,7 +3142,7 @@
             );
 
 
-            selectedObject.add(
+            selectedObject.add(  // mark is move besed one modle move and rotate
                 currentHotspot
             );
 
@@ -3152,7 +3152,7 @@
         /* ==============================
            UPDATE INSPECTION
         ============================== */
-
+  // / use to disply cuurernt have inscption disply in bar
         function updateInspectionStep() {
 
 
@@ -3163,12 +3163,12 @@
             }
 
 
-            const steps =
+            const steps = 
                 getInspectionSteps();
 
 
             const step =
-                steps[
+                steps[ // get current setp
                     inspectionStep
                 ];
 
