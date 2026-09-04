@@ -331,8 +331,8 @@
       <a-plane
         position="0 -0.015 0"
         rotation="-90 0 0"
-        width="1.62"
-        height="0.94"
+        width="1.96"
+        height="1.30"
         color="#07111f"
         opacity="0.78"
         material="transparent: true; opacity: 0.78; side: double">
@@ -340,7 +340,7 @@
 
       <a-text
         value="WP-01  |  PUMP MAINTENANCE TRAINER"
-        position="0 0.09 -0.39"
+        position="0 0.10 -0.58"
         rotation="-90 0 0"
         scale="0.16 0.16 0.16"
         align="center"
@@ -348,36 +348,39 @@
       </a-text>
 
       <!-- connection line / shaft guide -->
-      <a-box position="0 0.022 0" width="1.1" height="0.012" depth="0.035" color="#475569"></a-box>
+      <a-box position="0 0.022 -0.18" width="1.42" height="0.014" depth="0.04" color="#475569"></a-box>
+
+
+      <!-- OPTIONAL REAL MODELS: download open-licensed GLB assets and replace the primitive motor/coupling/pump entities if you want a more realistic appearance. Recommended sources: Poly Pizza, Sketchfab CC, CGTrader Free. -->
 
       <!-- ===========================
            DROP PADS
       ============================ -->
-      <a-cylinder id="motorPad" position="-0.44 0.008 -0.10" radius="0.21" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="motorRing" position="-0.44 0.017 -0.10" rotation="-90 0 0" radius-inner="0.19" radius-outer="0.225" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="motorPad" position="-0.58 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="motorRing" position="-0.58 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-cylinder id="couplingPad" position="0 0.008 -0.10" radius="0.17" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="couplingRing" position="0 0.017 -0.10" rotation="-90 0 0" radius-inner="0.17" radius-outer="0.205" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="couplingPad" position="0 0.008 -0.18" radius="0.18" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="couplingRing" position="0 0.017 -0.18" rotation="-90 0 0" radius-inner="0.18" radius-outer="0.215" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-cylinder id="pumpPad" position="0.44 0.008 -0.10" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="pumpRing" position="0.44 0.017 -0.10" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.235" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="pumpPad" position="0.58 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="pumpRing" position="0.58 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-text id="motorSlotLabel" value="MOTOR" position="-0.44 0.08 -0.33" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
-      <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.08 -0.33" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
-      <a-text id="pumpSlotLabel" value="PUMP" position="0.44 0.08 -0.33" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="motorSlotLabel" value="MOTOR" position="-0.58 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="pumpSlotLabel" value="PUMP" position="0.58 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
       <!-- ===========================
            PARTS TRAY
       ============================ -->
       <a-entity id="partsTray">
-        <a-plane position="0 0.012 0.48" rotation="-90 0 0" width="1.38" height="0.30" color="#0f172a" opacity="0.92"></a-plane>
-        <a-text value="PARTS TRAY - DRAG TO THE GLOWING POSITION" position="0 0.035 0.34" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#7dd3fc"></a-text>
+        <a-plane position="0 0.012 0.76" rotation="-90 0 0" width="1.86" height="0.34" color="#0f172a" opacity="0.94"></a-plane>
+        <a-text value="PARTS TRAY - DRAG TO THE GLOWING POSITION" position="0 0.035 0.58" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#7dd3fc"></a-text>
       </a-entity>
 
       <!-- ===========================
            MOTOR PART
       ============================ -->
-      <a-entity id="motorPart" position="-0.46 0.06 0.52" scale="1.18 1.18 1.18">
+      <a-entity id="motorPart" position="-0.58 0.08 0.78" scale="1.28 1.28 1.28">
         <a-cylinder position="0 0.08 0" rotation="0 0 90" radius="0.11" height="0.25" color="#2563eb"></a-cylinder>
         <a-cylinder position="0.14 0.08 0" rotation="0 0 90" radius="0.045" height="0.12" color="#cbd5e1"></a-cylinder>
         <a-box position="0 0.005 0" width="0.28" height="0.035" depth="0.22" color="#334155"></a-box>
@@ -393,7 +396,7 @@
       <!-- ===========================
            COUPLING PART
       ============================ -->
-      <a-entity id="couplingPart" position="0 0.06 0.52" scale="1.22 1.22 1.22">
+      <a-entity id="couplingPart" position="0 0.08 0.78" scale="1.30 1.30 1.30">
         <a-entity id="couplingVisual">
           <a-cylinder position="-0.05 0.08 0" rotation="0 0 90" radius="0.075" height="0.09" color="#f59e0b"></a-cylinder>
           <a-cylinder position="0.05 0.08 0" rotation="0 0 90" radius="0.075" height="0.09" color="#f59e0b"></a-cylinder>
@@ -406,7 +409,7 @@
       <!-- ===========================
            PUMP PART
       ============================ -->
-      <a-entity id="pumpPart" position="0.46 0.06 0.52" scale="1.15 1.15 1.15">
+      <a-entity id="pumpPart" position="0.58 0.08 0.78" scale="1.24 1.24 1.24">
         <a-cylinder position="0 0.10 0" rotation="90 0 0" radius="0.14" height="0.18" color="#0ea5e9"></a-cylinder>
         <a-cylinder position="-0.15 0.10 0" rotation="0 0 90" radius="0.055" height="0.15" color="#94a3b8"></a-cylinder>
         <a-cylinder position="0.08 0.22 0" radius="0.055" height="0.17" color="#0ea5e9"></a-cylinder>
@@ -424,43 +427,43 @@
            FAULT INDICATOR
       ============================ -->
       <a-entity id="faultIndicator" visible="false">
-        <a-ring position="0 0.20 0" rotation="-90 0 0" radius-inner="0.19" radius-outer="0.23" color="#ef4444"></a-ring>
-        <a-text value="FAULT: ABNORMAL VIBRATION" position="0 0.18 -0.30" rotation="-90 0 0" scale="0.13 0.13 0.13" align="center" color="#fecaca"></a-text>
+        <a-ring position="0 0.24 -0.18" rotation="-90 0 0" radius-inner="0.22" radius-outer="0.26" color="#ef4444"></a-ring>
+        <a-text value="FAULT: ABNORMAL VIBRATION" position="0 0.28 -0.48" rotation="-90 0 0" scale="0.13 0.13 0.13" align="center" color="#fecaca"></a-text>
       </a-entity>
 
       <!-- ===========================
            MAINTENANCE ACTION TRAY
       ============================ -->
       <a-entity id="actionTray" visible="false">
-        <a-plane position="0 0.014 0.50" rotation="-90 0 0" width="1.46" height="0.38" color="#111827" opacity="0.96"></a-plane>
-        <a-text value="DRAG THE BEST INSPECTION ACTION TO THE FAULT" position="0 0.038 0.34" rotation="-90 0 0" scale="0.105 0.105 0.105" align="center" color="#fbbf24"></a-text>
+        <a-plane position="0 0.014 0.78" rotation="-90 0 0" width="1.92" height="0.40" color="#111827" opacity="0.96"></a-plane>
+        <a-text value="DRAG THE BEST INSPECTION ACTION TO THE FAULT" position="0 0.038 0.58" rotation="-90 0 0" scale="0.105 0.105 0.105" align="center" color="#fbbf24"></a-text>
       </a-entity>
 
-      <a-entity id="actionCheckCoupling" position="-0.46 0.07 0.52" scale="1.08 1.08 1.08" visible="false">
+      <a-entity id="actionCheckCoupling" position="-0.58 0.08 0.80" scale="1.08 1.08 1.08" visible="false">
         <a-box width="0.38" height="0.06" depth="0.22" color="#1d4ed8"></a-box>
         <a-text value="CHECK\nCOUPLING" position="0 0.045 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
       </a-entity>
 
-      <a-entity id="actionCheckLeak" position="0 0.07 0.52" scale="1.08 1.08 1.08" visible="false">
+      <a-entity id="actionCheckLeak" position="0 0.08 0.80" scale="1.08 1.08 1.08" visible="false">
         <a-box width="0.38" height="0.06" depth="0.22" color="#475569"></a-box>
         <a-text value="CHECK\nLEAKAGE" position="0 0.045 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
       </a-entity>
 
-      <a-entity id="actionReplaceMotor" position="0.46 0.07 0.52" scale="1.08 1.08 1.08" visible="false">
+      <a-entity id="actionReplaceMotor" position="0.58 0.08 0.80" scale="1.08 1.08 1.08" visible="false">
         <a-box width="0.38" height="0.06" depth="0.22" color="#475569"></a-box>
         <a-text value="REPLACE\nMOTOR" position="0 0.045 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- coupling target used in diagnosis -->
-      <a-cylinder id="diagnosisTarget" position="0 0.015 -0.10" radius="0.22" height="0.012" color="#f59e0b" opacity="0.24" material="transparent: true; opacity: 0.24" visible="false"></a-cylinder>
+      <a-cylinder id="diagnosisTarget" position="0 0.015 -0.18" radius="0.28" height="0.012" color="#f59e0b" opacity="0.24" material="transparent: true; opacity: 0.24" visible="false"></a-cylinder>
 
       <!-- safety isolation visual -->
-      <a-entity id="isolationTag" visible="false" position="-0.55 0.10 -0.32">
+      <a-entity id="isolationTag" visible="false" position="-0.78 0.12 -0.56">
         <a-box width="0.32" height="0.05" depth="0.20" color="#dc2626"></a-box>
         <a-text value="POWER\nISOLATED" position="0 0.04 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
       </a-entity>
 
-      <a-entity id="successMark" visible="false" position="0 0.12 -0.33">
+      <a-entity id="successMark" visible="false" position="0 0.14 -0.58">
         <a-ring rotation="-90 0 0" radius-inner="0.18" radius-outer="0.23" color="#22c55e"></a-ring>
         <a-text value="MAINTENANCE TRAINING COMPLETE" position="0 0.03 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#bbf7d0"></a-text>
       </a-entity>
@@ -531,11 +534,11 @@
     /* =====================================================
        CONFIG
     ====================================================== */
-    const MODEL_Y = 0.06;
+    const MODEL_Y = 0.08;
     const DRAG_Y = 0.22;
-    const PART_SNAP_DISTANCE = 0.34;
-    const ACTION_SNAP_DISTANCE = 0.34;
-    const GRAB_PIXELS = 190;
+    const PART_SNAP_DISTANCE = 0.40;
+    const ACTION_SNAP_DISTANCE = 0.40;
+    const GRAB_PIXELS = 230;
 
     const PARTS = {
       motor: {
@@ -545,8 +548,8 @@
         pad: motorPad,
         ring: motorRing,
         carryLabel: motorCarryLabel,
-        trayPos: { x: -0.46, y: MODEL_Y, z: 0.52 },
-        slotPos: { x: -0.44, y: MODEL_Y, z: -0.10 },
+        trayPos: { x: -0.58, y: MODEL_Y, z: 0.78 },
+        slotPos: { x: -0.58, y: MODEL_Y, z: -0.18 },
         why: "The motor provides rotational power to the pump drive.",
         placed: false
       },
@@ -557,8 +560,8 @@
         pad: couplingPad,
         ring: couplingRing,
         carryLabel: couplingCarryLabel,
-        trayPos: { x: 0, y: MODEL_Y, z: 0.52 },
-        slotPos: { x: 0, y: MODEL_Y, z: -0.10 },
+        trayPos: { x: 0, y: MODEL_Y, z: 0.78 },
+        slotPos: { x: 0, y: MODEL_Y, z: -0.18 },
         why: "The coupling transfers rotation from the motor shaft to the pump shaft.",
         placed: false
       },
@@ -569,8 +572,8 @@
         pad: pumpPad,
         ring: pumpRing,
         carryLabel: pumpCarryLabel,
-        trayPos: { x: 0.46, y: MODEL_Y, z: 0.52 },
-        slotPos: { x: 0.44, y: MODEL_Y, z: -0.10 },
+        trayPos: { x: 0.58, y: MODEL_Y, z: 0.78 },
+        slotPos: { x: 0.58, y: MODEL_Y, z: -0.18 },
         why: "The pump is the driven equipment that moves the fluid.",
         placed: false
       }
@@ -584,21 +587,21 @@
         id: "checkCoupling",
         name: "Check coupling",
         el: actionCheckCoupling,
-        trayPos: { x: -0.46, y: 0.07, z: 0.52 },
+        trayPos: { x: -0.58, y: 0.08, z: 0.80 },
         correct: true
       },
       {
         id: "checkLeak",
         name: "Check leakage",
         el: actionCheckLeak,
-        trayPos: { x: 0, y: 0.07, z: 0.52 },
+        trayPos: { x: 0, y: 0.08, z: 0.80 },
         correct: false
       },
       {
         id: "replaceMotor",
         name: "Replace motor",
         el: actionReplaceMotor,
-        trayPos: { x: 0.46, y: 0.07, z: 0.52 },
+        trayPos: { x: 0.58, y: 0.08, z: 0.80 },
         correct: false
       }
     ];
@@ -801,7 +804,7 @@
         stepText.textContent = "Step 3 of 6 · Diagnose";
         progressBar.style.width = "72%";
         coachTitle.textContent = "Fault detected: abnormal vibration";
-        coachBody.textContent = "Drag the best inspection action from the tray onto the highlighted fault area.";
+        coachBody.textContent = "All three parts are kept in a clear exploded view. Drag the best inspection action from the front tray onto the highlighted fault area.";
         coachWhy.textContent = "The vibration is strongest around the connection between the motor and pump.";
         setStatus("FAULT DETECTED", "warning");
         return;
@@ -951,7 +954,7 @@
       }
 
       const pos = action.el.object3D.position;
-      const nearFault = distance2D(pos.x, pos.z, 0, -0.10) < ACTION_SNAP_DISTANCE;
+      const nearFault = distance2D(pos.x, pos.z, 0, -0.18) < ACTION_SNAP_DISTANCE;
 
       if (!nearFault) {
         returnActionToTray(action);
@@ -1126,7 +1129,7 @@
         hoverTarget = distance2D(x, z, dragging.slotPos.x, dragging.slotPos.z) < PART_SNAP_DISTANCE;
         refreshAssemblyVisuals();
       } else {
-        hoverTarget = distance2D(x, z, 0, -0.10) < ACTION_SNAP_DISTANCE;
+        hoverTarget = distance2D(x, z, 0, -0.18) < ACTION_SNAP_DISTANCE;
         diagnosisTarget.setAttribute("color", hoverTarget ? "#22c55e" : "#f59e0b");
         diagnosisTarget.setAttribute("opacity", hoverTarget ? 0.50 : 0.24);
         diagnosisTarget.setAttribute("material", "opacity", hoverTarget ? 0.50 : 0.24);
