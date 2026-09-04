@@ -3,143 +3,149 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width,
-          initial-scale=1.0,
-          user-scalable=no">
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+user-scalable=no">
 
-    <title>FixAR | Motor Assembly Training</title>
-
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
-    <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+<title>FixAR | Motor Operation Training</title>
 
 
-    <style>
+<!-- A-Frame -->
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-
-            margin: 0;
-
-            width: 100%;
-            height: 100%;
-
-            overflow: hidden;
-
-            font-family: Arial, Helvetica, sans-serif;
-
-            background: #07111f;
-
-            touch-action: none;
-        }
+<!-- AR.js -->
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
 
-        canvas {
+<style>
 
-            touch-action: none !important;
-
-        }
-
-
-        #info {
-
-            position: fixed;
-
-            top: 12px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            width: calc(100% - 20px);
-            max-width: 470px;
-
-            padding: 11px 13px;
-
-            background: rgba(0, 0, 0, 0.84);
-
-            border: 1px solid #38bdf8;
-
-            border-radius: 10px;
-
-            color: white;
-
-            text-align: center;
-
-            font-size: 13px;
-
-            line-height: 1.35;
-
-            z-index: 1000;
-
-            pointer-events: none;
-        }
+*{
+    box-sizing:border-box;
+}
 
 
-        #progress {
+html,
+body{
 
-            position: fixed;
+    margin:0;
 
-            left: 15px;
-            bottom: 18px;
+    width:100%;
+    height:100%;
 
-            padding: 10px 14px;
+    overflow:hidden;
 
-            background: rgba(7, 17, 31, 0.95);
+    font-family:Arial,sans-serif;
 
-            border: 1px solid #38bdf8;
-
-            border-radius: 9px;
-
-            color: white;
-
-            font-size: 11px;
-            font-weight: bold;
-
-            z-index: 1000;
-        }
+    background:#07111f;
+}
 
 
-        #progress.complete {
+/* =========================
+   TOP MESSAGE
+========================= */
 
-            border-color: #22c55e;
+#info{
 
-            color: #86efac;
-        }
+    position:fixed;
+
+    top:12px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:calc(100% - 20px);
+
+    max-width:470px;
+
+    padding:11px 13px;
+
+    background:rgba(0,0,0,0.84);
+
+    border:1px solid #38bdf8;
+
+    border-radius:10px;
+
+    color:white;
+
+    text-align:center;
+
+    font-size:13px;
+
+    z-index:1000;
+
+    pointer-events:none;
+}
 
 
-        #resetBtn {
+/* =========================
+   MOTOR STATUS
+========================= */
 
-            position: fixed;
+#motorStatus{
 
-            right: 15px;
-            bottom: 18px;
+    position:fixed;
 
-            padding: 10px 14px;
+    left:15px;
+    bottom:18px;
 
-            border: 1px solid #38bdf8;
+    padding:10px 14px;
 
-            border-radius: 9px;
+    background:rgba(7,17,31,0.95);
 
-            background: rgba(7, 17, 31, 0.95);
+    border:1px solid #ef4444;
 
-            color: white;
+    border-radius:9px;
 
-            font-size: 11px;
-            font-weight: bold;
+    color:#fecaca;
 
-            z-index: 1000;
-        }
+    font-size:11px;
 
-    </style>
+    font-weight:bold;
+
+    z-index:1000;
+}
+
+
+#motorStatus.running{
+
+    border-color:#22c55e;
+
+    color:#86efac;
+}
+
+
+/* =========================
+   RESET BUTTON
+========================= */
+
+#resetBtn{
+
+    position:fixed;
+
+    right:15px;
+    bottom:18px;
+
+    padding:10px 14px;
+
+    border:1px solid #38bdf8;
+
+    border-radius:9px;
+
+    background:rgba(7,17,31,0.95);
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    z-index:1000;
+}
+
+</style>
 
 </head>
 
@@ -149,21 +155,21 @@
 
 <div id="info">
 
-    Point the camera at the Hiro marker.
+Point the camera at the Hiro marker.
 
 </div>
 
 
-<div id="progress">
+<div id="motorStatus">
 
-    Assembly: 0 / 3
+MOTOR OFF
 
 </div>
 
 
 <button id="resetBtn">
 
-    Reset
+Reset
 
 </button>
 
@@ -171,324 +177,160 @@
 
 <a-scene
 
-    id="scene"
+embedded
 
-    embedded
+renderer="
+antialias:true;
+colorManagement:true;
+"
 
-    renderer="
-        antialias: true;
-        colorManagement: true;
-    "
+arjs="
+sourceType:webcam;
+debugUIEnabled:false;
+">
 
-    arjs="
-        sourceType: webcam;
-        debugUIEnabled: false;
-    ">
 
 
+<a-marker
+id="hiroMarker"
+preset="hiro">
 
-    <a-marker
-        id="hiroMarker"
-        preset="hiro">
 
 
+<!-- =========================
+     MOTOR MODEL
+========================= -->
 
-        <!-- =====================================================
-             MOTOR MODEL
-        ====================================================== -->
+<a-entity
 
-        <a-entity
+id="motorModel"
 
-            id="motorModel"
+gltf-model="url(models/machine.glb)"
 
-            gltf-model="url(models/machine.glb)"
+position="0.15 0 0"
 
-            position="0.15 0 0"
+rotation="0 0 0"
 
-            rotation="0 0 0"
+scale="0.5 0.5 0.5">
 
-            scale="0.5 0.5 0.5">
+</a-entity>
 
-        </a-entity>
 
 
+<!-- =========================
+     SWITCH MODEL
+========================= -->
 
-        <!-- =====================================================
-             TARGET 1 - SHAFT
-        ====================================================== -->
+<a-entity
 
-        <a-cylinder
+id="switchModel"
 
-            id="shaftTarget"
+gltf-model="url(models/switch.glb)"
 
-            position="0.55 0.18 0.12"
+position="-0.55 0.10 0.18"
 
-            radius="0.11"
+rotation="0 0 0"
 
-            height="0.025"
+scale="0.15 0.15 0.15">
 
-            color="#f59e0b"
+</a-entity>
 
-            opacity="0.40">
 
-        </a-cylinder>
 
+<!-- =========================
+     INVISIBLE SWITCH TOUCH AREA
+========================= -->
 
-        <a-text
+<a-box
 
-            value="SHAFT"
+id="switchHitArea"
 
-            position="0.55 0.34 0.14"
+class="clickable"
 
-            scale="0.25 0.25 0.25"
+position="-0.55 0.10 0.18"
 
-            color="#ffffff"
+width="0.60"
 
-            align="center">
+height="0.55"
 
-        </a-text>
+depth="0.55"
 
+material="
+transparent:true;
+opacity:0.01;
+depthWrite:false;
+">
 
+</a-box>
 
-        <!-- =====================================================
-             TARGET 2 - FAN
-        ====================================================== -->
 
-        <a-cylinder
 
-            id="fanTarget"
+<!-- =========================
+     SWITCH LABEL
+========================= -->
 
-            position="0.30 0.18 -0.34"
+<a-text
 
-            radius="0.12"
+id="switchLabel"
 
-            height="0.025"
+value="TAP SWITCH"
 
-            color="#f59e0b"
+position="-0.55 0.38 0.22"
 
-            opacity="0.40">
+scale="0.30 0.30 0.30"
 
-        </a-cylinder>
+align="center"
 
+color="#ffffff">
 
-        <a-text
+</a-text>
 
-            value="FAN"
 
-            position="0.30 0.34 -0.34"
 
-            scale="0.25 0.25 0.25"
+<!-- =========================
+     MOTOR STATUS LABEL
+========================= -->
 
-            color="#ffffff"
+<a-text
 
-            align="center">
+id="motorLabel"
 
-        </a-text>
+value="MOTOR OFF"
 
+position="0.15 0.42 0.22"
 
+scale="0.32 0.32 0.32"
 
-        <!-- =====================================================
-             TARGET 3 - COVER
-        ====================================================== -->
+align="center"
 
-        <a-box
+color="#ef4444">
 
-            id="coverTarget"
+</a-text>
 
-            position="-0.02 0.18 0.33"
 
-            width="0.24"
 
-            height="0.04"
+</a-marker>
 
-            depth="0.18"
 
-            color="#f59e0b"
 
-            opacity="0.40">
+<!-- =========================
+     CAMERA + CLICK SUPPORT
+========================= -->
 
-        </a-box>
+<a-entity
 
+camera
 
-        <a-text
+cursor="
+rayOrigin:mouse;
+fuse:false;
+"
 
-            value="COVER"
+raycaster="
+objects:.clickable;
+">
 
-            position="-0.02 0.34 0.34"
-
-            scale="0.23 0.23 0.23"
-
-            color="#ffffff"
-
-            align="center">
-
-        </a-text>
-
-
-
-        <!-- =====================================================
-             DRAGGABLE SHAFT
-        ====================================================== -->
-
-        <a-cylinder
-
-            id="shaftPart"
-
-            class="draggable"
-
-            data-part="shaft"
-
-            position="-0.65 0.18 0.28"
-
-            radius="0.055"
-
-            height="0.25"
-
-            rotation="0 0 90"
-
-            color="#cbd5e1">
-
-        </a-cylinder>
-
-
-        <a-text
-
-            value="SHAFT"
-
-            position="-0.65 0.36 0.28"
-
-            scale="0.22 0.22 0.22"
-
-            color="#ffffff"
-
-            align="center">
-
-        </a-text>
-
-
-
-        <!-- =====================================================
-             DRAGGABLE FAN
-        ====================================================== -->
-
-        <a-cylinder
-
-            id="fanPart"
-
-            class="draggable"
-
-            data-part="fan"
-
-            position="-0.65 0.18 0"
-
-            radius="0.11"
-
-            height="0.04"
-
-            color="#38bdf8">
-
-        </a-cylinder>
-
-
-        <!-- simple blades -->
-
-        <a-box
-
-            id="fanBlade1"
-
-            position="-0.65 0.205 0"
-
-            width="0.26"
-
-            height="0.025"
-
-            depth="0.035"
-
-            color="#38bdf8">
-
-        </a-box>
-
-
-        <a-box
-
-            id="fanBlade2"
-
-            position="-0.65 0.205 0"
-
-            width="0.035"
-
-            height="0.025"
-
-            depth="0.26"
-
-            color="#38bdf8">
-
-        </a-box>
-
-
-        <a-text
-
-            value="FAN"
-
-            position="-0.65 0.36 0"
-
-            scale="0.22 0.22 0.22"
-
-            color="#ffffff"
-
-            align="center">
-
-        </a-text>
-
-
-
-        <!-- =====================================================
-             DRAGGABLE COVER
-        ====================================================== -->
-
-        <a-box
-
-            id="coverPart"
-
-            class="draggable"
-
-            data-part="cover"
-
-            position="-0.65 0.18 -0.30"
-
-            width="0.28"
-
-            height="0.10"
-
-            depth="0.20"
-
-            color="#64748b">
-
-        </a-box>
-
-
-        <a-text
-
-            value="COVER"
-
-            position="-0.65 0.36 -0.30"
-
-            scale="0.22 0.22 0.22"
-
-            color="#ffffff"
-
-            align="center">
-
-        </a-text>
-
-
-    </a-marker>
-
-
-
-    <!-- CAMERA -->
-
-    <a-entity camera></a-entity>
+</a-entity>
 
 
 </a-scene>
@@ -498,782 +340,286 @@
 <script>
 
 
-/* =====================================================
+/* =========================
    ELEMENTS
-===================================================== */
-
-const scene =
-    document.getElementById(
-        "scene"
-    );
-
-
-const marker =
-    document.getElementById(
-        "hiroMarker"
-    );
-
+========================= */
 
 const info =
-    document.getElementById(
-        "info"
-    );
+document.getElementById(
+"info"
+);
 
 
-const progress =
-    document.getElementById(
-        "progress"
-    );
+const motorStatus =
+document.getElementById(
+"motorStatus"
+);
 
 
 const resetBtn =
-    document.getElementById(
-        "resetBtn"
-    );
+document.getElementById(
+"resetBtn"
+);
 
 
-const shaftPart =
-    document.getElementById(
-        "shaftPart"
-    );
+const marker =
+document.getElementById(
+"hiroMarker"
+);
 
 
-const fanPart =
-    document.getElementById(
-        "fanPart"
-    );
+const motorModel =
+document.getElementById(
+"motorModel"
+);
 
 
-const fanBlade1 =
-    document.getElementById(
-        "fanBlade1"
-    );
+const switchModel =
+document.getElementById(
+"switchModel"
+);
 
 
-const fanBlade2 =
-    document.getElementById(
-        "fanBlade2"
-    );
+const switchHitArea =
+document.getElementById(
+"switchHitArea"
+);
 
 
-const coverPart =
-    document.getElementById(
-        "coverPart"
-    );
+const switchLabel =
+document.getElementById(
+"switchLabel"
+);
 
 
-
-/* =====================================================
-   INITIAL POSITIONS
-===================================================== */
-
-const initialPositions = {
-
-
-    shaft:
-        new THREE.Vector3(
-            -0.65,
-            0.18,
-            0.28
-        ),
-
-
-    fan:
-        new THREE.Vector3(
-            -0.65,
-            0.18,
-            0
-        ),
-
-
-    cover:
-        new THREE.Vector3(
-            -0.65,
-            0.18,
-            -0.30
-        )
-
-};
+const motorLabel =
+document.getElementById(
+"motorLabel"
+);
 
 
 
-/* =====================================================
-   TARGET POSITIONS
-===================================================== */
-
-const targetPositions = {
-
-
-    shaft:
-        new THREE.Vector3(
-            0.55,
-            0.18,
-            0.12
-        ),
-
-
-    fan:
-        new THREE.Vector3(
-            0.30,
-            0.18,
-            -0.34
-        ),
-
-
-    cover:
-        new THREE.Vector3(
-            -0.02,
-            0.18,
-            0.33
-        )
-
-};
-
-
-
-/* =====================================================
-   PART DATA
-===================================================== */
-
-const partData = {
-
-
-    shaft: {
-
-        entity:
-            shaftPart,
-
-        completed:
-            false
-
-    },
-
-
-    fan: {
-
-        entity:
-            fanPart,
-
-        completed:
-            false
-
-    },
-
-
-    cover: {
-
-        entity:
-            coverPart,
-
-        completed:
-            false
-
-    }
-
-};
-
-
-
-/* =====================================================
-   DRAG STATE
-===================================================== */
-
-let draggedPart =
-    null;
-
+/* =========================
+   STATE
+========================= */
 
 let markerVisible =
-    false;
+false;
 
 
-let canvas =
-    null;
+let motorLoaded =
+false;
 
 
-const raycaster =
-    new THREE.Raycaster();
+let switchLoaded =
+false;
 
 
-const pointer =
-    new THREE.Vector2();
+let motorRunning =
+false;
 
 
-const dragPlane =
-    new THREE.Plane();
-
-
-const planeNormal =
-    new THREE.Vector3();
-
-
-const planePoint =
-    new THREE.Vector3();
-
-
-const worldIntersection =
-    new THREE.Vector3();
+let animationTime =
+0;
 
 
 
-/* =====================================================
-   FIND WHICH PART WAS TOUCHED
-===================================================== */
+/* =========================
+   AUDIO
+========================= */
 
-function getTouchedPart(
-    clientX,
-    clientY
-) {
+let audioContext =
+null;
 
 
-    if (
-        !canvas
-    ) {
+let oscillator1 =
+null;
 
-        return null;
+
+let oscillator2 =
+null;
+
+
+let masterGain =
+null;
+
+
+
+function startMotorSound(){
+
+
+    if(
+        !audioContext
+    ){
+
+
+        audioContext =
+        new (
+            window.AudioContext
+            ||
+            window.webkitAudioContext
+        )();
 
     }
 
 
-    const rect =
-        canvas.getBoundingClientRect();
+    if(
+        audioContext.state ===
+        "suspended"
+    ){
 
 
-    pointer.x =
+        audioContext.resume();
 
-        (
-            (
-                clientX
-                -
-                rect.left
-            )
-            /
-            rect.width
-        )
-        *
-        2
-        -
-        1;
+    }
 
 
-    pointer.y =
+    if(
+        oscillator1
+    ){
 
-        -
-        (
-            (
-                clientY
-                -
-                rect.top
-            )
-            /
-            rect.height
-        )
-        *
-        2
-        +
-        1;
+        return;
+
+    }
 
 
-    raycaster.setFromCamera(
+    masterGain =
+        audioContext.createGain();
 
-        pointer,
 
-        scene.camera
+    masterGain.gain.value =
+        0.05;
 
+
+
+    /* Main low motor hum */
+
+    oscillator1 =
+        audioContext.createOscillator();
+
+
+    oscillator1.type =
+        "sine";
+
+
+    oscillator1.frequency.value =
+        90;
+
+
+
+    /* Secondary motor tone */
+
+    oscillator2 =
+        audioContext.createOscillator();
+
+
+    oscillator2.type =
+        "triangle";
+
+
+    oscillator2.frequency.value =
+        180;
+
+
+
+    const secondGain =
+        audioContext.createGain();
+
+
+    secondGain.gain.value =
+        0.20;
+
+
+
+    oscillator1.connect(
+        masterGain
     );
 
 
-    const objects = [
-
-        shaftPart.object3D,
-
-        fanPart.object3D,
-
-        coverPart.object3D
-
-    ];
+    oscillator2.connect(
+        secondGain
+    );
 
 
-    const hits =
-        raycaster.intersectObjects(
-            objects,
-            true
-        );
+    secondGain.connect(
+        masterGain
+    );
 
 
-    if (
-        hits.length === 0
-    ) {
-
-        return null;
-
-    }
+    masterGain.connect(
+        audioContext.destination
+    );
 
 
-    const hitObject =
-        hits[0].object;
+    oscillator1.start();
 
 
-    for (
-        const partName
-        of
-        Object.keys(
-            partData
-        )
-    ) {
+    oscillator2.start();
+
+}
 
 
-        const root =
-            partData[
-                partName
-            ].entity.object3D;
+
+/* =========================
+   STOP SOUND
+========================= */
+
+function stopMotorSound(){
 
 
-        let object =
-            hitObject;
+    if(
+        oscillator1
+    ){
 
 
-        while (
-            object
-        ) {
+        try{
 
-
-            if (
-                object === root
-            ) {
-
-
-                return partName;
-
-            }
-
-
-            object =
-                object.parent;
+            oscillator1.stop();
 
         }
+        catch(error){}
+
+
+        oscillator1 =
+            null;
 
     }
 
 
-    return null;
+    if(
+        oscillator2
+    ){
 
-}
 
+        try{
 
-
-/* =====================================================
-   CREATE MARKER DRAG PLANE
-===================================================== */
-
-function updateDragPlane() {
-
-
-    marker.object3D.updateMatrixWorld(
-        true
-    );
-
-
-    /*
-       Marker local Y axis becomes
-       plane normal in world space.
-    */
-
-    planeNormal
-        .set(
-            0,
-            1,
-            0
-        )
-        .applyQuaternion(
-            marker.object3D
-                .getWorldQuaternion(
-                    new THREE.Quaternion()
-                )
-        )
-        .normalize();
-
-
-    planePoint
-        .set(
-            0,
-            0.18,
-            0
-        );
-
-
-    marker.object3D.localToWorld(
-        planePoint
-    );
-
-
-    dragPlane.setFromNormalAndCoplanarPoint(
-
-        planeNormal,
-
-        planePoint
-
-    );
-
-}
-
-
-
-/* =====================================================
-   MOVE DRAGGED PART
-===================================================== */
-
-function moveDraggedPart(
-    clientX,
-    clientY
-) {
-
-
-    if (
-        !draggedPart
-        ||
-        !canvas
-    ) {
-
-        return;
-
-    }
-
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-
-    pointer.x =
-
-        (
-            (
-                clientX
-                -
-                rect.left
-            )
-            /
-            rect.width
-        )
-        *
-        2
-        -
-        1;
-
-
-    pointer.y =
-
-        -
-        (
-            (
-                clientY
-                -
-                rect.top
-            )
-            /
-            rect.height
-        )
-        *
-        2
-        +
-        1;
-
-
-    raycaster.setFromCamera(
-
-        pointer,
-
-        scene.camera
-
-    );
-
-
-    updateDragPlane();
-
-
-    const found =
-        raycaster.ray.intersectPlane(
-
-            dragPlane,
-
-            worldIntersection
-
-        );
-
-
-    if (
-        !found
-    ) {
-
-        return;
-
-    }
-
-
-    const localPosition =
-        marker.object3D.worldToLocal(
-
-            worldIntersection.clone()
-
-        );
-
-
-    /*
-       Keep part at fixed training height.
-    */
-
-    localPosition.y =
-        0.18;
-
-
-    const entity =
-        partData[
-            draggedPart
-        ].entity;
-
-
-    entity.object3D.position.copy(
-        localPosition
-    );
-
-
-    /*
-       Fan blades follow the fan.
-    */
-
-    if (
-        draggedPart === "fan"
-    ) {
-
-
-        fanBlade1.object3D.position.copy(
-            localPosition
-        );
-
-
-        fanBlade1.object3D.position.y +=
-            0.025;
-
-
-        fanBlade2.object3D.position.copy(
-            localPosition
-        );
-
-
-        fanBlade2.object3D.position.y +=
-            0.025;
-
-    }
-
-}
-
-
-
-/* =====================================================
-   DROP PART
-===================================================== */
-
-function finishDrag() {
-
-
-    if (
-        !draggedPart
-    ) {
-
-        return;
-
-    }
-
-
-    const data =
-        partData[
-            draggedPart
-        ];
-
-
-    const target =
-        targetPositions[
-            draggedPart
-        ];
-
-
-    const current =
-        data.entity.object3D.position;
-
-
-    const distance =
-        current.distanceTo(
-            target
-        );
-
-
-    /*
-       Drop close enough to target.
-    */
-
-    if (
-        distance < 0.20
-    ) {
-
-
-        data.entity.object3D.position.copy(
-            target
-        );
-
-
-        data.completed =
-            true;
-
-
-        if (
-            draggedPart === "fan"
-        ) {
-
-
-            fanBlade1.object3D.position.copy(
-                target
-            );
-
-
-            fanBlade1.object3D.position.y +=
-                0.025;
-
-
-            fanBlade2.object3D.position.copy(
-                target
-            );
-
-
-            fanBlade2.object3D.position.y +=
-                0.025;
+            oscillator2.stop();
 
         }
+        catch(error){}
 
 
-        info.textContent =
-
-            "✓ "
-            +
-            draggedPart.toUpperCase()
-            +
-            " placed correctly.";
-
-
-        updateProgress();
-
-
-    } else {
-
-
-        /*
-           Wrong position:
-           return to start.
-        */
-
-        const initial =
-            initialPositions[
-                draggedPart
-            ];
-
-
-        data.entity.object3D.position.copy(
-            initial
-        );
-
-
-        if (
-            draggedPart === "fan"
-        ) {
-
-
-            fanBlade1.object3D.position.copy(
-                initial
-            );
-
-
-            fanBlade1.object3D.position.y +=
-                0.025;
-
-
-            fanBlade2.object3D.position.copy(
-                initial
-            );
-
-
-            fanBlade2.object3D.position.y +=
-                0.025;
-
-        }
-
-
-        info.textContent =
-
-            "Wrong position — the part returned to its starting point.";
+        oscillator2 =
+            null;
 
     }
 
 
-    draggedPart =
-        null;
-
-}
-
+    if(
+        masterGain
+    ){
 
 
-/* =====================================================
-   PROGRESS
-===================================================== */
+        try{
 
-function updateProgress() {
-
-
-    let completed =
-        0;
-
-
-    Object.values(
-        partData
-    ).forEach(
-
-        function (
-            data
-        ) {
-
-
-            if (
-                data.completed
-            ) {
-
-                completed++;
-
-            }
+            masterGain.disconnect();
 
         }
-
-    );
-
-
-    progress.textContent =
-
-        "Assembly: "
-        +
-        completed
-        +
-        " / 3";
+        catch(error){}
 
 
-    if (
-        completed === 3
-    ) {
-
-
-        progress.classList.add(
-            "complete"
-        );
-
-
-        info.textContent =
-
-            "✓ Motor assembly training completed — 3/3 parts placed correctly.";
+        masterGain =
+            null;
 
     }
 
@@ -1281,234 +627,431 @@ function updateProgress() {
 
 
 
-/* =====================================================
-   POINTER START
-===================================================== */
+/* =========================
+   MOTOR MODEL LOAD
+========================= */
 
-function handlePointerDown(
-    event
-) {
+motorModel.addEventListener(
 
+"model-loaded",
 
-    if (
-        !markerVisible
-    ) {
-
-        return;
-
-    }
+function(){
 
 
-    const partName =
-        getTouchedPart(
-
-            event.clientX,
-
-            event.clientY
-
-        );
+    motorLoaded =
+        true;
 
 
-    if (
-        !partName
-    ) {
+    updateStatus();
 
-        return;
+}
 
-    }
+);
 
 
-    if (
-        partData[
-            partName
-        ].completed
-    ) {
 
+motorModel.addEventListener(
 
-        info.textContent =
-            "This part is already installed.";
+"model-error",
 
-
-        return;
-
-    }
-
-
-    draggedPart =
-        partName;
+function(){
 
 
     info.textContent =
-
-        "Dragging "
-        +
-        partName.toUpperCase()
-        +
-        " — move it to the matching highlighted target.";
-
-
-    try {
-
-        canvas.setPointerCapture(
-            event.pointerId
-        );
-
-    } catch (
-        error
-    ) {
-    }
-
-
-    event.preventDefault();
+        "Motor model failed to load.";
 
 }
 
+);
 
 
-/* =====================================================
-   POINTER MOVE
-===================================================== */
 
-function handlePointerMove(
-    event
-) {
+/* =========================
+   SWITCH LOAD
+========================= */
 
+switchModel.addEventListener(
 
-    if (
-        !draggedPart
-    ) {
+"model-loaded",
 
-        return;
-
-    }
+function(){
 
 
-    moveDraggedPart(
-
-        event.clientX,
-
-        event.clientY
-
-    );
+    switchLoaded =
+        true;
 
 
-    event.preventDefault();
+    updateStatus();
 
 }
 
+);
 
 
-/* =====================================================
-   POINTER END
-===================================================== */
 
-function handlePointerUp(
-    event
-) {
+switchModel.addEventListener(
 
+"model-error",
 
-    if (
-        !draggedPart
-    ) {
-
-        return;
-
-    }
+function(){
 
 
-    moveDraggedPart(
-
-        event.clientX,
-
-        event.clientY
-
-    );
-
-
-    finishDrag();
-
-
-    event.preventDefault();
+    info.textContent =
+        "Switch model failed to load.";
 
 }
 
+);
 
 
-/* =====================================================
-   RESET
-===================================================== */
 
-function resetTraining() {
+/* =========================
+   STATUS
+========================= */
 
-
-    draggedPart =
-        null;
+function updateStatus(){
 
 
-    partData.shaft.completed =
-        false;
-
-
-    partData.fan.completed =
-        false;
-
-
-    partData.cover.completed =
-        false;
-
-
-    shaftPart.object3D.position.copy(
-        initialPositions.shaft
-    );
-
-
-    fanPart.object3D.position.copy(
-        initialPositions.fan
-    );
-
-
-    fanBlade1.object3D.position.copy(
-        initialPositions.fan
-    );
-
-
-    fanBlade1.object3D.position.y +=
-        0.025;
-
-
-    fanBlade2.object3D.position.copy(
-        initialPositions.fan
-    );
-
-
-    fanBlade2.object3D.position.y +=
-        0.025;
-
-
-    coverPart.object3D.position.copy(
-        initialPositions.cover
-    );
-
-
-    progress.textContent =
-        "Assembly: 0 / 3";
-
-
-    progress.classList.remove(
-        "complete"
-    );
-
-
-    if (
-        markerVisible
-    ) {
+    if(
+        !markerVisible
+    ){
 
 
         info.textContent =
-            "Training reset — drag each part to the matching target.";
+            "Point the camera at the Hiro marker.";
 
 
-    } else {
+        return;
+
+    }
+
+
+    if(
+        !motorLoaded
+    ){
+
+
+        info.textContent =
+            "Loading motor...";
+
+
+        return;
+
+    }
+
+
+    if(
+        !switchLoaded
+    ){
+
+
+        info.textContent =
+            "Loading switch...";
+
+
+        return;
+
+    }
+
+
+    if(
+        motorRunning
+    ){
+
+
+        info.textContent =
+            "Motor running — tap the switch to stop.";
+
+
+    }
+    else{
+
+
+        info.textContent =
+            "Motor ready — tap the 3D switch to start.";
+
+    }
+
+}
+
+
+
+/* =========================
+   START MOTOR
+========================= */
+
+function startMotor(){
+
+
+    motorRunning =
+        true;
+
+
+
+    /* SOUND */
+
+    startMotorSound();
+
+
+
+    /* UI */
+
+    motorStatus.textContent =
+        "MOTOR RUNNING";
+
+
+    motorStatus.classList.add(
+        "running"
+    );
+
+
+    motorLabel.setAttribute(
+        "value",
+        "MOTOR RUNNING"
+    );
+
+
+    motorLabel.setAttribute(
+        "color",
+        "#22c55e"
+    );
+
+
+    switchLabel.setAttribute(
+        "value",
+        "TAP TO STOP"
+    );
+
+
+
+    /*
+      Switch visually moves
+      to ON position.
+    */
+
+    switchModel.setAttribute(
+        "rotation",
+        "0 0 -18"
+    );
+
+
+    info.textContent =
+        "✓ Motor running — sound active.";
+
+}
+
+
+
+/* =========================
+   STOP MOTOR
+========================= */
+
+function stopMotor(){
+
+
+    motorRunning =
+        false;
+
+
+
+    stopMotorSound();
+
+
+
+    motorStatus.textContent =
+        "MOTOR OFF";
+
+
+    motorStatus.classList.remove(
+        "running"
+    );
+
+
+    motorLabel.setAttribute(
+        "value",
+        "MOTOR OFF"
+    );
+
+
+    motorLabel.setAttribute(
+        "color",
+        "#ef4444"
+    );
+
+
+    switchLabel.setAttribute(
+        "value",
+        "TAP SWITCH"
+    );
+
+
+    switchModel.setAttribute(
+        "rotation",
+        "0 0 0"
+    );
+
+
+
+    /*
+       Return motor to exact
+       original position.
+    */
+
+    motorModel.object3D.position.set(
+        0.15,
+        0,
+        0
+    );
+
+
+    info.textContent =
+        "Motor stopped.";
+
+}
+
+
+
+/* =========================
+   SWITCH TAP
+========================= */
+
+switchHitArea.addEventListener(
+
+"click",
+
+function(){
+
+
+    if(
+        !markerVisible
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        !motorLoaded
+        ||
+        !switchLoaded
+    ){
+
+
+        info.textContent =
+            "Wait until the models finish loading.";
+
+
+        return;
+
+    }
+
+
+
+    if(
+        motorRunning
+    ){
+
+
+        stopMotor();
+
+
+    }
+    else{
+
+
+        startMotor();
+
+    }
+
+}
+
+);
+
+
+
+/* =========================
+   MOTOR RUNNING ANIMATION
+========================= */
+
+function animate(){
+
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if(
+        !motorRunning
+    ){
+
+        return;
+
+    }
+
+
+    animationTime +=
+        0.20;
+
+
+
+    /*
+       Small vibration effect.
+    */
+
+    motorModel.object3D.position.x =
+
+        0.15
+        +
+        Math.sin(
+            animationTime
+        )
+        *
+        0.004;
+
+
+
+    motorModel.object3D.position.z =
+
+        Math.cos(
+            animationTime * 1.25
+        )
+        *
+        0.003;
+
+}
+
+
+animate();
+
+
+
+/* =========================
+   RESET
+========================= */
+
+resetBtn.addEventListener(
+
+"click",
+
+function(){
+
+
+    stopMotor();
+
+
+    if(
+        markerVisible
+    ){
+
+
+        info.textContent =
+            "Training reset — tap the 3D switch.";
+
+
+    }
+    else{
 
 
         info.textContent =
@@ -1518,145 +1061,52 @@ function resetTraining() {
 
 }
 
-
-
-resetBtn.addEventListener(
-
-    "click",
-
-    function (
-        event
-    ) {
-
-
-        event.stopPropagation();
-
-
-        resetTraining();
-
-    }
-
 );
 
 
 
-/* =====================================================
-   SCENE READY
-===================================================== */
-
-scene.addEventListener(
-
-    "loaded",
-
-    function () {
-
-
-        canvas =
-            scene.canvas;
-
-
-        if (
-            !canvas
-        ) {
-
-            return;
-
-        }
-
-
-        canvas.style.touchAction =
-            "none";
-
-
-        canvas.addEventListener(
-
-            "pointerdown",
-
-            handlePointerDown
-
-        );
-
-
-        canvas.addEventListener(
-
-            "pointermove",
-
-            handlePointerMove
-
-        );
-
-
-        canvas.addEventListener(
-
-            "pointerup",
-
-            handlePointerUp
-
-        );
-
-
-        canvas.addEventListener(
-
-            "pointercancel",
-
-            handlePointerUp
-
-        );
-
-
-        info.textContent =
-            "AR ready — point the camera at the Hiro marker.";
-
-    }
-
-);
-
-
-
-/* =====================================================
-   MARKER EVENTS
-===================================================== */
+/* =========================
+   MARKER FOUND
+========================= */
 
 marker.addEventListener(
 
-    "markerFound",
+"markerFound",
 
-    function () {
-
-
-        markerVisible =
-            true;
+function(){
 
 
-        info.textContent =
+    markerVisible =
+        true;
 
-            "Motor detected — touch and drag a loose part to its matching target.";
 
-    }
+    updateStatus();
+
+}
 
 );
 
 
+
+/* =========================
+   MARKER LOST
+========================= */
+
 marker.addEventListener(
 
-    "markerLost",
+"markerLost",
 
-    function () {
-
-
-        markerVisible =
-            false;
+function(){
 
 
-        draggedPart =
-            null;
+    markerVisible =
+        false;
 
 
-        info.textContent =
+    info.textContent =
+        "Marker lost — point the camera at the Hiro marker.";
 
-            "Marker lost — point the camera at the Hiro marker.";
-
-    }
+}
 
 );
 
