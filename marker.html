@@ -280,30 +280,31 @@
   <script>
     AFRAME.registerComponent('fit-model', {
       schema: {
-        size: {type: 'number', default: 0.36}
+        size: {type: 'number', default: 0.36},
+        lift: {type: 'number', default: 0.015}
       },
       init: function () {
         this.el.addEventListener('model-loaded', () => {
           const mesh = this.el.getObject3D('mesh');
           if (!mesh) return;
 
-          // Normalize each downloaded model so different source units still look consistent.
+          // Keep the model's authored orientation, but normalize source units.
           mesh.scale.set(1, 1, 1);
           mesh.position.set(0, 0, 0);
           mesh.updateMatrixWorld(true);
 
           let box = new THREE.Box3().setFromObject(mesh);
-          const worldSize = new THREE.Vector3();
-          box.getSize(worldSize);
+          const size = new THREE.Vector3();
+          box.getSize(size);
 
-          // Convert world size back to this entity's local scale before calculating the fit.
           const worldScale = new THREE.Vector3();
           this.el.object3D.getWorldScale(worldScale);
           const localSize = new THREE.Vector3(
-            worldSize.x / Math.max(Math.abs(worldScale.x), 0.000001),
-            worldSize.y / Math.max(Math.abs(worldScale.y), 0.000001),
-            worldSize.z / Math.max(Math.abs(worldScale.z), 0.000001)
+            size.x / Math.max(Math.abs(worldScale.x), 0.000001),
+            size.y / Math.max(Math.abs(worldScale.y), 0.000001),
+            size.z / Math.max(Math.abs(worldScale.z), 0.000001)
           );
+
           const maxDim = Math.max(localSize.x, localSize.y, localSize.z);
           if (!Number.isFinite(maxDim) || maxDim <= 0) return;
 
@@ -311,12 +312,23 @@
           mesh.scale.setScalar(factor);
           mesh.updateMatrixWorld(true);
 
-          // Center the model in its parent coordinate system.
+          // IMPORTANT FIX:
+          // Center only X/Z and put the BOTTOM of the downloaded model on the tray.
+          // The previous version centered Y too, which could place most of a model
+          // below the marker plane and make it look missing.
           box = new THREE.Box3().setFromObject(mesh);
-          const center = new THREE.Vector3();
-          box.getCenter(center);
-          mesh.parent.worldToLocal(center);
-          mesh.position.sub(center);
+          const centerWorld = new THREE.Vector3();
+          box.getCenter(centerWorld);
+          const minWorld = box.min.clone();
+
+          const parent = mesh.parent;
+          const centerLocal = parent.worldToLocal(centerWorld.clone());
+          const minLocal = parent.worldToLocal(minWorld.clone());
+
+          mesh.position.x -= centerLocal.x;
+          mesh.position.z -= centerLocal.z;
+          mesh.position.y -= minLocal.y;
+          mesh.position.y += this.data.lift;
           mesh.updateMatrixWorld(true);
         });
       }
@@ -432,8 +444,12 @@
       <a-entity id="motorPart" position="-0.58 0.12 0.78" scale="1 1 1">
         <a-box position="0 0.012 0" width="0.42" height="0.035" depth="0.30" color="#1e293b"></a-box>
         <a-entity id="motorFan" position="0 0.06 0">
+          <a-entity id="motorFallback">
+            <a-cylinder rotation="0 0 90" radius="0.10" height="0.26" color="#2563eb"></a-cylinder>
+            <a-cylinder position="0.16 0 0" rotation="0 0 90" radius="0.035" height="0.10" color="#cbd5e1"></a-cylinder>
+          </a-entity>
           <a-entity id="motorRealModel" gltf-model="url(models/motor.glb)"
-                    fit-model="size: 0.42"
+                    fit-model="size: 0.42; lift: 0.015"
                     position="0 0 0"
                     rotation="0 90 0"></a-entity>
         </a-entity>
@@ -446,8 +462,13 @@
       ============================ -->
       <a-entity id="couplingPart" position="0 0.12 0.78" scale="1 1 1">
         <a-entity id="couplingVisual" position="0 0.06 0">
+          <a-entity id="couplingFallback">
+            <a-cylinder position="-0.055 0.07 0" rotation="0 0 90" radius="0.07" height="0.09" color="#f59e0b"></a-cylinder>
+            <a-cylinder position="0.055 0.07 0" rotation="0 0 90" radius="0.07" height="0.09" color="#f59e0b"></a-cylinder>
+            <a-cylinder position="0 0.07 0" rotation="0 0 90" radius="0.03" height="0.24" color="#fde68a"></a-cylinder>
+          </a-entity>
           <a-entity id="couplingRealModel" gltf-model="url(models/coupling.glb)"
-                    fit-model="size: 0.30"
+                    fit-model="size: 0.38; lift: 0.015"
                     position="0 0 0"
                     rotation="0 90 0"></a-entity>
         </a-entity>
@@ -461,8 +482,13 @@
       <a-entity id="pumpPart" position="0.58 0.12 0.78" scale="1 1 1">
         <a-box position="0 0.012 0" width="0.42" height="0.035" depth="0.30" color="#1e293b"></a-box>
         <a-entity id="pumpImpeller" position="0 0.07 0">
+          <a-entity id="pumpFallback">
+            <a-cylinder rotation="90 0 0" radius="0.14" height="0.18" color="#0ea5e9"></a-cylinder>
+            <a-cylinder position="-0.16 0 0" rotation="0 0 90" radius="0.05" height="0.15" color="#94a3b8"></a-cylinder>
+            <a-cylinder position="0.08 0.13 0" radius="0.05" height="0.18" color="#0ea5e9"></a-cylinder>
+          </a-entity>
           <a-entity id="pumpRealModel" gltf-model="url(models/pump.glb)"
-                    fit-model="size: 0.46"
+                    fit-model="size: 0.48; lift: 0.015"
                     position="0 0 0"
                     rotation="0 90 0"></a-entity>
         </a-entity>
@@ -572,20 +598,25 @@
     const motorRealModel = document.getElementById("motorRealModel");
     const couplingRealModel = document.getElementById("couplingRealModel");
     const pumpRealModel = document.getElementById("pumpRealModel");
+    const motorFallback = document.getElementById("motorFallback");
+    const couplingFallback = document.getElementById("couplingFallback");
+    const pumpFallback = document.getElementById("pumpFallback");
 
     // Real-model load diagnostics. If a file/path is wrong, the app says exactly which one.
     [
-      [motorRealModel, "Motor", "models/motor.glb"],
-      [couplingRealModel, "Coupling", "models/coupling.glb"],
-      [pumpRealModel, "Pump", "models/pump.glb"]
-    ].forEach(([el, name, path]) => {
+      [motorRealModel, motorFallback, "Motor", "models/motor.glb"],
+      [couplingRealModel, couplingFallback, "Coupling", "models/coupling.glb"],
+      [pumpRealModel, pumpFallback, "Pump", "models/pump.glb"]
+    ].forEach(([el, fallback, name, path]) => {
       if (!el) return;
       el.addEventListener("model-loaded", () => {
         console.log(name + " model loaded: " + path);
+        if (fallback) fallback.setAttribute("visible", false);
       });
       el.addEventListener("model-error", () => {
         console.error(name + " model failed: " + path);
-        setFeedback(name + " model failed to load. Check " + path + ".", "bad");
+        if (fallback) fallback.setAttribute("visible", true);
+        setFeedback(name + " real model could not load, so FixAR is showing a fallback. Check " + path + ".", "bad");
       });
     });
 
