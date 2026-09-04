@@ -415,18 +415,18 @@
       <!-- ===========================
            DROP PADS
       ============================ -->
-      <a-cylinder id="motorPad" position="-0.34 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="motorRing" position="-0.34 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="motorPad" position="-0.31 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="motorRing" position="-0.31 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
 
       <a-cylinder id="couplingPad" position="0 0.008 -0.18" radius="0.18" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
       <a-ring id="couplingRing" position="0 0.017 -0.18" rotation="-90 0 0" radius-inner="0.18" radius-outer="0.215" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-cylinder id="pumpPad" position="0.34 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="pumpRing" position="0.34 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="pumpPad" position="0.31 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="pumpRing" position="0.31 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-text id="motorSlotLabel" value="MOTOR" position="-0.34 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
+      <a-text id="motorSlotLabel" value="MOTOR" position="-0.31 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
-      <a-text id="pumpSlotLabel" value="PUMP" position="0.34 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="pumpSlotLabel" value="PUMP" position="0.31 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
       <!-- ===========================
            PARTS TRAY
@@ -509,7 +509,48 @@
                 scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
       </a-entity>
 
-      <!-- Visible mechanical shafts connecting all three units after assembly -->
+      <!-- FINAL ASSEMBLED CONNECTOR: fixed on the same shaft line as motor + pump -->
+      <a-entity id="assembledConnector" visible="false">
+        <!-- one continuous shaft visually entering both machines -->
+        <a-cylinder id="mainDriveShaft"
+                    position="0 0.205 -0.18"
+                    rotation="0 0 90"
+                    radius="0.018"
+                    height="0.50"
+                    color="#dbeafe"
+                    material="metalness: 0.90; roughness: 0.16"></a-cylinder>
+
+        <!-- sleeves close to motor and pump -->
+        <a-cylinder position="-0.235 0.205 -0.18" rotation="0 0 90"
+                    radius="0.030" height="0.075" color="#64748b"
+                    material="metalness: 0.82; roughness: 0.20"></a-cylinder>
+        <a-cylinder position="0.235 0.205 -0.18" rotation="0 0 90"
+                    radius="0.030" height="0.075" color="#64748b"
+                    material="metalness: 0.82; roughness: 0.20"></a-cylinder>
+
+        <!-- this rotor is what actually spins during the test -->
+        <a-entity id="couplingRotor" position="0 0.205 -0.18">
+          <a-cylinder position="-0.050 0 0" rotation="0 0 90"
+                      radius="0.066" height="0.085" color="#f59e0b"
+                      material="metalness: 0.52; roughness: 0.30"></a-cylinder>
+          <a-cylinder position="0.050 0 0" rotation="0 0 90"
+                      radius="0.066" height="0.085" color="#f59e0b"
+                      material="metalness: 0.52; roughness: 0.30"></a-cylinder>
+          <a-cylinder position="0 0 0" rotation="0 0 90"
+                      radius="0.050" height="0.055" color="#111827"
+                      material="metalness: 0.10; roughness: 0.72"></a-cylinder>
+          <a-torus position="0 0 0" rotation="0 90 0"
+                   radius="0.047" radius-tubular="0.011"
+                   color="#fde047"></a-torus>
+
+          <!-- asymmetric rotation markers: make spinning obvious -->
+          <a-sphere position="0 0.064 0.030" radius="0.015" color="#22c55e"></a-sphere>
+          <a-sphere position="0 -0.064 -0.030" radius="0.015" color="#ef4444"></a-sphere>
+          <a-box position="0 0.035 -0.050" width="0.018" height="0.018" depth="0.050" color="#38bdf8"></a-box>
+        </a-entity>
+      </a-entity>
+
+      <!-- legacy shaft helpers kept hidden; final connector above is used -->
       <a-entity id="driveShafts" visible="false">
         <a-cylinder position="-0.17 0.172 -0.18" rotation="0 0 90"
                     radius="0.022" height="0.15" color="#94a3b8"
@@ -649,6 +690,8 @@
     const motorFallback = document.getElementById("motorFallback");
     const pumpFallback = document.getElementById("pumpFallback");
     const driveShafts = document.getElementById("driveShafts");
+    const assembledConnector = document.getElementById("assembledConnector");
+    const couplingRotor = document.getElementById("couplingRotor");
 
     // Real-model load diagnostics. If a file/path is wrong, the app says exactly which one.
     [
@@ -695,7 +738,7 @@
         ring: motorRing,
         carryLabel: motorCarryLabel,
         trayPos: { x: -0.58, y: MODEL_Y, z: 0.78 },
-        slotPos: { x: -0.34, y: MODEL_Y, z: -0.18 },
+        slotPos: { x: -0.31, y: MODEL_Y, z: -0.18 },
         why: "The motor provides rotational power to the pump drive.",
         placed: false
       },
@@ -719,7 +762,7 @@
         ring: pumpRing,
         carryLabel: pumpCarryLabel,
         trayPos: { x: 0.58, y: MODEL_Y, z: 0.78 },
-        slotPos: { x: 0.34, y: MODEL_Y, z: -0.18 },
+        slotPos: { x: 0.31, y: MODEL_Y, z: -0.18 },
         why: "The pump is the driven equipment that moves the fluid.",
         placed: false
       }
@@ -780,6 +823,8 @@
     let humGain = null;
     let humLfo = null;
     let humLfoGain = null;
+    let motorAudio = null;
+    let motorAudioUrl = null;
     let feedbackTimer = null;
 
     const worldScratch = new THREE.Vector3();
@@ -811,7 +856,7 @@
     function addMistake() {
       mistakes += 1;
       scoreText.textContent = "Mistakes " + mistakes;
-      setVisible(driveShafts, allPartsPlaced() && phase !== "scan");
+      updateMechanicalConnection();
     }
 
     function markerIsTracked() {
@@ -824,6 +869,15 @@
 
     function allPartsPlaced() {
       return placedCount() === PART_LIST.length;
+    }
+
+    function updateMechanicalConnection() {
+      const assembled = allPartsPlaced() && phase !== "assemble" && phase !== "scan";
+      setVisible(assembledConnector, assembled);
+      // The draggable coupling is only for the assembly step. Once fitted,
+      // the fixed connector is used so it sits exactly on the shaft line.
+      setVisible(couplingPart, !PARTS.coupling.placed || phase === "assemble");
+      setVisible(driveShafts, false);
     }
 
     function currentRequiredPart() {
@@ -843,9 +897,65 @@
     }
 
     /* =====================================================
-       SOUND
+       SOUND - iPhone/mobile friendly
+       Primary: generated looping WAV through HTMLAudio.
+       Fallback: WebAudio oscillators.
     ====================================================== */
+    function createMotorWavUrl() {
+      const sampleRate = 22050;
+      const seconds = 1.2;
+      const n = Math.floor(sampleRate * seconds);
+      const dataSize = n * 2;
+      const buffer = new ArrayBuffer(44 + dataSize);
+      const view = new DataView(buffer);
+
+      function writeString(offset, value) {
+        for (let i = 0; i < value.length; i++) view.setUint8(offset + i, value.charCodeAt(i));
+      }
+
+      writeString(0, "RIFF");
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(8, "WAVE");
+      writeString(12, "fmt ");
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeString(36, "data");
+      view.setUint32(40, dataSize, true);
+
+      for (let i = 0; i < n; i++) {
+        const t = i / sampleRate;
+        // industrial motor-style low hum with harmonics and slight modulation
+        const mod = 0.82 + 0.18 * Math.sin(2 * Math.PI * 5 * t);
+        const raw = (
+          Math.sin(2 * Math.PI * 78 * t) * 0.56 +
+          Math.sin(2 * Math.PI * 156 * t) * 0.24 +
+          Math.sin(2 * Math.PI * 39 * t) * 0.12 +
+          Math.sin(2 * Math.PI * 234 * t) * 0.08
+        ) * mod;
+        const sample = Math.max(-1, Math.min(1, raw * 0.72));
+        view.setInt16(44 + i * 2, sample * 32767, true);
+      }
+
+      return URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
+    }
+
+    function prepareMotorAudio() {
+      if (motorAudio) return;
+      motorAudioUrl = createMotorWavUrl();
+      motorAudio = new Audio(motorAudioUrl);
+      motorAudio.loop = true;
+      motorAudio.volume = 0.95;
+      motorAudio.preload = "auto";
+      motorAudio.setAttribute("playsinline", "true");
+    }
+
     function unlockAudio() {
+      prepareMotorAudio();
       if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
@@ -854,42 +964,59 @@
       }
     }
 
-    function startHum() {
-      unlockAudio();
+    function startHumFallback() {
       if (!audioContext || humOsc) return;
 
       humGain = audioContext.createGain();
-      humGain.gain.value = 0.09;
+      humGain.gain.value = 0.12;
       humGain.connect(audioContext.destination);
 
       humOsc = audioContext.createOscillator();
       humOsc.type = "sawtooth";
-      humOsc.frequency.value = 90;
+      humOsc.frequency.value = 78;
 
       humOsc2 = audioContext.createOscillator();
       humOsc2.type = "triangle";
-      humOsc2.frequency.value = 180;
-
-      humLfo = audioContext.createOscillator();
-      humLfo.type = "sine";
-      humLfo.frequency.value = 5;
-      humLfoGain = audioContext.createGain();
-      humLfoGain.gain.value = 0.01;
-
-      humLfo.connect(humLfoGain);
-      humLfoGain.connect(humGain.gain);
+      humOsc2.frequency.value = 156;
 
       humOsc.connect(humGain);
       humOsc2.connect(humGain);
-
       humOsc.start();
       humOsc2.start();
-      humLfo.start();
-
-      setFeedback("Machine started. Motor sound is on.", "ok");
     }
 
-    function stopHum() {
+    function startMotorSound() {
+      unlockAudio();
+      if (!motorAudio) {
+        startHumFallback();
+        return;
+      }
+
+      try {
+        motorAudio.currentTime = 0;
+        const playPromise = motorAudio.play();
+        if (playPromise && playPromise.catch) {
+          playPromise.catch(() => {
+            if (audioContext && audioContext.state === "suspended") {
+              audioContext.resume().then(startHumFallback).catch(startHumFallback);
+            } else {
+              startHumFallback();
+            }
+          });
+        }
+      } catch (_) {
+        startHumFallback();
+      }
+    }
+
+    function stopMotorSound() {
+      if (motorAudio) {
+        try {
+          motorAudio.pause();
+          motorAudio.currentTime = 0;
+        } catch (_) {}
+      }
+
       if (humOsc) {
         try { humOsc.stop(); } catch (_) {}
         humOsc = null;
@@ -931,6 +1058,7 @@
     function renderPhase() {
       document.body.dataset.phase = phase;
       clearButtons();
+      updateMechanicalConnection();
       targetPreview.classList.toggle("visible", phase === "scan");
       trainingNote.classList.toggle("visible", phase === "safety" || phase === "correct" || phase === "complete");
       scoreText.textContent = "Mistakes " + mistakes;
@@ -964,7 +1092,7 @@
         stepText.textContent = "Step 2 of 6 · Test";
         progressBar.style.width = "55%";
         coachTitle.textContent = "Machine assembled";
-        coachBody.textContent = "The motor, coded shaft coupling and pump are now mechanically connected. Start the machine test.";
+        coachBody.textContent = "Motor, coupling and pump are aligned on one shaft. Press Start machine test.";
         coachWhy.textContent = "The visible shafts and coupling show how torque is transmitted from the motor to the pump.";
         setStatus("READY TO TEST", "ready");
         controlArea.classList.add("visible");
@@ -976,7 +1104,7 @@
         stepText.textContent = "Step 2 of 6 · Testing";
         progressBar.style.width = "62%";
         coachTitle.textContent = "Machine test running";
-        coachBody.textContent = "Watch the rotating drive and listen to the motor sound. FixAR is checking the simulated machine response.";
+        coachBody.textContent = "The coloured coupling markers are rotating on the shared shaft. Listen to the motor sound while FixAR checks the machine.";
         coachWhy.textContent = "The motor transfers rotation through the coupling to the pump.";
         setStatus("MACHINE RUNNING", "running");
         return;
@@ -1084,6 +1212,7 @@
       }
 
       renderPhase();
+      updateMechanicalConnection();
     }
 
     /* =====================================================
@@ -1092,27 +1221,27 @@
     function startMachineTest() {
       if (phase !== "ready" || !allPartsPlaced()) return;
 
-      unlockAudio();
       machineRunning = true;
       phase = "running";
-      startHum();
+      startMotorSound();
+      setFeedback("Machine started — coupling rotating and motor sound playing.", "ok");
       renderPhase();
 
       if (testTimer) clearTimeout(testTimer);
       testTimer = setTimeout(() => {
         stopMachineAndCreateFault();
-      }, 3300);
+      }, 5500);
     }
 
     function stopMachineAndCreateFault() {
       machineRunning = false;
-      stopHum();
+      stopMotorSound();
       testTimer = null;
       faultIntroduced = true;
 
       // Visually misalign the coupling slightly.
-      couplingVisual.object3D.position.z = 0.065;
-      couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(12);
+      couplingRotor.object3D.position.z = -0.12;
+      couplingRotor.object3D.rotation.y = THREE.MathUtils.degToRad(12);
 
       setVisible(faultIndicator, true);
       showDiagnosisActions(true);
@@ -1461,7 +1590,7 @@
       // Machine running animation.
       if (machineRunning) {
         const speed = THREE.MathUtils.degToRad(14);
-        if (couplingVisual && couplingVisual.object3D) couplingVisual.object3D.rotation.x += speed * 0.9;
+        if (couplingRotor && couplingRotor.object3D) couplingRotor.object3D.rotation.x += speed * 1.8;
         if (motorFan && motorFan.object3D) motorFan.object3D.position.y = 0.06 + Math.sin(Date.now() / 45) * 0.003;
         if (pumpImpeller && pumpImpeller.object3D) pumpImpeller.object3D.position.y = 0.07 + Math.sin(Date.now() / 50) * 0.002;
       }
@@ -1471,8 +1600,8 @@
         correctionProgress = Math.min(1, correctionProgress + 0.025);
         const t = 1 - Math.pow(1 - correctionProgress, 3);
 
-        couplingVisual.object3D.position.z = THREE.MathUtils.lerp(0.075, 0, t);
-        couplingVisual.object3D.rotation.y = THREE.MathUtils.lerp(
+        couplingRotor.object3D.position.z = THREE.MathUtils.lerp(-0.12, -0.18, t);
+        couplingRotor.object3D.rotation.y = THREE.MathUtils.lerp(
           THREE.MathUtils.degToRad(12),
           0,
           t
@@ -1500,7 +1629,7 @@
         testTimer = null;
       }
 
-      stopHum();
+      stopMotorSound();
 
       phase = markerVisible ? "assemble" : "scan";
       mistakes = 0;
@@ -1533,8 +1662,12 @@
         setVisible(action.el, false);
       });
 
-      couplingVisual.object3D.position.set(0, 0, 0);
+      couplingVisual.object3D.position.set(0, 0.080, 0);
       couplingVisual.object3D.rotation.set(0, 0, 0);
+      couplingRotor.object3D.position.set(0, 0.205, -0.18);
+      couplingRotor.object3D.rotation.set(0, 0, 0);
+      setVisible(assembledConnector, false);
+      setVisible(driveShafts, false);
       motorFan.object3D.rotation.set(0, 0, 0);
       motorFan.object3D.position.y = 0.06;
       pumpImpeller.object3D.rotation.set(0, 0, 0);
