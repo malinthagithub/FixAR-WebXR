@@ -43,35 +43,38 @@
 
 
         #info {
+            display: none;
+        }
+
+
+        #trainPanel {
 
             position: fixed;
 
-            top: 56px;
             left: 50%;
+            top: 52px;
 
             transform: translateX(-50%);
 
             width: calc(100% - 20px);
             max-width: 470px;
 
-            padding: 11px 13px;
+            padding: 8px 12px 7px;
 
-            background: rgba(0, 0, 0, 0.84);
+            background: rgba(7, 17, 31, 0.94);
 
             border: 1px solid #38bdf8;
-            border-radius: 10px;
+            border-radius: 12px;
 
             color: white;
 
-            text-align: center;
-
-            font-size: 13px;
-
-            line-height: 1.35;
-
-            z-index: 1000;
+            z-index: 1100;
 
             pointer-events: none;
+
+            max-height: 22vh;
+
+            overflow-y: auto;
         }
 
 
@@ -149,37 +152,6 @@
             right: 15px;
             bottom: 18px;
             top: auto;
-        }
-
-
-        #trainPanel {
-
-            position: fixed;
-
-            left: 50%;
-            top: 56px;
-
-            transform: translateX(-50%);
-
-            width: calc(100% - 20px);
-            max-width: 470px;
-
-            padding: 10px 12px 8px;
-
-            background: rgba(7, 17, 31, 0.96);
-
-            border: 1px solid #38bdf8;
-            border-radius: 12px;
-
-            color: white;
-
-            z-index: 1100;
-
-            pointer-events: none;
-
-            max-height: 26vh;
-
-            overflow-y: auto;
         }
 
 
@@ -533,20 +505,20 @@
         <a-entity id="partsTray">
 
             <a-box
-                position="0 0.0 0.86"
-                width="1.45"
+                position="0 0.0 0.58"
+                width="1.35"
                 height="0.02"
-                depth="0.42"
+                depth="0.38"
                 color="#0f172a"
                 opacity="0.88"
                 material="shader: flat; transparent: true; opacity: 0.88">
             </a-box>
 
             <a-box
-                position="0 0.012 0.86"
-                width="1.38"
+                position="0 0.012 0.58"
+                width="1.28"
                 height="0.004"
-                depth="0.36"
+                depth="0.32"
                 color="#1e293b"
                 opacity="0.95"
                 material="shader: flat; transparent: true; opacity: 0.95">
@@ -555,7 +527,7 @@
             <a-text
                 id="trayLabel"
                 value="PARTS TRAY"
-                position="0 0.10 1.04"
+                position="0 0.10 0.76"
                 scale="0.18 0.18 0.18"
                 align="center"
                 color="#7dd3fc">
@@ -569,7 +541,7 @@
              BATTERY — starts on the tray
         =========================================== -->
 
-        <a-entity id="batteryPart" position="-0.46 0.45 0.86">
+        <a-entity id="batteryPart" position="-0.42 0.45 0.58">
 
             <a-entity
                 id="batteryModel"
@@ -603,7 +575,7 @@
              SWITCH — starts on the tray
         =========================================== -->
 
-        <a-entity id="switchPart" position="0 0.45 0.86">
+        <a-entity id="switchPart" position="0 0.45 0.58">
 
             <a-entity
                 id="switchModel"
@@ -638,7 +610,7 @@
              on a shared shaft. Dragged as one part.
         =========================================== -->
 
-        <a-entity id="drivePart" position="0.46 0.45 0.86">
+        <a-entity id="drivePart" position="0.42 0.45 0.58">
 
             <a-entity
                 id="motorModel"
@@ -833,7 +805,6 @@ const OFF_RETURN_COLOR = "#7f1d1d";
 const MODEL_Y = 0.05;
 const DRAG_Y = 0.22;
 const SNAP_DISTANCE = 0.38;
-const GRAB_DISTANCE = 0.50;
 const MOTOR_BASE_Y = 90;
 const TURBINE_BASE_Y = 90;
 const SWITCH_OFF_ROT = "0 -40 0";
@@ -849,7 +820,7 @@ const PARTS = {
         carryLabel: batteryCarryLabel,
         pad: batteryPad,
         ring: batteryRing,
-        trayPos: { x: -0.46, y: MODEL_Y, z: 0.86 },
+        trayPos: { x: -0.42, y: MODEL_Y, z: 0.58 },
         slotPos: { x: -0.50, y: MODEL_Y, z: 0.38 },
         placed: false
     },
@@ -861,7 +832,7 @@ const PARTS = {
         carryLabel: switchCarryLabel,
         pad: switchPad,
         ring: switchRing,
-        trayPos: { x: 0, y: MODEL_Y, z: 0.86 },
+        trayPos: { x: 0, y: MODEL_Y, z: 0.58 },
         slotPos: { x: -0.50, y: MODEL_Y, z: -0.38 },
         placed: false
     },
@@ -873,7 +844,7 @@ const PARTS = {
         carryLabel: driveCarryLabel,
         pad: drivePad,
         ring: driveRing,
-        trayPos: { x: 0.46, y: MODEL_Y, z: 0.86 },
+        trayPos: { x: 0.42, y: MODEL_Y, z: 0.58 },
         slotPos: { x: 0.50, y: MODEL_Y, z: 0 },
         placed: false
     }
@@ -953,8 +924,10 @@ let dropAnimating = false;
 let driveSpin = 0;
 
 let dragging = null;
-let dragOffsetX = 0;
-let dragOffsetZ = 0;
+let dragStartScreenX = 0;
+let dragStartScreenY = 0;
+let dragStartPosX = 0;
+let dragStartPosZ = 0;
 let pointerActive = false;
 let hoverSlotId = null;
 
@@ -1717,120 +1690,124 @@ function toggleSystem() {
 
 
 /* ==========================================
-   POINTER PICKING / DRAG ON MARKER PLANE
+   SCREEN-SPACE DRAG
+   AR.js raycasts often miss. We pick the part
+   closest to the finger on screen, then slide
+   it on the marker using screen movement.
 ========================================== */
 
-function setRayFromClient(clientX, clientY) {
+const worldScratch = new THREE.Vector3();
+const GRAB_PIXELS = 180;
+
+
+function eventPoint(event) {
+
+    if (event.touches && event.touches.length > 0) {
+        return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }
+
+    if (event.changedTouches && event.changedTouches.length > 0) {
+        return { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+    }
+
+    return { x: event.clientX, y: event.clientY };
+
+}
+
+
+function markerIsTracked() {
+
+    if (markerVisible) {
+        return true;
+    }
+
+    return Boolean(marker.object3D && marker.object3D.visible);
+
+}
+
+
+function worldToScreen(worldVec) {
+
+    const cam = sceneEl.camera;
+    const projected = worldVec.clone().project(cam);
+
+    return {
+        x: (projected.x * 0.5 + 0.5) * window.innerWidth,
+        y: (-projected.y * 0.5 + 0.5) * window.innerHeight
+    };
+
+}
+
+
+function markerLocalToScreen(x, y, z) {
+
+    marker.object3D.updateMatrixWorld(true);
+    worldScratch.set(x, y, z);
+    marker.object3D.localToWorld(worldScratch);
+
+    return worldToScreen(worldScratch);
+
+}
+
+
+function pickPartByScreen(clientX, clientY) {
 
     if (!sceneEl.camera) {
-        return false;
-    }
-
-    touchPointer.x = (clientX / window.innerWidth) * 2 - 1;
-    touchPointer.y = -(clientY / window.innerHeight) * 2 + 1;
-
-    touchRaycaster.setFromCamera(touchPointer, sceneEl.camera);
-
-    return true;
-
-}
-
-
-function getMarkerPlanePoint(clientX, clientY) {
-
-    if (!setRayFromClient(clientX, clientY)) {
         return null;
     }
 
-    const markerObject = marker.object3D;
-
-    markerObject.updateMatrixWorld(true);
-    markerObject.getWorldQuaternion(markerQuat);
-
-    markerNormal.set(0, 1, 0).applyQuaternion(markerQuat);
-    markerPlanePoint.set(0, MODEL_Y, 0).applyMatrix4(markerObject.matrixWorld);
-    markerPlane.setFromNormalAndCoplanarPoint(markerNormal, markerPlanePoint);
-
-    const hit = touchRaycaster.ray.intersectPlane(markerPlane, planeIntersection);
-
-    if (!hit) {
-        return null;
-    }
-
-    return markerObject.worldToLocal(planeIntersection.clone());
-
-}
-
-
-function objectBelongsTo(object, root) {
-
-    let current = object;
-
-    while (current) {
-        if (current === root) {
-            return true;
-        }
-        current = current.parent;
-    }
-
-    return false;
-
-}
-
-
-function pickPart(clientX, clientY) {
-
-    if (!setRayFromClient(clientX, clientY)) {
-        return null;
-    }
-
-    const roots = [];
+    let best = null;
+    let bestDist = GRAB_PIXELS;
 
     PART_LIST.forEach(function (part) {
-        part.el.object3D.updateMatrixWorld(true);
-        part.hitEl.object3D.updateMatrixWorld(true);
-        part.pad.object3D.updateMatrixWorld(true);
-        part.ring.object3D.updateMatrixWorld(true);
-        roots.push(part.el.object3D);
-        roots.push(part.hitEl.object3D);
-        roots.push(part.pad.object3D);
-        roots.push(part.ring.object3D);
-    });
 
-    const hits = touchRaycaster.intersectObjects(roots, true);
-
-    if (hits.length === 0) {
-        return null;
-    }
-
-    for (let i = 0; i < hits.length; i += 1) {
-
-        const hitObject = hits[i].object;
-
-        for (let p = 0; p < PART_LIST.length; p += 1) {
-
-            const part = PART_LIST[p];
-
-            if (objectBelongsTo(hitObject, part.el.object3D)) {
-                return part;
-            }
-
+        if (part.placed) {
+            return;
         }
 
+        part.el.object3D.updateMatrixWorld(true);
+        part.el.object3D.getWorldPosition(worldScratch);
+
+        const screen = worldToScreen(worldScratch);
+        const dist = Math.hypot(screen.x - clientX, screen.y - clientY);
+
+        if (dist < bestDist) {
+            bestDist = dist;
+            best = part;
+        }
+
+    });
+
+    return best;
+
+}
+
+
+function screenDeltaToMarkerXZ(dx, dy) {
+
+    const origin = markerLocalToScreen(0, MODEL_Y, 0);
+    const xAxis = markerLocalToScreen(1, MODEL_Y, 0);
+    const zAxis = markerLocalToScreen(0, MODEL_Y, 1);
+
+    const ax = xAxis.x - origin.x;
+    const ay = xAxis.y - origin.y;
+    const bx = zAxis.x - origin.x;
+    const by = zAxis.y - origin.y;
+    const det = ax * by - ay * bx;
+
+    if (Math.abs(det) < 0.0001) {
+        return { x: 0, z: 0 };
     }
 
-    return null;
+    return {
+        x: (dx * by - dy * bx) / det,
+        z: (ax * dy - ay * dx) / det
+    };
 
 }
 
 
 function beginDrag(part, clientX, clientY) {
-
-    let localPoint = getMarkerPlanePoint(clientX, clientY);
-
-    if (!localPoint) {
-        localPoint = part.el.object3D.position.clone();
-    }
 
     if (part.placed) {
         return;
@@ -1838,11 +1815,14 @@ function beginDrag(part, clientX, clientY) {
 
     dropAnimating = false;
     dragging = part;
-    dragOffsetX = part.el.object3D.position.x - localPoint.x;
-    dragOffsetZ = part.el.object3D.position.z - localPoint.z;
+    dragStartScreenX = clientX;
+    dragStartScreenY = clientY;
+    dragStartPosX = part.el.object3D.position.x;
+    dragStartPosZ = part.el.object3D.position.z;
 
     part.el.object3D.position.y = DRAG_Y;
     part.carryLabel.setAttribute("visible", true);
+    setFeedback("Holding " + part.id + " — drop it on its glowing slot.", "ok");
 
 }
 
@@ -1853,20 +1833,17 @@ function moveDrag(clientX, clientY) {
         return;
     }
 
-    const localPoint = getMarkerPlanePoint(clientX, clientY);
+    const delta = screenDeltaToMarkerXZ(
+        clientX - dragStartScreenX,
+        clientY - dragStartScreenY
+    );
 
-    if (!localPoint) {
-        return;
-    }
-
-    const x = THREE.MathUtils.clamp(localPoint.x + dragOffsetX, -1.15, 1.15);
-    const z = THREE.MathUtils.clamp(localPoint.z + dragOffsetZ, -0.95, 1.25);
+    const x = THREE.MathUtils.clamp(dragStartPosX + delta.x, -1.2, 1.2);
+    const z = THREE.MathUtils.clamp(dragStartPosZ + delta.z, -1.0, 1.1);
 
     dragging.el.object3D.position.set(x, DRAG_Y, z);
 
-    const nearSlot = distanceToSlot(dragging, x, z) < SNAP_DISTANCE;
-
-    hoverSlotId = nearSlot ? dragging.id : null;
+    hoverSlotId = distanceToSlot(dragging, x, z) < SNAP_DISTANCE ? dragging.id : null;
     refreshPadColors();
 
 }
@@ -1888,9 +1865,7 @@ function endDrag() {
         snapPart(part);
     } else {
         returnToTray(part);
-        if (markerVisible) {
-            info.textContent = "Drop it on the matching glowing slot.";
-        }
+        setFeedback("Drop it on the glowing slot.", "bad");
     }
 
     refreshPadColors();
@@ -1921,50 +1896,23 @@ function isUiTarget(target) {
 }
 
 
-function pickNearestPart(localPoint) {
-
-    if (!localPoint) {
-        return null;
-    }
-
-    let best = null;
-    let bestDist = GRAB_DISTANCE;
-
-    PART_LIST.forEach(function (part) {
-
-        if (part.placed) {
-            return;
-        }
-
-        const pos = part.el.object3D.position;
-        const dist = Math.sqrt(
-            (pos.x - localPoint.x) * (pos.x - localPoint.x) +
-            (pos.z - localPoint.z) * (pos.z - localPoint.z)
-        );
-
-        if (dist < bestDist) {
-            bestDist = dist;
-            best = part;
-        }
-
-    });
-
-    return best;
-
-}
-
-
 function onPointerDown(event) {
 
     if (isUiTarget(event.target)) {
         return;
     }
 
-    if (!markerVisible) {
+    const point = eventPoint(event);
+
+    if (markerIsTracked() && phase === "scan") {
+        beginAssemble();
+    }
+
+    if (!markerIsTracked()) {
         return;
     }
 
-    if (phase === "quiz" || phase === "complete" || phase === "scan") {
+    if (phase === "quiz" || phase === "complete") {
         return;
     }
 
@@ -1972,22 +1920,17 @@ function onPointerDown(event) {
 
     if (phase === "assemble") {
 
-        const localPoint = getMarkerPlanePoint(event.clientX, event.clientY);
-        let part = pickPart(event.clientX, event.clientY);
-
-        if ((!part || part.placed) && localPoint) {
-            part = pickNearestPart(localPoint);
-        }
+        const part = pickPartByScreen(point.x, point.y);
 
         if (part && !part.placed) {
-            beginDrag(part, event.clientX, event.clientY);
+            beginDrag(part, point.x, point.y);
+        } else {
+            setFeedback("Touch a blue part on the marker, then slide.", "bad");
         }
 
     }
 
-    if (event.pointerType === "touch") {
-        event.preventDefault();
-    }
+    event.preventDefault();
 
 }
 
@@ -1995,10 +1938,8 @@ function onPointerDown(event) {
 function onPointerMove(event) {
 
     if (dragging) {
-        moveDrag(event.clientX, event.clientY);
-    }
-
-    if (event.pointerType === "touch" && pointerActive) {
+        const point = eventPoint(event);
+        moveDrag(point.x, point.y);
         event.preventDefault();
     }
 
@@ -2007,14 +1948,12 @@ function onPointerMove(event) {
 
 function onPointerUp(event) {
 
-    if (isUiTarget(event.target)) {
+    if (isUiTarget(event.target) && !dragging) {
         pointerActive = false;
-        if (dragging) {
-            endDrag();
-        }
         return;
     }
 
+    const point = eventPoint(event);
     const wasDragging = Boolean(dragging);
 
     if (dragging) {
@@ -2023,43 +1962,43 @@ function onPointerUp(event) {
 
     pointerActive = false;
 
-    if (wasDragging || !markerVisible) {
+    if (wasDragging || !markerIsTracked()) {
         return;
     }
 
     if (phase === "operate") {
-        handleSwitchTouch(event.clientX, event.clientY);
+        handleSwitchTouch(point.x, point.y);
     }
 
 }
 
 
-window.addEventListener("pointerdown", onPointerDown, { passive: false });
-window.addEventListener("pointermove", onPointerMove, { passive: false });
-window.addEventListener("pointerup", onPointerUp, { passive: false });
-window.addEventListener("pointercancel", onPointerUp, { passive: false });
+const inputOptions = { capture: true, passive: false };
+
+document.addEventListener("pointerdown", onPointerDown, inputOptions);
+document.addEventListener("pointermove", onPointerMove, inputOptions);
+document.addEventListener("pointerup", onPointerUp, inputOptions);
+document.addEventListener("pointercancel", onPointerUp, inputOptions);
+document.addEventListener("touchstart", onPointerDown, inputOptions);
+document.addEventListener("touchmove", onPointerMove, inputOptions);
+document.addEventListener("touchend", onPointerUp, inputOptions);
+document.addEventListener("touchcancel", onPointerUp, inputOptions);
 
 
 
 function handleSwitchTouch(clientX, clientY) {
 
-    if (!markerVisible || phase !== "operate") {
+    if (!markerIsTracked() || phase !== "operate" || !allPlaced()) {
         return;
     }
 
-    if (!allPlaced()) {
-        return;
-    }
+    switchPart.object3D.updateMatrixWorld(true);
+    switchPart.object3D.getWorldPosition(worldScratch);
 
-    if (!setRayFromClient(clientX, clientY)) {
-        return;
-    }
+    const screen = worldToScreen(worldScratch);
+    const dist = Math.hypot(screen.x - clientX, screen.y - clientY);
 
-    switchHit.object3D.updateMatrixWorld(true);
-
-    const hits = touchRaycaster.intersectObject(switchHit.object3D, true);
-
-    if (hits.length > 0) {
+    if (dist < 160) {
         toggleSystem();
     }
 
