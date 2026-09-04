@@ -1,2329 +1,1367 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width,
-          initial-scale=1.0,
-          user-scalable=no">
-
-    <title>FixAR | Turbine System Trainer</title>
-
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
-    <!-- MindAR image tracking -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-
-            margin: 0;
-
-            width: 100%;
-            height: 100%;
-
-            overflow: hidden;
-
-            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-
-            background: #061018;
-
-            touch-action: none;
-
-            -webkit-tap-highlight-color: transparent;
-        }
-
-
-        a-scene {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-
-        #info {
-            display: none;
-        }
-
-
-        #systemStatus,
-        #homeBtn,
-        #resetBtn {
-
-            position: fixed;
-
-            z-index: 1200;
-
-            height: 36px;
-
-            padding: 0 12px;
-
-            border-radius: 8px;
-
-            font-size: 11px;
-            font-weight: 700;
-
-            letter-spacing: 0.04em;
-
-            display: flex;
-            align-items: center;
-
-            text-decoration: none;
-        }
-
-
-        #systemStatus {
-
-            left: 12px;
-            top: 10px;
-
-            background: rgba(8, 18, 32, 0.88);
-
-            border: 1px solid rgba(248, 113, 113, 0.7);
-
-            color: #fecaca;
-
-            pointer-events: none;
-        }
-
-
-        #systemStatus.running {
-            border-color: #4ade80;
-            color: #bbf7d0;
-        }
-
-
-        #systemStatus.assembled {
-            border-color: #38bdf8;
-            color: #bae6fd;
-        }
-
-
-        #homeBtn {
-            right: 12px;
-            top: 10px;
-            background: rgba(8, 18, 32, 0.88);
-            border: 1px solid rgba(56, 189, 248, 0.55);
-            color: #e2e8f0;
-        }
-
-
-        #resetBtn {
-            right: 12px;
-            bottom: 14px;
-            top: auto;
-            background: rgba(8, 18, 32, 0.88);
-            border: 1px solid rgba(56, 189, 248, 0.55);
-            color: #e2e8f0;
-        }
-
-
-        #trainPanel {
-
-            position: fixed;
-
-            left: 12px;
-            right: 12px;
-            top: 54px;
-
-            transform: none;
-
-            width: auto;
-            max-width: none;
-
-            padding: 10px 12px;
-
-            background: rgba(8, 18, 32, 0.9);
-
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 12px;
-
-            color: #f8fafc;
-
-            z-index: 1100;
-
-            pointer-events: none;
-
-            max-height: none;
-
-            overflow: visible;
-
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        }
-
-
-        #trainPanel button,
-        #quizBox {
-            pointer-events: auto;
-        }
-
-
-        .train-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #7dd3fc;
-        }
-
-
-        #trainTitle {
-            margin: 0 0 4px;
-            font-size: 16px;
-            line-height: 1.25;
-            font-weight: 700;
-        }
-
-
-        #trainBody {
-            margin: 0;
-            font-size: 13px;
-            line-height: 1.4;
-            color: #e2e8f0;
-        }
-
-
-        #targetPreview {
-            display: none;
-            width: 92px;
-            height: auto;
-            margin-top: 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(56, 189, 248, 0.45);
-            background: #fff;
-        }
-
-
-        #targetPreview.visible {
-            display: block;
-        }
-
-
-        #trainWhy,
-        #trainNotice,
-        #trainFeedback:empty {
-            display: none;
-        }
-
-
-        #trainFeedback {
-            margin: 6px 0 0;
-            font-size: 12px;
-            font-weight: 700;
-            color: #fde68a;
-        }
-
-
-        #trainFeedback.ok {
-            color: #86efac;
-        }
-
-
-        #trainFeedback.bad {
-            color: #fca5a5;
-        }
-
-
-        #progressTrack {
-            height: 4px;
-            margin: 0 0 8px;
-            background: #1e293b;
-            border-radius: 99px;
-            overflow: hidden;
-        }
-
-
-        #progressBar {
-            width: 8%;
-            height: 100%;
-            background: linear-gradient(90deg, #38bdf8, #22c55e);
-        }
-
-
-        #quizBox {
-            display: none;
-            flex-direction: column;
-            gap: 7px;
-            margin: 8px 0 0;
-        }
-
-
-        #quizBox.visible {
-            display: flex;
-        }
-
-
-        .quiz-btn,
-        #continueBtn,
-        #retryQuizBtn,
-        #startMotorBtn {
-            width: 100%;
-            padding: 11px 12px;
-            border-radius: 10px;
-            border: 0;
-            background: #0f172a;
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-
-        .quiz-btn {
-            text-align: left;
-            border: 1px solid #334155;
-        }
-
-
-        .quiz-btn.correct {
-            border-color: #22c55e;
-            background: #052e16;
-        }
-
-
-        .quiz-btn.wrong {
-            border-color: #ef4444;
-            background: #450a0a;
-        }
-
-
-        #continueBtn,
-        #retryQuizBtn,
-        #startMotorBtn {
-            display: none;
-            margin-top: 8px;
-            background: #38bdf8;
-            color: #07111f;
-        }
-
-
-        #startMotorBtn {
-            background: #22c55e;
-            min-height: 46px;
-            font-size: 15px;
-        }
-
-
-        #startMotorBtn.running {
-            background: #ef4444;
-            color: white;
-        }
-
-
-        #continueBtn.visible,
-        #retryQuizBtn.visible,
-        #startMotorBtn.visible {
-            display: block;
-        }
-
-
-        #completeList {
-            display: none;
-            margin: 8px 0 0;
-            padding-left: 18px;
-            font-size: 12px;
-            line-height: 1.45;
-            color: #dbeafe;
-        }
-
-
-        #completeList.visible {
-            display: block;
-        }
-
-
-        #arjs-video,
-        video {
-            pointer-events: none !important;
-        }
-
-    </style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>FixAR | Marker-Based Pump Maintenance Trainer</title>
+
+  <!-- A-Frame + MindAR -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: #061018;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a-scene {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #statusBadge,
+    #homeBtn,
+    #resetBtn {
+      position: fixed;
+      z-index: 2000;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      background: rgba(5, 15, 28, 0.90);
+      color: #e2e8f0;
+      backdrop-filter: blur(8px);
+    }
+
+    #statusBadge {
+      left: 12px;
+      top: 10px;
+      pointer-events: none;
+      border-color: rgba(248, 113, 113, 0.75);
+      color: #fecaca;
+    }
+
+    #statusBadge.ready {
+      border-color: #38bdf8;
+      color: #bae6fd;
+    }
+
+    #statusBadge.running {
+      border-color: #22c55e;
+      color: #bbf7d0;
+    }
+
+    #statusBadge.warning {
+      border-color: #f59e0b;
+      color: #fde68a;
+    }
+
+    #statusBadge.complete {
+      border-color: #22c55e;
+      color: #bbf7d0;
+    }
+
+    #homeBtn {
+      right: 12px;
+      top: 10px;
+    }
+
+    #resetBtn {
+      right: 12px;
+      bottom: 14px;
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      cursor: pointer;
+    }
+
+    #coachPanel {
+      position: fixed;
+      z-index: 1900;
+      left: 12px;
+      right: 12px;
+      top: 54px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      color: #f8fafc;
+      background: rgba(5, 15, 28, 0.91);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .coach-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: #7dd3fc;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #coachTitle {
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    #coachBody {
+      margin: 0;
+      color: #e2e8f0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    #coachWhy {
+      margin: 6px 0 0;
+      color: #94a3b8;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    #feedback {
+      min-height: 18px;
+      margin: 6px 0 0;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fde68a;
+    }
+
+    #feedback.ok { color: #86efac; }
+    #feedback.bad { color: #fca5a5; }
+
+    #progressTrack {
+      width: 100%;
+      height: 4px;
+      margin: 0 0 8px;
+      background: #1e293b;
+      overflow: hidden;
+      border-radius: 999px;
+    }
+
+    #progressBar {
+      width: 4%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      transition: width 0.25s ease;
+    }
+
+    #controlArea,
+    #safetyChoices {
+      display: none;
+      margin-top: 8px;
+      gap: 7px;
+      pointer-events: auto;
+    }
+
+    #controlArea.visible,
+    #safetyChoices.visible {
+      display: grid;
+    }
+
+    #controlArea {
+      grid-template-columns: 1fr;
+    }
+
+    #safetyChoices {
+      grid-template-columns: 1fr;
+    }
+
+    .actionBtn,
+    .safetyBtn {
+      width: 100%;
+      min-height: 43px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      color: #07111f;
+      background: #38bdf8;
+    }
+
+    .safetyBtn {
+      color: #f8fafc;
+      background: #0f172a;
+      border: 1px solid #334155;
+      text-align: left;
+    }
+
+    .safetyBtn.correct {
+      border-color: #22c55e;
+      background: #052e16;
+    }
+
+    .safetyBtn.wrong {
+      border-color: #ef4444;
+      background: #450a0a;
+    }
+
+    #showFixBtn { background: #22c55e; }
+    #restartBtn { background: #e2e8f0; }
+
+    #targetPreview {
+      display: none;
+      width: 82px;
+      height: auto;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(56,189,248,0.5);
+      background: white;
+    }
+
+    #targetPreview.visible { display: block; }
+
+    #trainingNote {
+      display: none;
+      margin-top: 7px;
+      color: #94a3b8;
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    #trainingNote.visible { display: block; }
+
+    video,
+    #arjs-video {
+      pointer-events: none !important;
+    }
+  </style>
 </head>
 
-
 <body>
+  <div id="statusBadge">SCAN MARKER</div>
+  <a id="homeBtn" href="index.html">Home</a>
+  <button id="resetBtn" type="button">Restart</button>
 
-
-<div id="info">
-
-    Point the camera at the target image to start training.
-
-</div>
-
-
-<div id="systemStatus">
-
-    SCAN MARKER
-
-</div>
-
-
-<a href="index.html" id="homeBtn">Home</a>
-
-
-<button id="resetBtn" type="button">
-
-    Restart
-
-</button>
-
-
-<div id="trainPanel">
-
-    <div class="train-top">
-        <span id="trainStep">Step 0 of 4</span>
-        <span id="trainScore">Mistakes 0</span>
+  <div id="coachPanel">
+    <div class="coach-top">
+      <span id="stepText">Step 0 of 6</span>
+      <span id="scoreText">Mistakes 0</span>
     </div>
 
-    <div id="progressTrack">
-        <div id="progressBar"></div>
+    <div id="progressTrack"><div id="progressBar"></div></div>
+
+    <h2 id="coachTitle">FixAR Pump Maintenance Trainer</h2>
+    <p id="coachBody">Point the camera at the target image to identify Water Pump WP-01.</p>
+    <p id="coachWhy">Marker-based AR anchors equipment-specific training content to the scanned machine marker.</p>
+    <p id="feedback"></p>
+
+    <img id="targetPreview" src="target.png" alt="Scan this target image" />
+
+    <div id="controlArea">
+      <button id="startTestBtn" class="actionBtn" type="button">Start machine test</button>
+      <button id="showFixBtn" class="actionBtn" type="button">Show correct alignment</button>
+      <button id="restartBtn" class="actionBtn" type="button">Restart training</button>
     </div>
 
-    <h2 id="trainTitle">Battery-powered turbine trainer</h2>
-
-    <p id="trainBody">
-    Point the camera at the target image, then drag each part onto its own pad.
-    </p>
-
-    <img id="targetPreview" src="target.png" alt="Scan this target image">
-
-    <p id="trainWhy">
-        This is a familiarisation module, not a workplace procedure. It trains names, order of assembly, and isolation.
-    </p>
-
-    <p id="trainFeedback"></p>
-
-    <div id="quizBox"></div>
-
-    <ul id="completeList"></ul>
-
-    <button id="startMotorBtn" type="button">Start motor</button>
-    <button id="continueBtn" type="button">Continue</button>
-    <button id="retryQuizBtn" type="button">Retry knowledge check</button>
-
-    <div id="trainNotice">
-        Training aid only — follow workplace SOPs and qualified supervision.
+    <div id="safetyChoices">
+      <button class="safetyBtn" data-answer="isolate" type="button">Isolate machine power</button>
+      <button class="safetyBtn" data-answer="start" type="button">Start the machine again</button>
+      <button class="safetyBtn" data-answer="remove" type="button">Remove the coupling while running</button>
     </div>
 
-</div>
+    <div id="trainingNote">Training demonstration only — real equipment maintenance must follow workplace SOPs, lockout/tagout requirements, and qualified supervision.</div>
+  </div>
 
-
-
-<a-scene
-
+  <a-scene
     id="scene"
-
     embedded
-
     vr-mode-ui="enabled: false"
-
     device-orientation-permission-ui="enabled: false"
+    renderer="antialias: true; colorManagement: true; physicallyCorrectLights: false"
+    mindar-image="imageTargetSrc: ./target.mind; autoStart: true; uiScanning: no; uiLoading: no; filterMinCF: 0.0001; filterBeta: 0.001">
 
-    renderer="
-        antialias: true;
-        colorManagement: true;
-    "
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    mindar-image="
-        imageTargetSrc: ./target.mind;
-        autoStart: true;
-        uiScanning: no;
-        uiLoading: no;
-    ">
+    <a-entity id="markerRoot" mindar-image-target="targetIndex: 0">
 
+      <!-- ===========================
+           MACHINE WORK AREA
+      ============================ -->
+      <a-plane
+        position="0 -0.015 0"
+        rotation="-90 0 0"
+        width="1.55"
+        height="1.15"
+        color="#07111f"
+        opacity="0.78"
+        material="transparent: true; opacity: 0.78; side: double">
+      </a-plane>
 
-    <a-camera
-        position="0 0 0"
-        look-controls="enabled: false">
-    </a-camera>
+      <a-text
+        value="WP-01  |  PUMP MAINTENANCE TRAINER"
+        position="0 0.09 -0.46"
+        rotation="-90 0 0"
+        scale="0.16 0.16 0.16"
+        align="center"
+        color="#7dd3fc">
+      </a-text>
 
+      <!-- connection line / shaft guide -->
+      <a-box position="0 0.022 0" width="1.1" height="0.012" depth="0.035" color="#475569"></a-box>
 
-    <a-entity
-        id="hiroMarker"
-        mindar-image-target="targetIndex: 0">
+      <!-- ===========================
+           DROP PADS
+      ============================ -->
+      <a-cylinder id="motorPad" position="-0.48 0.008 0" radius="0.19" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="motorRing" position="-0.48 0.017 0" rotation="-90 0 0" radius-inner="0.19" radius-outer="0.225" color="#7dd3fc" visible="false"></a-ring>
 
+      <a-cylinder id="couplingPad" position="0 0.008 0" radius="0.15" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="couplingRing" position="0 0.017 0" rotation="-90 0 0" radius-inner="0.15" radius-outer="0.185" color="#7dd3fc" visible="false"></a-ring>
 
-        <!-- ==========================================
-             LAYOUT
+      <a-cylinder id="pumpPad" position="0.48 0.008 0" radius="0.20" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="pumpRing" position="0.48 0.017 0" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.235" color="#7dd3fc" visible="false"></a-ring>
 
-             Empty slots + wires are always visible.
-             Parts start on the front tray and are
-             dragged onto their matching slots.
+      <a-text id="motorSlotLabel" value="MOTOR" position="-0.48 0.08 -0.26" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.08 -0.26" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="pumpSlotLabel" value="PUMP" position="0.48 0.08 -0.26" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
-               switch slot (back-left)
-               battery slot (front-left)
-               motor+turbine (right) — one glued drive
+      <!-- ===========================
+           PARTS TRAY
+      ============================ -->
+      <a-entity id="partsTray">
+        <a-plane position="0 0.012 0.70" rotation="-90 0 0" width="1.38" height="0.34" color="#0f172a" opacity="0.92"></a-plane>
+        <a-text value="PARTS TRAY - DRAG TO THE GLOWING POSITION" position="0 0.035 0.55" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#7dd3fc"></a-text>
+      </a-entity>
 
-             MODEL_Y = 0.05, WIRE_Y = 0.00
-        =========================================== -->
-
-
-        <!-- ==========================================
-             SLOT PADS — drop targets
-        =========================================== -->
-
-        <a-cylinder
-            id="batteryPad"
-            class="slot-pad"
-            position="-0.36 0.006 0.28"
-            radius="0.13"
-            height="0.01"
-            color="#38bdf8"
-            opacity="0.35"
-            material="shader: flat; transparent: true; opacity: 0.35">
-        </a-cylinder>
-
-        <a-ring
-            id="batteryRing"
-            visible="false"
-            position="-0.36 0.014 0.28"
-            radius-inner="0.13"
-            radius-outer="0.16"
-            rotation="-90 0 0"
-            color="#7dd3fc">
-        </a-ring>
-
-
-        <a-cylinder
-            id="switchPad"
-            class="slot-pad"
-            position="-0.36 0.006 -0.28"
-            radius="0.13"
-            height="0.01"
-            color="#38bdf8"
-            opacity="0.35"
-            material="shader: flat; transparent: true; opacity: 0.35">
-        </a-cylinder>
-
-        <a-ring
-            id="switchRing"
-            visible="false"
-            position="-0.36 0.014 -0.28"
-            radius-inner="0.13"
-            radius-outer="0.16"
-            rotation="-90 0 0"
-            color="#7dd3fc">
-        </a-ring>
-
-
-        <a-cylinder
-            id="drivePad"
-            class="slot-pad"
-            position="0.38 0.006 0"
-            radius="0.20"
-            height="0.01"
-            color="#38bdf8"
-            opacity="0.35"
-            material="shader: flat; transparent: true; opacity: 0.35">
-        </a-cylinder>
-
-        <a-ring
-            id="driveRing"
-            visible="false"
-            position="0.38 0.014 0"
-            radius-inner="0.20"
-            radius-outer="0.24"
-            rotation="-90 0 0"
-            color="#7dd3fc">
-        </a-ring>
-
-
-
-        <!-- ==========================================
-             PARTS TRAY — models start here
-        =========================================== -->
-
-        <a-entity id="partsTray">
-
-            <a-cylinder position="-0.48 0.003 0.92" radius="0.14" height="0.008" color="#0f172a"></a-cylinder>
-            <a-cylinder position="0 0.003 0.92" radius="0.14" height="0.008" color="#0f172a"></a-cylinder>
-            <a-cylinder position="0.52 0.003 0.92" radius="0.18" height="0.008" color="#0f172a"></a-cylinder>
-
-            <a-text
-                id="trayLabel"
-                value="PARTS"
-                position="0 0.12 1.08"
-                scale="0.16 0.16 0.16"
-                align="center"
-                color="#7dd3fc">
-            </a-text>
-
+      <!-- ===========================
+           MOTOR PART
+      ============================ -->
+      <a-entity id="motorPart" position="-0.50 0.06 0.76">
+        <a-cylinder position="0 0.08 0" rotation="0 0 90" radius="0.11" height="0.25" color="#2563eb"></a-cylinder>
+        <a-cylinder position="0.14 0.08 0" rotation="0 0 90" radius="0.045" height="0.12" color="#cbd5e1"></a-cylinder>
+        <a-box position="0 0.005 0" width="0.28" height="0.035" depth="0.22" color="#334155"></a-box>
+        <a-entity id="motorFan" position="-0.14 0.08 0">
+          <a-cylinder rotation="0 0 90" radius="0.08" height="0.025" color="#0f172a"></a-cylinder>
+          <a-box position="0 0.055 0" width="0.018" height="0.11" depth="0.035" color="#93c5fd"></a-box>
+          <a-box position="0 -0.055 0" width="0.018" height="0.11" depth="0.035" color="#93c5fd"></a-box>
         </a-entity>
+        <a-box id="motorHit" width="0.36" height="0.30" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.27 0" scale="0.16 0.16 0.16" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
-
-
-        <!-- ==========================================
-             BATTERY — starts on the tray
-        =========================================== -->
-
-        <a-entity id="batteryPart" position="-0.48 0.45 0.92">
-
-            <a-entity
-                id="batteryModel"
-                gltf-model="url(models/battery.glb)"
-                rotation="0 0 0"
-                scale="0.16 0.16 0.16">
-            </a-entity>
-
-            <a-box
-                id="batteryHit"
-                width="0.32"
-                height="0.32"
-                depth="0.32"
-                material="transparent: true; opacity: 0.01; depthWrite: false">
-            </a-box>
-
-            <a-text
-                id="batteryCarryLabel"
-                value="BATTERY"
-                position="0 0.26 0"
-                scale="0.16 0.16 0.16"
-                align="center"
-                color="#ffffff">
-            </a-text>
-
+      <!-- ===========================
+           COUPLING PART
+      ============================ -->
+      <a-entity id="couplingPart" position="0 0.06 0.76">
+        <a-entity id="couplingVisual">
+          <a-cylinder position="-0.05 0.08 0" rotation="0 0 90" radius="0.075" height="0.09" color="#f59e0b"></a-cylinder>
+          <a-cylinder position="0.05 0.08 0" rotation="0 0 90" radius="0.075" height="0.09" color="#f59e0b"></a-cylinder>
+          <a-cylinder position="0 0.08 0" rotation="0 0 90" radius="0.035" height="0.21" color="#fde68a"></a-cylinder>
         </a-entity>
+        <a-box id="couplingHit" width="0.31" height="0.28" depth="0.31" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.27 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
-
-
-        <!-- ==========================================
-             SWITCH — starts on the tray
-        =========================================== -->
-
-        <a-entity id="switchPart" position="0 0.45 0.92">
-
-            <a-entity
-                id="switchModel"
-                gltf-model="url(models/switch.glb)"
-                rotation="0 0 0"
-                scale="0.16 0.16 0.16">
-            </a-entity>
-
-            <a-box
-                id="switchHit"
-                width="0.32"
-                height="0.32"
-                depth="0.32"
-                material="transparent: true; opacity: 0.01; depthWrite: false">
-            </a-box>
-
-            <a-text
-                id="switchCarryLabel"
-                value="SWITCH"
-                position="0 0.26 0"
-                scale="0.16 0.16 0.16"
-                align="center"
-                color="#ffffff">
-            </a-text>
-
+      <!-- ===========================
+           PUMP PART
+      ============================ -->
+      <a-entity id="pumpPart" position="0.50 0.06 0.76">
+        <a-cylinder position="0 0.10 0" rotation="90 0 0" radius="0.14" height="0.18" color="#0ea5e9"></a-cylinder>
+        <a-cylinder position="-0.15 0.10 0" rotation="0 0 90" radius="0.055" height="0.15" color="#94a3b8"></a-cylinder>
+        <a-cylinder position="0.08 0.22 0" radius="0.055" height="0.17" color="#0ea5e9"></a-cylinder>
+        <a-box position="0 0.01 0" width="0.31" height="0.04" depth="0.24" color="#334155"></a-box>
+        <a-entity id="pumpImpeller" position="0 0.10 -0.105">
+          <a-cylinder rotation="90 0 0" radius="0.09" height="0.015" color="#dbeafe"></a-cylinder>
+          <a-box width="0.02" height="0.15" depth="0.02" color="#0284c7"></a-box>
+          <a-box rotation="0 0 90" width="0.02" height="0.15" depth="0.02" color="#0284c7"></a-box>
         </a-entity>
+        <a-box id="pumpHit" width="0.40" height="0.37" depth="0.38" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.31 0" scale="0.15 0.15 0.15" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
+      <!-- ===========================
+           FAULT INDICATOR
+      ============================ -->
+      <a-entity id="faultIndicator" visible="false">
+        <a-ring position="0 0.20 0" rotation="-90 0 0" radius-inner="0.19" radius-outer="0.23" color="#ef4444"></a-ring>
+        <a-text value="FAULT: ABNORMAL VIBRATION" position="0 0.18 -0.30" rotation="-90 0 0" scale="0.13 0.13 0.13" align="center" color="#fecaca"></a-text>
+      </a-entity>
 
+      <!-- ===========================
+           MAINTENANCE ACTION TRAY
+      ============================ -->
+      <a-entity id="actionTray" visible="false">
+        <a-plane position="0 0.014 0.74" rotation="-90 0 0" width="1.46" height="0.38" color="#111827" opacity="0.96"></a-plane>
+        <a-text value="DRAG THE BEST INSPECTION ACTION TO THE FAULT" position="0 0.038 0.56" rotation="-90 0 0" scale="0.105 0.105 0.105" align="center" color="#fbbf24"></a-text>
+      </a-entity>
 
-        <!-- ==========================================
-             DRIVE UNIT — motor + turbine glued
-             on a shared shaft. Dragged as one part.
-        =========================================== -->
+      <a-entity id="actionCheckCoupling" position="-0.48 0.07 0.77" visible="false">
+        <a-box width="0.38" height="0.06" depth="0.22" color="#1d4ed8"></a-box>
+        <a-text value="CHECK\nCOUPLING" position="0 0.045 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
-        <a-entity id="drivePart" position="0.52 0.45 0.92">
+      <a-entity id="actionCheckLeak" position="0 0.07 0.77" visible="false">
+        <a-box width="0.38" height="0.06" depth="0.22" color="#475569"></a-box>
+        <a-text value="CHECK\nLEAKAGE" position="0 0.045 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
-            <a-entity
-                id="motorModel"
-                gltf-model="url(models/motor.glb)"
-                position="-0.10 0.06 0"
-                rotation="0 90 0"
-                scale="0.42 0.42 0.42">
-            </a-entity>
+      <a-entity id="actionReplaceMotor" position="0.48 0.07 0.77" visible="false">
+        <a-box width="0.38" height="0.06" depth="0.22" color="#475569"></a-box>
+        <a-text value="REPLACE\nMOTOR" position="0 0.045 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
-            <a-entity id="turbineSpinner" position="0.12 0.06 0">
-                <a-entity
-                    id="turbineModel"
-                    gltf-model="url(models/turbine.glb)"
-                    position="0 0 0"
-                    rotation="0 90 0"
-                    scale="0.36 0.36 0.36">
-                </a-entity>
-            </a-entity>
+      <!-- coupling target used in diagnosis -->
+      <a-cylinder id="diagnosisTarget" position="0 0.015 0" radius="0.22" height="0.012" color="#f59e0b" opacity="0.24" material="transparent: true; opacity: 0.24" visible="false"></a-cylinder>
 
-            <a-cylinder
-                id="driveShaft"
-                position="0.01 0.06 0"
-                radius="0.02"
-                height="0.18"
-                rotation="0 0 90"
-                color="#cbd5e1"
-                material="shader: flat; color: #cbd5e1">
-            </a-cylinder>
+      <!-- safety isolation visual -->
+      <a-entity id="isolationTag" visible="false" position="-0.55 0.10 -0.32">
+        <a-box width="0.32" height="0.05" depth="0.20" color="#dc2626"></a-box>
+        <a-text value="POWER\nISOLATED" position="0 0.04 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#ffffff"></a-text>
+      </a-entity>
 
-            <a-cylinder
-                id="driveCoupling"
-                position="0.01 0.06 0"
-                radius="0.04"
-                height="0.045"
-                rotation="0 0 90"
-                color="#64748b"
-                material="shader: flat; color: #64748b">
-            </a-cylinder>
+      <a-entity id="successMark" visible="false" position="0 0.12 -0.33">
+        <a-ring rotation="-90 0 0" radius-inner="0.18" radius-outer="0.23" color="#22c55e"></a-ring>
+        <a-text value="MAINTENANCE TRAINING COMPLETE" position="0 0.03 0" rotation="-90 0 0" scale="0.12 0.12 0.12" align="center" color="#bbf7d0"></a-text>
+      </a-entity>
 
-            <a-box
-                id="driveHit"
-                width="0.42"
-                height="0.32"
-                depth="0.32"
-                material="transparent: true; opacity: 0.01; depthWrite: false">
-            </a-box>
-
-            <a-text
-                id="driveCarryLabel"
-                value="MOTOR + TURBINE"
-                position="0 0.32 0"
-                scale="0.15 0.15 0.15"
-                align="center"
-                color="#ffffff">
-            </a-text>
-
-        </a-entity>
-
-
-
-        <!-- ==========================================
-             WIRES — stay on the slots from the start
-        =========================================== -->
-
-        <!-- battery -> switch (left) -->
-        <a-entity line="start: -0.36 0 0.28; end: -0.50 0 0; color: #ef4444" id="wireA1"></a-entity>
-        <a-entity line="start: -0.50 0 0; end: -0.36 0 -0.28; color: #ef4444" id="wireA2"></a-entity>
-
-        <a-entity line="start: -0.36 0 -0.28; end: 0.02 0 -0.40; color: #ef4444" id="wireB1"></a-entity>
-        <a-entity line="start: 0.02 0 -0.40; end: 0.38 0 0; color: #ef4444" id="wireB2"></a-entity>
-
-        <a-entity line="start: 0.38 0 0; end: 0.02 0 0.40; color: #7f1d1d" id="wireD1"></a-entity>
-        <a-entity line="start: 0.02 0 0.40; end: -0.36 0 0.28; color: #7f1d1d" id="wireD2"></a-entity>
-
-        <a-entity line="start: -0.36 0.05 0.28; end: -0.36 0 0.28; color: #ef4444" id="dropBattery"></a-entity>
-        <a-entity line="start: -0.36 0.05 -0.28; end: -0.36 0 -0.28; color: #ef4444" id="dropSwitch"></a-entity>
-        <a-entity line="start: 0.38 0.06 0; end: 0.38 0 0; color: #ef4444" id="dropMotor"></a-entity>
-        <a-entity line="start: 0.38 0.06 0; end: 0.38 0 0; color: #ef4444" id="dropTurbine"></a-entity>
-
-
-
-        <!-- ==========================================
-             SLOT LABELS
-        =========================================== -->
-
-        <a-text
-            id="batterySlotLabel"
-            value="BATTERY"
-            position="-0.36 0.26 0.28"
-            scale="0.18 0.18 0.18"
-            align="center"
-            color="#ffffff">
-        </a-text>
-
-        <a-text
-            id="switchLabel"
-            value="SWITCH"
-            position="-0.36 0.24 -0.28"
-            scale="0.15 0.15 0.15"
-            align="center"
-            color="#ffffff">
-        </a-text>
-
-        <a-text
-            id="motorLabel"
-            value="MOTOR + TURBINE"
-            position="0.38 0.28 0"
-            scale="0.15 0.15 0.15"
-            align="center"
-            color="#ef4444">
-        </a-text>
-
+      <a-light type="ambient" intensity="1.2" color="#ffffff"></a-light>
+      <a-light type="directional" intensity="1.0" position="0.5 1 0.5"></a-light>
 
     </a-entity>
+  </a-scene>
 
+  <script>
+    /* =====================================================
+       ELEMENTS
+    ====================================================== */
+    const sceneEl = document.getElementById("scene");
+    const marker = document.getElementById("markerRoot");
 
-</a-scene>
+    const statusBadge = document.getElementById("statusBadge");
+    const resetBtn = document.getElementById("resetBtn");
+    const coachTitle = document.getElementById("coachTitle");
+    const coachBody = document.getElementById("coachBody");
+    const coachWhy = document.getElementById("coachWhy");
+    const stepText = document.getElementById("stepText");
+    const scoreText = document.getElementById("scoreText");
+    const progressBar = document.getElementById("progressBar");
+    const feedback = document.getElementById("feedback");
+    const targetPreview = document.getElementById("targetPreview");
+    const trainingNote = document.getElementById("trainingNote");
 
+    const controlArea = document.getElementById("controlArea");
+    const startTestBtn = document.getElementById("startTestBtn");
+    const showFixBtn = document.getElementById("showFixBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const safetyChoices = document.getElementById("safetyChoices");
+    const safetyButtons = Array.from(document.querySelectorAll(".safetyBtn"));
 
+    const motorPart = document.getElementById("motorPart");
+    const couplingPart = document.getElementById("couplingPart");
+    const pumpPart = document.getElementById("pumpPart");
 
-<script>
+    const motorPad = document.getElementById("motorPad");
+    const couplingPad = document.getElementById("couplingPad");
+    const pumpPad = document.getElementById("pumpPad");
 
+    const motorRing = document.getElementById("motorRing");
+    const couplingRing = document.getElementById("couplingRing");
+    const pumpRing = document.getElementById("pumpRing");
 
-/* ==========================================
-   ELEMENTS
-========================================== */
+    const motorCarryLabel = document.getElementById("motorCarryLabel");
+    const couplingCarryLabel = document.getElementById("couplingCarryLabel");
+    const pumpCarryLabel = document.getElementById("pumpCarryLabel");
 
-const sceneEl = document.getElementById("scene");
-const marker = document.getElementById("hiroMarker");
-const info = document.getElementById("info");
-const systemStatus = document.getElementById("systemStatus");
-const resetBtn = document.getElementById("resetBtn");
-const trainPanel = document.getElementById("trainPanel");
-const trainStep = document.getElementById("trainStep");
-const trainScore = document.getElementById("trainScore");
-const trainTitle = document.getElementById("trainTitle");
-const trainBody = document.getElementById("trainBody");
-const targetPreview = document.getElementById("targetPreview");
-const trainWhy = document.getElementById("trainWhy");
-const trainFeedback = document.getElementById("trainFeedback");
-const progressBar = document.getElementById("progressBar");
-const quizBox = document.getElementById("quizBox");
-const completeList = document.getElementById("completeList");
-const continueBtn = document.getElementById("continueBtn");
-const retryQuizBtn = document.getElementById("retryQuizBtn");
-const startMotorBtn = document.getElementById("startMotorBtn");
-const trayLabel = document.getElementById("trayLabel");
+    const partsTray = document.getElementById("partsTray");
+    const motorFan = document.getElementById("motorFan");
+    const couplingVisual = document.getElementById("couplingVisual");
+    const pumpImpeller = document.getElementById("pumpImpeller");
 
-const batteryPart = document.getElementById("batteryPart");
-const switchPart = document.getElementById("switchPart");
-const drivePart = document.getElementById("drivePart");
+    const faultIndicator = document.getElementById("faultIndicator");
+    const actionTray = document.getElementById("actionTray");
+    const diagnosisTarget = document.getElementById("diagnosisTarget");
+    const isolationTag = document.getElementById("isolationTag");
+    const successMark = document.getElementById("successMark");
 
-const batteryModel = document.getElementById("batteryModel");
-const switchModel = document.getElementById("switchModel");
-const motorModel = document.getElementById("motorModel");
-const turbineModel = document.getElementById("turbineModel");
-const turbineSpinner = document.getElementById("turbineSpinner");
+    const actionCheckCoupling = document.getElementById("actionCheckCoupling");
+    const actionCheckLeak = document.getElementById("actionCheckLeak");
+    const actionReplaceMotor = document.getElementById("actionReplaceMotor");
 
-const batteryHit = document.getElementById("batteryHit");
-const switchHit = document.getElementById("switchHit");
-const driveHit = document.getElementById("driveHit");
+    /* =====================================================
+       CONFIG
+    ====================================================== */
+    const MODEL_Y = 0.06;
+    const DRAG_Y = 0.22;
+    const PART_SNAP_DISTANCE = 0.30;
+    const ACTION_SNAP_DISTANCE = 0.31;
+    const GRAB_PIXELS = 165;
 
-const partsTray = document.getElementById("partsTray");
-
-const switchLabel = document.getElementById("switchLabel");
-const motorLabel = document.getElementById("motorLabel");
-
-const batteryCarryLabel = document.getElementById("batteryCarryLabel");
-const switchCarryLabel = document.getElementById("switchCarryLabel");
-const driveCarryLabel = document.getElementById("driveCarryLabel");
-
-const batteryPad = document.getElementById("batteryPad");
-const switchPad = document.getElementById("switchPad");
-const drivePad = document.getElementById("drivePad");
-const batteryRing = document.getElementById("batteryRing");
-const switchRing = document.getElementById("switchRing");
-const driveRing = document.getElementById("driveRing");
-
-const wireIds = ["wireA1", "wireA2", "wireB1", "wireB2", "dropBattery", "dropSwitch", "dropMotor"];
-const returnWireIds = ["wireD1", "wireD2", "dropTurbine"];
-
-const ON_WIRE_COLOR = "#22c55e";
-const OFF_WIRE_COLOR = "#ef4444";
-const ON_RETURN_COLOR = "#166534";
-const OFF_RETURN_COLOR = "#7f1d1d";
-
-const MODEL_Y = 0.05;
-const DRAG_Y = 0.22;
-const SNAP_DISTANCE = 0.38;
-const SWITCH_OFF_ROT = "0 0 0";
-const SWITCH_ON_ROT = "0 -28 0";
-
-
-const PARTS = {
-    battery: {
-        id: "battery",
-        el: batteryPart,
-        hitEl: batteryHit,
-        modelEl: batteryModel,
-        carryLabel: batteryCarryLabel,
-        pad: batteryPad,
-        ring: batteryRing,
-        trayPos: { x: -0.48, y: MODEL_Y, z: 0.92 },
-        slotPos: { x: -0.36, y: MODEL_Y, z: 0.28 },
+    const PARTS = {
+      motor: {
+        id: "motor",
+        name: "Motor",
+        el: motorPart,
+        pad: motorPad,
+        ring: motorRing,
+        carryLabel: motorCarryLabel,
+        trayPos: { x: -0.50, y: MODEL_Y, z: 0.76 },
+        slotPos: { x: -0.48, y: MODEL_Y, z: 0 },
+        why: "The motor provides rotational power to the pump drive.",
         placed: false
-    },
-    switch: {
-        id: "switch",
-        el: switchPart,
-        hitEl: switchHit,
-        modelEl: switchModel,
-        carryLabel: switchCarryLabel,
-        pad: switchPad,
-        ring: switchRing,
-        trayPos: { x: 0, y: MODEL_Y, z: 0.92 },
-        slotPos: { x: -0.36, y: MODEL_Y, z: -0.28 },
+      },
+      coupling: {
+        id: "coupling",
+        name: "Coupling",
+        el: couplingPart,
+        pad: couplingPad,
+        ring: couplingRing,
+        carryLabel: couplingCarryLabel,
+        trayPos: { x: 0, y: MODEL_Y, z: 0.76 },
+        slotPos: { x: 0, y: MODEL_Y, z: 0 },
+        why: "The coupling transfers rotation from the motor shaft to the pump shaft.",
         placed: false
-    },
-    drive: {
-        id: "drive",
-        el: drivePart,
-        hitEl: driveHit,
-        modelEl: motorModel,
-        carryLabel: driveCarryLabel,
-        pad: drivePad,
-        ring: driveRing,
-        trayPos: { x: 0.52, y: MODEL_Y, z: 0.92 },
-        slotPos: { x: 0.38, y: MODEL_Y, z: 0 },
+      },
+      pump: {
+        id: "pump",
+        name: "Pump",
+        el: pumpPart,
+        pad: pumpPad,
+        ring: pumpRing,
+        carryLabel: pumpCarryLabel,
+        trayPos: { x: 0.50, y: MODEL_Y, z: 0.76 },
+        slotPos: { x: 0.48, y: MODEL_Y, z: 0 },
+        why: "The pump is the driven equipment that moves the fluid.",
         placed: false
-    }
-};
+      }
+    };
 
-const PART_LIST = [PARTS.battery, PARTS.switch, PARTS.drive];
+    const PART_LIST = [PARTS.motor, PARTS.coupling, PARTS.pump];
+    const ASSEMBLY_ORDER = ["motor", "coupling", "pump"];
 
+    const ACTIONS = [
+      {
+        id: "checkCoupling",
+        name: "Check coupling",
+        el: actionCheckCoupling,
+        trayPos: { x: -0.48, y: 0.07, z: 0.77 },
+        correct: true
+      },
+      {
+        id: "checkLeak",
+        name: "Check leakage",
+        el: actionCheckLeak,
+        trayPos: { x: 0, y: 0.07, z: 0.77 },
+        correct: false
+      },
+      {
+        id: "replaceMotor",
+        name: "Replace motor",
+        el: actionReplaceMotor,
+        trayPos: { x: 0.48, y: 0.07, z: 0.77 },
+        correct: false
+      }
+    ];
 
-const ASSEMBLE_STEPS = [
-    {
-        id: "battery",
-        title: "1. Drag the battery",
-        body: "Drag the battery onto its pad.",
-        why: "Fit the supply first so the rest of the circuit has a power source."
-    },
-    {
-        id: "switch",
-        title: "1. Drag the switch",
-        body: "Drag the switch onto its pad.",
-        why: "The switch sits between the battery and the motor so you can isolate the drive."
-    },
-    {
-        id: "drive",
-        title: "1. Drag the motor",
-        body: "Drag the motor and rotor onto the right pad.",
-        why: "The load goes on last. The circuit is then complete, but still isolated until you use the switch."
-    }
-];
+    /* =====================================================
+       STATE
+    ====================================================== */
+    let phase = "scan";
+    let markerVisible = false;
+    let mistakes = 0;
+    let dragging = null;
+    let dragKind = null; // "part" or "action"
+    let dragStartScreenX = 0;
+    let dragStartScreenY = 0;
+    let dragStartPosX = 0;
+    let dragStartPosZ = 0;
+    let hoverTarget = false;
 
+    let machineRunning = false;
+    let testTimer = null;
+    let faultIntroduced = false;
+    let diagnosisCorrect = false;
+    let powerIsolated = false;
+    let correctionStarted = false;
+    let correctionProgress = 0;
 
-const QUIZ = [
-    {
-        question: "What is the battery's job in this system?",
-        why: "Power has to come from somewhere before a motor can run.",
-        options: [
-            { text: "It supplies electrical power", correct: true },
-            { text: "It isolates the motor", correct: false },
-            { text: "It cools the turbine", correct: false }
-        ]
-    },
-    {
-        question: "Why must the switch be fitted before you start the drive?",
-        why: "You need a way to energise and isolate the motor.",
-        options: [
-            { text: "It isolates and controls power to the motor", correct: true },
-            { text: "It holds the turbine in place", correct: false },
-            { text: "It charges the battery", correct: false }
-        ]
-    },
-    {
-        question: "The motor and turbine are one unit on a shared shaft. What happens when the motor runs?",
-        why: "A mechanical coupling transmits rotation.",
-        options: [
-            { text: "Both rotate together because they are coupled", correct: true },
-            { text: "Only the motor can rotate", correct: false },
-            { text: "The battery starts spinning", correct: false }
-        ]
-    }
-];
+    let audioContext = null;
+    let humOsc = null;
+    let humGain = null;
+    let feedbackTimer = null;
 
+    const worldScratch = new THREE.Vector3();
 
-
-/* ==========================================
-   STATE
-========================================== */
-
-let markerVisible = false;
-
-let batteryLoaded = false;
-let switchLoaded = false;
-let motorLoaded = false;
-let turbineLoaded = false;
-
-let systemRunning = false;
-let dropAnimating = false;
-
-let dragging = null;
-let dragStartScreenX = 0;
-let dragStartScreenY = 0;
-let dragStartPosX = 0;
-let dragStartPosZ = 0;
-let pointerActive = false;
-let hoverSlotId = null;
-
-let phase = "scan";
-let identifyIndex = 0;
-let quizIndex = 0;
-let quizCorrect = 0;
-let mistakes = 0;
-let identified = { battery: false, switch: false, drive: false };
-let startedOnce = false;
-let stoppedOnce = false;
-let feedbackTimer = null;
-
-const touchRaycaster = new THREE.Raycaster();
-const touchPointer = new THREE.Vector2();
-const planeIntersection = new THREE.Vector3();
-const markerQuat = new THREE.Quaternion();
-const markerNormal = new THREE.Vector3();
-const markerPlanePoint = new THREE.Vector3();
-const markerPlane = new THREE.Plane();
-
-
-
-/* ==========================================
-   MOTOR SOUND
-========================================== */
-
-let audioContext = null;
-let oscillator1 = null;
-let oscillator2 = null;
-let masterGain = null;
-let noiseSource = null;
-let motorAudio = null;
-let audioUnlocked = false;
-
-
-function makeMotorWavUrl() {
-
-    const sampleRate = 22050;
-    const n = sampleRate;
-    const dataSize = n * 2;
-    const buffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(buffer);
-
-    function writeStr(offset, text) {
-        for (let i = 0; i < text.length; i += 1) {
-            view.setUint8(offset + i, text.charCodeAt(i));
-        }
+    /* =====================================================
+       HELPERS
+    ====================================================== */
+    function setVisible(el, value) {
+      el.setAttribute("visible", Boolean(value));
     }
 
-    writeStr(0, "RIFF");
-    view.setUint32(4, 36 + dataSize, true);
-    writeStr(8, "WAVE");
-    writeStr(12, "fmt ");
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, 1, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true);
-    view.setUint16(32, 2, true);
-    view.setUint16(34, 16, true);
-    writeStr(36, "data");
-    view.setUint32(40, dataSize, true);
-
-    for (let i = 0; i < n; i += 1) {
-        const t = i / sampleRate;
-        const sample = Math.sin(2 * Math.PI * 78 * t) * 0.5
-            + Math.sin(2 * Math.PI * 156 * t) * 0.25
-            + Math.sin(2 * Math.PI * 39 * t) * 0.15;
-        view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, sample)) * 30000, true);
-    }
-
-    return URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
-
-}
-
-
-function unlockAudio() {
-
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    if (audioContext.state === "suspended") {
-        audioContext.resume();
-    }
-
-    if (!motorAudio) {
-        motorAudio = new Audio(makeMotorWavUrl());
-        motorAudio.loop = true;
-        motorAudio.volume = 0.8;
-        motorAudio.setAttribute("playsinline", "true");
-    }
-
-    const playPromise = motorAudio.play();
-
-    if (playPromise && playPromise.then) {
-        playPromise.then(function () {
-            if (!systemRunning) {
-                motorAudio.pause();
-                motorAudio.currentTime = 0;
-            }
-            audioUnlocked = true;
-        }).catch(function () {});
-    }
-
-}
-
-
-function startOscillators() {
-
-    if (!audioContext || oscillator1) {
-        return;
-    }
-
-    masterGain = audioContext.createGain();
-    masterGain.gain.value = 0.32;
-    masterGain.connect(audioContext.destination);
-
-    oscillator1 = audioContext.createOscillator();
-    oscillator1.type = "sawtooth";
-    oscillator1.frequency.value = 72;
-    oscillator1.connect(masterGain);
-
-    oscillator2 = audioContext.createOscillator();
-    oscillator2.type = "triangle";
-    oscillator2.frequency.value = 144;
-
-    const whirGain = audioContext.createGain();
-    whirGain.gain.value = 0.4;
-    oscillator2.connect(whirGain);
-    whirGain.connect(masterGain);
-
-    oscillator1.start();
-    oscillator2.start();
-
-}
-
-
-function startSystemSound() {
-
-    unlockAudio();
-
-    if (motorAudio) {
-        motorAudio.currentTime = 0;
-        motorAudio.play().catch(function () {});
-    }
-
-    if (audioContext && audioContext.state === "suspended") {
-        audioContext.resume().then(startOscillators);
-    } else {
-        startOscillators();
-    }
-
-}
-
-
-function stopSystemSound() {
-
-    if (motorAudio) {
-        motorAudio.pause();
-        motorAudio.currentTime = 0;
-    }
-
-    if (oscillator1) {
-        try { oscillator1.stop(); } catch (error) {}
-        oscillator1 = null;
-    }
-
-    if (oscillator2) {
-        try { oscillator2.stop(); } catch (error) {}
-        oscillator2 = null;
-    }
-
-    if (noiseSource) {
-        try { noiseSource.stop(); } catch (error) {}
-        noiseSource = null;
-    }
-
-    if (masterGain) {
-        try { masterGain.disconnect(); } catch (error) {}
-        masterGain = null;
-    }
-
-}
-
-
-
-/* ==========================================
-   MODEL LOAD LISTENERS
-========================================== */
-
-batteryModel.addEventListener("model-loaded", function () {
-    batteryLoaded = true;
-    maybeStartDrop();
-    updateStatus();
-});
-
-batteryModel.addEventListener("model-error", function () {
-    info.textContent = "Battery model failed to load.";
-});
-
-
-switchModel.addEventListener("model-loaded", function () {
-    switchLoaded = true;
-    maybeStartDrop();
-    updateStatus();
-});
-
-switchModel.addEventListener("model-error", function () {
-    info.textContent = "Switch model failed to load.";
-});
-
-
-motorModel.addEventListener("model-loaded", function () {
-    motorLoaded = true;
-    maybeStartDrop();
-    updateStatus();
-});
-
-motorModel.addEventListener("model-error", function () {
-    info.textContent = "Motor model failed to load.";
-});
-
-
-turbineModel.addEventListener("model-loaded", function () {
-    turbineLoaded = true;
-    maybeStartDrop();
-    updateStatus();
-});
-
-turbineModel.addEventListener("model-error", function () {
-    info.textContent = "Turbine model failed to load.";
-});
-
-
-function modelsReady() {
-    return batteryLoaded && switchLoaded && motorLoaded && turbineLoaded;
-}
-
-
-function maybeStartDrop() {
-
-    if (modelsReady()) {
-
-        PART_LIST.forEach(function (part) {
-            if (!part.placed && dragging !== part) {
-                part.el.object3D.position.set(part.trayPos.x, 0.42, part.trayPos.z);
-            }
-        });
-
-        dropAnimating = true;
-
-    }
-
-    if (markerVisible && phase === "scan") {
-        beginAssemble();
-    }
-
-}
-
-
-function currentAssembleStep() {
-    for (let i = 0; i < ASSEMBLE_STEPS.length; i += 1) {
-        const step = ASSEMBLE_STEPS[i];
-        if (!PARTS[step.id].placed) {
-            return step;
-        }
-    }
-    return null;
-}
-
-
-function setFeedback(message, kind) {
-
-    trainFeedback.textContent = message || "";
-    trainFeedback.className = kind || "";
-
-    if (feedbackTimer) {
+    function setFeedback(message, kind = "") {
+      feedback.textContent = message || "";
+      feedback.className = kind || "";
+
+      if (feedbackTimer) {
         clearTimeout(feedbackTimer);
         feedbackTimer = null;
+      }
+
+      if (message && kind === "ok") {
+        feedbackTimer = setTimeout(() => {
+          feedback.textContent = "";
+          feedback.className = "";
+        }, 2200);
+      }
     }
 
-    if (message && kind === "ok") {
-        feedbackTimer = setTimeout(function () {
-            trainFeedback.textContent = "";
-            trainFeedback.className = "";
-        }, 1600);
+    function addMistake() {
+      mistakes += 1;
+      scoreText.textContent = "Mistakes " + mistakes;
     }
 
-}
-
-
-function addMistake() {
-    mistakes += 1;
-    trainScore.textContent = "Mistakes " + mistakes;
-}
-
-
-function setButtonVisible(button, visible) {
-    if (visible) {
-        button.classList.add("visible");
-    } else {
-        button.classList.remove("visible");
-    }
-}
-
-
-function beginAssemble() {
-    phase = "assemble";
-    refreshAssemblyLook();
-}
-
-
-function beginOperate() {
-    phase = "operate";
-    startedOnce = false;
-    stoppedOnce = false;
-    refreshAssemblyLook();
-}
-
-
-function beginQuiz() {
-    phase = "quiz";
-    quizIndex = 0;
-    quizCorrect = 0;
-    refreshAssemblyLook();
-}
-
-
-function finishTraining() {
-
-    phase = "complete";
-
-    if (systemRunning) {
-        stopSystem();
+    function markerIsTracked() {
+      return markerVisible || Boolean(marker.object3D && marker.object3D.visible);
     }
 
-    refreshAssemblyLook();
+    function placedCount() {
+      return PART_LIST.filter(p => p.placed).length;
+    }
 
-}
+    function allPartsPlaced() {
+      return placedCount() === PART_LIST.length;
+    }
 
+    function currentRequiredPart() {
+      for (const id of ASSEMBLY_ORDER) {
+        if (!PARTS[id].placed) return PARTS[id];
+      }
+      return null;
+    }
 
-function renderQuiz() {
+    function setEntityPosition(el, pos) {
+      el.object3D.position.set(pos.x, pos.y, pos.z);
+      el.setAttribute("position", `${pos.x} ${pos.y} ${pos.z}`);
+    }
 
-    const item = QUIZ[quizIndex];
+    function distance2D(ax, az, bx, bz) {
+      return Math.hypot(ax - bx, az - bz);
+    }
 
-    quizBox.innerHTML = "";
-    quizBox.classList.add("visible");
+    /* =====================================================
+       SOUND
+    ====================================================== */
+    function unlockAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === "suspended") {
+        audioContext.resume().catch(() => {});
+      }
+    }
 
-    item.options.forEach(function (option, index) {
+    function startHum() {
+      unlockAudio();
+      if (!audioContext || humOsc) return;
 
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "quiz-btn";
-        button.textContent = option.text;
-        button.addEventListener("click", function () {
-            answerQuiz(index);
-        });
-        quizBox.appendChild(button);
+      humGain = audioContext.createGain();
+      humGain.gain.value = 0.055;
+      humGain.connect(audioContext.destination);
 
-    });
+      humOsc = audioContext.createOscillator();
+      humOsc.type = "sawtooth";
+      humOsc.frequency.value = 92;
+      humOsc.connect(humGain);
+      humOsc.start();
+    }
 
-}
+    function stopHum() {
+      if (humOsc) {
+        try { humOsc.stop(); } catch (_) {}
+        humOsc = null;
+      }
+      if (humGain) {
+        try { humGain.disconnect(); } catch (_) {}
+        humGain = null;
+      }
+    }
 
+    /* =====================================================
+       UI / PHASE RENDERING
+    ====================================================== */
+    function clearButtons() {
+      controlArea.classList.remove("visible");
+      safetyChoices.classList.remove("visible");
+      startTestBtn.style.display = "none";
+      showFixBtn.style.display = "none";
+      restartBtn.style.display = "none";
+    }
 
-function answerQuiz(optionIndex) {
+    function setStatus(text, className = "") {
+      statusBadge.textContent = text;
+      statusBadge.className = className;
+    }
 
-    const item = QUIZ[quizIndex];
-    const buttons = quizBox.querySelectorAll(".quiz-btn");
+    function renderPhase() {
+      clearButtons();
+      targetPreview.classList.toggle("visible", phase === "scan");
+      trainingNote.classList.toggle("visible", phase !== "scan");
+      scoreText.textContent = "Mistakes " + mistakes;
 
-    if (buttons.length === 0 || buttons[0].disabled) {
+      if (phase === "scan") {
+        stepText.textContent = "Step 0 of 6";
+        progressBar.style.width = "4%";
+        coachTitle.textContent = "FixAR Pump Maintenance Trainer";
+        coachBody.textContent = "Point the camera at the target image to identify Water Pump WP-01.";
+        coachWhy.textContent = "The marker identifies the equipment and anchors its maintenance training content.";
+        setStatus("SCAN MARKER");
         return;
-    }
+      }
 
-    buttons.forEach(function (button) {
-        button.disabled = true;
-    });
-
-    const chosen = item.options[optionIndex];
-
-    buttons.forEach(function (button, index) {
-        if (item.options[index].correct) {
-            button.classList.add("correct");
-        }
-        if (index === optionIndex && !chosen.correct) {
-            button.classList.add("wrong");
-        }
-    });
-
-    if (chosen.correct) {
-        quizCorrect += 1;
-        setFeedback("Correct.", "ok");
-    } else {
-        addMistake();
-        setFeedback("Not quite. " + item.why, "bad");
-    }
-
-    setTimeout(function () {
-
-        quizIndex += 1;
-
-        if (quizIndex >= QUIZ.length) {
-            finishTraining();
-            return;
-        }
-
-        renderCoach();
-
-    }, 1100);
-
-}
-
-
-function trainingPassed() {
-    return quizCorrect >= 2 && startedOnce && stoppedOnce && allPlaced();
-}
-
-
-function renderCoach() {
-
-    quizBox.classList.remove("visible");
-    quizBox.innerHTML = "";
-    completeList.classList.remove("visible");
-    completeList.innerHTML = "";
-    setButtonVisible(continueBtn, false);
-    setButtonVisible(retryQuizBtn, false);
-    setButtonVisible(startMotorBtn, false);
-    startMotorBtn.classList.remove("running");
-    trainScore.textContent = "Mistakes " + mistakes;
-
-    if (targetPreview) {
-        targetPreview.classList.toggle("visible", phase === "scan");
-    }
-
-    if (phase === "scan") {
-        trainStep.textContent = "Step 0 of 3";
-        progressBar.style.width = "6%";
-        trainTitle.textContent = "Battery-powered turbine trainer";
-        trainBody.textContent = "Point the camera at the target image, then drag each part onto its own pad.";
-        trainWhy.textContent = "This is a familiarisation module, not a workplace procedure.";
-        return;
-    }
-
-    if (phase === "assemble") {
-        const step = currentAssembleStep();
+      if (phase === "assemble") {
+        const required = currentRequiredPart();
         const done = placedCount();
-        trainStep.textContent = "Step 1 of 3 · Assemble " + done + "/3";
-        progressBar.style.width = (12 + done * 18) + "%";
-        if (step) {
-            trainTitle.textContent = step.title;
-            trainBody.textContent = step.body;
-            trainWhy.textContent = "Why it matters: " + step.why;
-        }
+        stepText.textContent = `Step 1 of 6 · Assemble ${done}/3`;
+        progressBar.style.width = `${12 + done * 13}%`;
+        coachTitle.textContent = required ? `Drag the ${required.name}` : "Assembly complete";
+        coachBody.textContent = required
+          ? `Drag the ${required.name.toLowerCase()} from the parts tray onto its glowing position.`
+          : "All components are in their correct positions.";
+        coachWhy.textContent = required ? required.why : "The motor, coupling and pump now form one drive system.";
+        setStatus(`ASSEMBLY ${done}/3`, "ready");
+        refreshAssemblyVisuals();
         return;
-    }
+      }
 
-    if (phase === "operate") {
-        trainStep.textContent = "Step 2 of 3 · Operate";
-        progressBar.style.width = startedOnce ? "78%" : "68%";
-        if (!startedOnce) {
-            trainTitle.textContent = "2. Start the motor";
-            trainBody.textContent = "All parts are in place. Press Start motor — you should hear the drive and see the rotor spin.";
-            trainWhy.textContent = "The switch sends power from the battery to the coupled drive.";
-            startMotorBtn.textContent = "Start motor";
-            setButtonVisible(startMotorBtn, true);
-        } else if (systemRunning) {
-            trainTitle.textContent = "2. Motor running";
-            trainBody.textContent = "The rotor is spinning and the motor is humming. Press Stop motor to isolate power.";
-            trainWhy.textContent = "They share one shaft, so both rotate together.";
-            startMotorBtn.textContent = "Stop motor";
-            startMotorBtn.classList.add("running");
-            setButtonVisible(startMotorBtn, true);
-        } else {
-            trainTitle.textContent = "2. Power isolated";
-            trainBody.textContent = "The drive is stopped. Continue to the knowledge check.";
-            trainWhy.textContent = "Why it matters: starting and isolating are both part of safe operation.";
-            continueBtn.textContent = "Start knowledge check";
-            setButtonVisible(continueBtn, true);
-        }
+      if (phase === "ready") {
+        stepText.textContent = "Step 2 of 6 · Test";
+        progressBar.style.width = "55%";
+        coachTitle.textContent = "Machine assembled";
+        coachBody.textContent = "Start the machine test. Observe the motor, coupling and pump rotation.";
+        coachWhy.textContent = "A coupled drive should transmit rotation smoothly from the motor to the pump.";
+        setStatus("READY TO TEST", "ready");
+        controlArea.classList.add("visible");
+        startTestBtn.style.display = "block";
         return;
-    }
+      }
 
-    if (phase === "quiz") {
-        const item = QUIZ[quizIndex];
-        trainStep.textContent = "Step 3 of 3 · Check " + (quizIndex + 1) + "/3";
-        progressBar.style.width = (84 + quizIndex * 5) + "%";
-        trainTitle.textContent = "3. Knowledge check";
-        trainBody.textContent = item.question;
-        trainWhy.textContent = "Choose the best answer.";
-        renderQuiz();
+      if (phase === "running") {
+        stepText.textContent = "Step 2 of 6 · Testing";
+        progressBar.style.width = "62%";
+        coachTitle.textContent = "Machine test running";
+        coachBody.textContent = "Watch the rotating drive. FixAR is checking the simulated machine response.";
+        coachWhy.textContent = "The motor transfers rotation through the coupling to the pump.";
+        setStatus("MACHINE RUNNING", "running");
         return;
-    }
+      }
 
-    if (phase === "complete") {
-        const passed = trainingPassed();
-        trainStep.textContent = passed ? "Module complete" : "Needs review";
+      if (phase === "diagnose") {
+        stepText.textContent = "Step 3 of 6 · Diagnose";
+        progressBar.style.width = "72%";
+        coachTitle.textContent = "Fault detected: abnormal vibration";
+        coachBody.textContent = "Drag the best inspection action from the tray onto the highlighted fault area.";
+        coachWhy.textContent = "The vibration is strongest around the connection between the motor and pump.";
+        setStatus("FAULT DETECTED", "warning");
+        return;
+      }
+
+      if (phase === "safety") {
+        stepText.textContent = "Step 4 of 6 · Safety";
+        progressBar.style.width = "82%";
+        coachTitle.textContent = "Before touching the coupling...";
+        coachBody.textContent = "What must be done before inspecting or correcting the coupling?";
+        coachWhy.textContent = "Choose the safe action before maintenance work begins.";
+        setStatus("SAFETY CHECK", "warning");
+        safetyChoices.classList.add("visible");
+        return;
+      }
+
+      if (phase === "correct") {
+        stepText.textContent = "Step 5 of 6 · Correct";
+        progressBar.style.width = "92%";
+        coachTitle.textContent = "Coupling misalignment confirmed";
+        coachBody.textContent = "Power is isolated. Show the corrective alignment animation.";
+        coachWhy.textContent = "The correction demonstrates how both shafts should align before operation.";
+        setStatus("POWER ISOLATED", "ready");
+        controlArea.classList.add("visible");
+        showFixBtn.style.display = "block";
+        return;
+      }
+
+      if (phase === "complete") {
+        stepText.textContent = "Step 6 of 6 · Complete";
         progressBar.style.width = "100%";
-        trainTitle.textContent = passed ? "Training complete" : "Review needed";
-        trainBody.textContent = "Knowledge check " + quizCorrect + " / 3. Mistakes: " + mistakes + ".";
-        trainWhy.textContent = passed
-            ? "You identified the parts, assembled in a safe order, ran the coupled drive, and isolated it."
-            : "Score at least 2 / 3 on the knowledge check after you have started and isolated the drive.";
-        completeList.innerHTML =
-            "<li>Drag battery, then switch, then the coupled drive onto their slots</li>" +
-            "<li>Energise, observe coupling, then isolate</li>";
-        completeList.classList.add("visible");
-        continueBtn.textContent = "Restart module";
-        setButtonVisible(continueBtn, true);
-        if (!passed) {
-            setButtonVisible(retryQuizBtn, true);
-        }
+        coachTitle.textContent = "Maintenance training complete";
+        coachBody.textContent = `You assembled the drive, diagnosed the coupling fault, isolated power and corrected the alignment. Mistakes: ${mistakes}.`;
+        coachWhy.textContent = "This demonstrates equipment-specific marker-based AR guidance and interactive maintenance training.";
+        setStatus("TRAINING COMPLETE", "complete");
+        controlArea.classList.add("visible");
+        restartBtn.style.display = "block";
+      }
     }
 
-}
+    function refreshAssemblyVisuals() {
+      const required = currentRequiredPart();
 
-
-
-/* ==========================================
-   STATUS TEXT
-========================================== */
-
-function placedCount() {
-    return PART_LIST.filter(function (part) { return part.placed; }).length;
-}
-
-
-function allPlaced() {
-    return placedCount() === PART_LIST.length;
-}
-
-
-function updateStatus() {
-
-    if (!markerVisible) {
-        info.textContent = "Point the camera at the target image to start training.";
-        return;
-    }
-
-    if (!modelsReady()) {
-        info.textContent = "Marker detected — loading system components...";
-        return;
-    }
-
-    if (phase === "assemble") {
-        info.textContent = "Drag the glowing part onto its slot.";
-        return;
-    }
-
-    if (phase === "operate") {
-        info.textContent = systemRunning
-            ? "Press Stop motor when you have watched the drive."
-            : "Press Start motor.";
-        return;
-    }
-
-    if (phase === "quiz" || phase === "complete") {
-        info.textContent = "Use the training panel to finish the module.";
-        return;
-    }
-
-    info.textContent = "Marker detected — follow the training panel.";
-
-}
-
-
-function updateSystemBadge() {
-
-    systemStatus.classList.remove("running", "assembled");
-
-    if (systemRunning) {
-        systemStatus.textContent = "MOTOR RUNNING";
-        systemStatus.classList.add("running");
-        return;
-    }
-
-    if (phase === "complete") {
-        systemStatus.textContent = trainingPassed() ? "PASSED" : "REVIEW";
-        systemStatus.classList.add("assembled");
-        return;
-    }
-
-    if (phase === "operate" && allPlaced()) {
-        systemStatus.textContent = "READY TO START";
-        systemStatus.classList.add("assembled");
-        return;
-    }
-
-    if (phase === "assemble") {
-        systemStatus.textContent = "DRAG " + placedCount() + "/3";
-        return;
-    }
-
-    if (phase === "quiz") {
-        systemStatus.textContent = "KNOWLEDGE CHECK";
-        systemStatus.classList.add("assembled");
-        return;
-    }
-
-    systemStatus.textContent = markerVisible ? "TRAINING" : "SCAN MARKER";
-
-}
-
-
-
-/* ==========================================
-   SLOT / TRAY VISIBILITY
-========================================== */
-
-function setSlotVisible(part, visible) {
-
-    part.pad.setAttribute("visible", visible);
-    if (part.ring) {
-        part.ring.setAttribute("visible", false);
-    }
-
-}
-
-
-function setTrayVisible(visible) {
-
-    partsTray.setAttribute("visible", visible);
-
-}
-
-
-function refreshAssemblyLook() {
-
-    const assembleStep = currentAssembleStep();
-
-    PART_LIST.forEach(function (part) {
-
-        const showSlot = phase === "assemble" && assembleStep && part.id === assembleStep.id;
-
-        setSlotVisible(part, showSlot);
+      PART_LIST.forEach(part => {
+        const active = phase === "assemble" && required && required.id === part.id;
+        setVisible(part.pad, active);
+        setVisible(part.ring, active && hoverTarget && dragging === part);
         part.carryLabel.setAttribute("visible", !part.placed);
-        part.hitEl.setAttribute("visible", phase === "assemble" && !part.placed);
 
-    });
-
-    setTrayVisible(phase === "assemble" || phase === "scan" ? !allPlaced() : false);
-
-    if (phase === "assemble") {
-        trayLabel.setAttribute("value", "DRAG TO A PAD");
-    } else {
-        trayLabel.setAttribute("value", "PARTS TRAY");
-    }
-
-    if (allPlaced() && (phase === "operate" || phase === "quiz" || phase === "complete")) {
-        switchLabel.setAttribute("value", systemRunning ? "TAP TO ISOLATE" : "TAP SWITCH");
-        motorLabel.setAttribute("value", systemRunning ? "MOTOR RUNNING" : "MOTOR OFF");
-        motorLabel.setAttribute("color", systemRunning ? "#22c55e" : "#ef4444");
-    } else {
-        switchLabel.setAttribute("value", "SWITCH");
-        motorLabel.setAttribute("value", "MOTOR + TURBINE");
-        motorLabel.setAttribute("color", "#ef4444");
-    }
-
-    updateSystemBadge();
-    updateStatus();
-    renderCoach();
-
-}
-
-
-
-/* ==========================================
-   WIRE COLOR HELPERS
-========================================== */
-
-function setWiresOn() {
-
-    wireIds.forEach(function (id) {
-        document.getElementById(id).setAttribute("line", "color", ON_WIRE_COLOR);
-    });
-
-    returnWireIds.forEach(function (id) {
-        document.getElementById(id).setAttribute("line", "color", ON_RETURN_COLOR);
-    });
-
-}
-
-
-function setWiresOff() {
-
-    wireIds.forEach(function (id) {
-        document.getElementById(id).setAttribute("line", "color", OFF_WIRE_COLOR);
-    });
-
-    returnWireIds.forEach(function (id) {
-        document.getElementById(id).setAttribute("line", "color", OFF_RETURN_COLOR);
-    });
-
-}
-
-
-
-/* ==========================================
-   PART PLACEMENT
-========================================== */
-
-function setPartPosition(part, x, y, z) {
-
-    part.el.object3D.position.set(x, y, z);
-    part.el.setAttribute("position", x + " " + y + " " + z);
-
-}
-
-
-function snapPart(part) {
-
-    if (phase !== "assemble" || part.placed) {
-        return;
-    }
-
-    const required = currentAssembleStep();
-
-    if (!required || part.id !== required.id) {
-        addMistake();
-        returnToTray(part);
-        if (required) {
-            setFeedback("Not yet. Fit the " + required.id + " first.", "bad");
+        if (active) {
+          part.pad.setAttribute("color", hoverTarget && dragging === part ? "#22c55e" : "#38bdf8");
+          part.pad.setAttribute("opacity", hoverTarget && dragging === part ? 0.72 : 0.38);
+          part.pad.setAttribute("material", "opacity", hoverTarget && dragging === part ? 0.72 : 0.38);
         }
+      });
+
+      setVisible(partsTray, phase === "assemble" && !allPartsPlaced());
+    }
+
+    function showDiagnosisActions(show) {
+      setVisible(actionTray, show);
+      setVisible(diagnosisTarget, show);
+      ACTIONS.forEach(action => setVisible(action.el, show));
+    }
+
+    /* =====================================================
+       ASSEMBLY DRAG/DROP
+    ====================================================== */
+    function returnPartToTray(part) {
+      part.placed = false;
+      setEntityPosition(part.el, part.trayPos);
+      hoverTarget = false;
+      refreshAssemblyVisuals();
+    }
+
+    function snapPart(part) {
+      if (phase !== "assemble" || part.placed) return;
+
+      const required = currentRequiredPart();
+      if (!required || required.id !== part.id) {
+        addMistake();
+        returnPartToTray(part);
+        setFeedback(required ? `Not yet. Fit the ${required.name.toLowerCase()} first.` : "Wrong part.", "bad");
         return;
+      }
+
+      part.placed = true;
+      setEntityPosition(part.el, part.slotPos);
+      part.carryLabel.setAttribute("visible", false);
+      hoverTarget = false;
+      setFeedback(`Correct. ${part.why}`, "ok");
+
+      if (allPartsPlaced()) {
+        phase = "ready";
+      }
+
+      renderPhase();
     }
 
-    part.placed = true;
-    setPartPosition(part, part.slotPos.x, part.slotPos.y, part.slotPos.z);
-    hoverSlotId = null;
-    refreshPadColors();
-    setFeedback("Fitted — " + required.why, "ok");
-    refreshAssemblyLook();
+    /* =====================================================
+       MACHINE TEST + FAULT
+    ====================================================== */
+    function startMachineTest() {
+      if (phase !== "ready" || !allPartsPlaced()) return;
 
-    if (allPlaced()) {
-        beginOperate();
+      unlockAudio();
+      machineRunning = true;
+      phase = "running";
+      startHum();
+      renderPhase();
+
+      if (testTimer) clearTimeout(testTimer);
+      testTimer = setTimeout(() => {
+        stopMachineAndCreateFault();
+      }, 3300);
     }
 
-}
+    function stopMachineAndCreateFault() {
+      machineRunning = false;
+      stopHum();
+      testTimer = null;
+      faultIntroduced = true;
 
+      // Visually misalign the coupling slightly.
+      couplingVisual.object3D.position.z = 0.105;
+      couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(10);
 
-function returnToTray(part) {
+      setVisible(faultIndicator, true);
+      showDiagnosisActions(true);
+      phase = "diagnose";
+      renderPhase();
+      setFeedback("FixAR detected abnormal vibration near the coupling.", "bad");
+    }
 
-    part.placed = false;
-    setPartPosition(part, part.trayPos.x, part.trayPos.y, part.trayPos.z);
-    hoverSlotId = null;
-    refreshPadColors();
-    refreshAssemblyLook();
+    /* =====================================================
+       DIAGNOSIS ACTION DRAG/DROP
+    ====================================================== */
+    function returnActionToTray(action) {
+      setEntityPosition(action.el, action.trayPos);
+      hoverTarget = false;
+    }
 
-}
-
-
-function distanceToSlot(part, x, z) {
-
-    const dx = x - part.slotPos.x;
-    const dz = z - part.slotPos.z;
-
-    return Math.sqrt(dx * dx + dz * dz);
-
-}
-
-
-function refreshPadColors() {
-
-    PART_LIST.forEach(function (part) {
-
-        const hovering = hoverSlotId === part.id && dragging === part;
-
-        const color = hovering ? "#22c55e" : "#38bdf8";
-        const ringColor = hovering ? "#86efac" : "#7dd3fc";
-
-        part.pad.setAttribute("color", color);
-        part.ring.setAttribute("color", ringColor);
-
-    });
-
-}
-
-
-
-/* ==========================================
-   SYSTEM START / STOP
-========================================== */
-
-function startSystem() {
-
-    if (systemRunning || !allPlaced()) {
+    function handleActionDrop(action) {
+      if (phase !== "diagnose") {
+        returnActionToTray(action);
         return;
-    }
+      }
 
-    systemRunning = true;
-    startedOnce = true;
+      const pos = action.el.object3D.position;
+      const nearFault = distance2D(pos.x, pos.z, 0, 0) < ACTION_SNAP_DISTANCE;
 
-    startSystemSound();
-
-    motorLabel.setAttribute("value", "MOTOR RUNNING");
-    motorLabel.setAttribute("color", "#22c55e");
-
-    switchLabel.setAttribute("value", "TAP TO ISOLATE");
-
-    switchModel.setAttribute("rotation", SWITCH_ON_ROT);
-
-    setWiresOn();
-
-    updateSystemBadge();
-    updateStatus();
-    if (phase === "operate") {
-        renderCoach();
-    }
-
-}
-
-
-function resetRotorSpin() {
-    if (turbineSpinner && turbineSpinner.object3D) {
-        turbineSpinner.object3D.rotation.set(0, 0, 0);
-    }
-    if (turbineModel && turbineModel.object3D) {
-        turbineModel.object3D.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
-    }
-}
-
-
-function stopSystem() {
-
-    if (!systemRunning) {
+      if (!nearFault) {
+        returnActionToTray(action);
+        setFeedback("Drop the inspection action onto the highlighted fault area.", "bad");
         return;
-    }
+      }
 
-    systemRunning = false;
-
-    stopSystemSound();
-
-    if (startedOnce) {
-        stoppedOnce = true;
-    }
-
-    motorLabel.setAttribute("value", allPlaced() ? "MOTOR OFF" : "MOTOR + TURBINE");
-    motorLabel.setAttribute("color", "#ef4444");
-
-    switchLabel.setAttribute("value", allPlaced() ? "TAP SWITCH" : "SWITCH");
-
-    switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
-
-    resetRotorSpin();
-
-    setWiresOff();
-
-    updateSystemBadge();
-    updateStatus();
-    if (phase === "operate") {
-        renderCoach();
-    }
-
-}
-
-
-function toggleSystem() {
-
-    if (phase !== "operate") {
+      if (!action.correct) {
+        addMistake();
+        returnActionToTray(action);
+        setFeedback("Not the best first action. Inspect the component connecting the motor and pump.", "bad");
         return;
+      }
+
+      diagnosisCorrect = true;
+      setEntityPosition(action.el, { x: 0, y: 0.18, z: 0 });
+      setFeedback("Correct. Coupling misalignment can cause abnormal vibration.", "ok");
+
+      setTimeout(() => {
+        showDiagnosisActions(false);
+        setVisible(action.el, false);
+        phase = "safety";
+        renderPhase();
+      }, 900);
     }
 
-    if (!allPlaced()) {
-        info.textContent = "Assemble the circuit before using the switch.";
-        return;
+    /* =====================================================
+       SAFETY + CORRECTION
+    ====================================================== */
+    function handleSafetyAnswer(button) {
+      if (phase !== "safety") return;
+
+      const answer = button.dataset.answer;
+      safetyButtons.forEach(btn => {
+        btn.classList.remove("correct", "wrong");
+      });
+
+      if (answer === "isolate") {
+        button.classList.add("correct");
+        powerIsolated = true;
+        setVisible(isolationTag, true);
+        setFeedback("Correct. Power isolated before coupling inspection.", "ok");
+
+        safetyButtons.forEach(btn => btn.disabled = true);
+
+        setTimeout(() => {
+          phase = "correct";
+          renderPhase();
+        }, 900);
+      } else {
+        addMistake();
+        button.classList.add("wrong");
+        setFeedback("Unsafe. The machine must be isolated before maintenance.", "bad");
+      }
     }
 
-    if (systemRunning) {
-        stopSystem();
-    } else {
-        startSystem();
+    function showCorrection() {
+      if (phase !== "correct" || !powerIsolated || correctionStarted) return;
+
+      correctionStarted = true;
+      correctionProgress = 0;
+      showFixBtn.disabled = true;
+      setFeedback("Correcting coupling alignment...", "ok");
     }
 
-}
-
-
-
-/* ==========================================
-   SCREEN-SPACE DRAG
-   AR.js raycasts often miss. We pick the part
-   closest to the finger on screen, then slide
-   it on the marker using screen movement.
-========================================== */
-
-const worldScratch = new THREE.Vector3();
-const GRAB_PIXELS = 180;
-
-
-function eventPoint(event) {
-
-    if (event.touches && event.touches.length > 0) {
-        return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    /* =====================================================
+       SCREEN-SPACE DRAG SYSTEM
+       Reuses the same idea as your original code:
+       choose the object nearest the finger, then convert
+       screen movement into marker-local X/Z movement.
+    ====================================================== */
+    function eventPoint(event) {
+      return { x: event.clientX, y: event.clientY };
     }
 
-    if (event.changedTouches && event.changedTouches.length > 0) {
-        return { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
-    }
-
-    return { x: event.clientX, y: event.clientY };
-
-}
-
-
-function markerIsTracked() {
-
-    if (markerVisible) {
-        return true;
-    }
-
-    return Boolean(marker.object3D && marker.object3D.visible);
-
-}
-
-
-function worldToScreen(worldVec) {
-
-    const cam = sceneEl.camera;
-    const projected = worldVec.clone().project(cam);
-
-    return {
+    function worldToScreen(worldVec) {
+      const cam = sceneEl.camera;
+      const projected = worldVec.clone().project(cam);
+      return {
         x: (projected.x * 0.5 + 0.5) * window.innerWidth,
         y: (-projected.y * 0.5 + 0.5) * window.innerHeight
-    };
-
-}
-
-
-function markerLocalToScreen(x, y, z) {
-
-    marker.object3D.updateMatrixWorld(true);
-    worldScratch.set(x, y, z);
-    marker.object3D.localToWorld(worldScratch);
-
-    return worldToScreen(worldScratch);
-
-}
-
-
-function pickPartByScreen(clientX, clientY) {
-
-    if (!sceneEl.camera) {
-        return null;
+      };
     }
 
-    let best = null;
-    let bestDist = GRAB_PIXELS;
-
-    PART_LIST.forEach(function (part) {
-
-        if (part.placed) {
-            return;
-        }
-
-        part.el.object3D.updateMatrixWorld(true);
-        part.el.object3D.getWorldPosition(worldScratch);
-
-        const screen = worldToScreen(worldScratch);
-        const dist = Math.hypot(screen.x - clientX, screen.y - clientY);
-
-        if (dist < bestDist) {
-            bestDist = dist;
-            best = part;
-        }
-
-    });
-
-    return best;
-
-}
-
-
-function screenDeltaToMarkerXZ(dx, dy) {
-
-    const origin = markerLocalToScreen(0, MODEL_Y, 0);
-    const xAxis = markerLocalToScreen(1, MODEL_Y, 0);
-    const zAxis = markerLocalToScreen(0, MODEL_Y, 1);
-
-    const ax = xAxis.x - origin.x;
-    const ay = xAxis.y - origin.y;
-    const bx = zAxis.x - origin.x;
-    const by = zAxis.y - origin.y;
-    const det = ax * by - ay * bx;
-
-    if (Math.abs(det) < 0.0001) {
-        return { x: 0, z: 0 };
+    function markerLocalToScreen(x, y, z) {
+      marker.object3D.updateMatrixWorld(true);
+      worldScratch.set(x, y, z);
+      marker.object3D.localToWorld(worldScratch);
+      return worldToScreen(worldScratch);
     }
 
-    return {
+    function screenDeltaToMarkerXZ(dx, dy) {
+      const origin = markerLocalToScreen(0, MODEL_Y, 0);
+      const xAxis = markerLocalToScreen(1, MODEL_Y, 0);
+      const zAxis = markerLocalToScreen(0, MODEL_Y, 1);
+
+      const ax = xAxis.x - origin.x;
+      const ay = xAxis.y - origin.y;
+      const bx = zAxis.x - origin.x;
+      const by = zAxis.y - origin.y;
+      const det = ax * by - ay * bx;
+
+      if (Math.abs(det) < 0.0001) return { x: 0, z: 0 };
+
+      return {
         x: (dx * by - dy * bx) / det,
         z: (ax * dy - ay * dx) / det
-    };
-
-}
-
-
-function beginDrag(part, clientX, clientY) {
-
-    if (part.placed) {
-        return;
+      };
     }
 
-    dropAnimating = false;
-    dragging = part;
-    dragStartScreenX = clientX;
-    dragStartScreenY = clientY;
-    dragStartPosX = part.el.object3D.position.x;
-    dragStartPosZ = part.el.object3D.position.z;
-
-    part.el.object3D.position.y = DRAG_Y;
-    part.carryLabel.setAttribute("visible", true);
-    setFeedback("Holding " + part.id + " — drop it on its glowing slot.", "ok");
-
-}
-
-
-function moveDrag(clientX, clientY) {
-
-    if (!dragging) {
-        return;
+    function screenDistanceToEntity(el, clientX, clientY) {
+      el.object3D.updateMatrixWorld(true);
+      el.object3D.getWorldPosition(worldScratch);
+      const screen = worldToScreen(worldScratch);
+      return Math.hypot(screen.x - clientX, screen.y - clientY);
     }
 
-    const delta = screenDeltaToMarkerXZ(
+    function pickPart(clientX, clientY) {
+      const required = currentRequiredPart();
+      if (!required || required.placed) return null;
+
+      // Allow only the required part. This keeps the training order clear.
+      const dist = screenDistanceToEntity(required.el, clientX, clientY);
+      return dist <= GRAB_PIXELS ? required : null;
+    }
+
+    function pickAction(clientX, clientY) {
+      let best = null;
+      let bestDist = GRAB_PIXELS;
+
+      for (const action of ACTIONS) {
+        const dist = screenDistanceToEntity(action.el, clientX, clientY);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = action;
+        }
+      }
+
+      return best;
+    }
+
+    function beginDrag(item, kind, clientX, clientY) {
+      dragging = item;
+      dragKind = kind;
+      dragStartScreenX = clientX;
+      dragStartScreenY = clientY;
+      dragStartPosX = item.el.object3D.position.x;
+      dragStartPosZ = item.el.object3D.position.z;
+      item.el.object3D.position.y = DRAG_Y;
+
+      if (kind === "part") {
+        item.carryLabel.setAttribute("visible", true);
+        setFeedback(`Holding ${item.name}. Move it to the glowing slot.`, "ok");
+      } else {
+        setFeedback(`Holding ${item.name}. Drag it to the highlighted fault.`, "ok");
+      }
+    }
+
+    function moveDrag(clientX, clientY) {
+      if (!dragging) return;
+
+      const delta = screenDeltaToMarkerXZ(
         clientX - dragStartScreenX,
         clientY - dragStartScreenY
-    );
+      );
 
-    const x = THREE.MathUtils.clamp(dragStartPosX + delta.x, -1.2, 1.2);
-    const z = THREE.MathUtils.clamp(dragStartPosZ + delta.z, -1.0, 1.1);
+      const x = THREE.MathUtils.clamp(dragStartPosX + delta.x, -0.78, 0.78);
+      const z = THREE.MathUtils.clamp(dragStartPosZ + delta.z, -0.43, 0.93);
+      dragging.el.object3D.position.set(x, DRAG_Y, z);
 
-    dragging.el.object3D.position.set(x, DRAG_Y, z);
-
-    hoverSlotId = distanceToSlot(dragging, x, z) < SNAP_DISTANCE ? dragging.id : null;
-    refreshPadColors();
-
-}
-
-
-function endDrag() {
-
-    if (!dragging) {
-        return;
+      if (dragKind === "part") {
+        hoverTarget = distance2D(x, z, dragging.slotPos.x, dragging.slotPos.z) < PART_SNAP_DISTANCE;
+        refreshAssemblyVisuals();
+      } else {
+        hoverTarget = distance2D(x, z, 0, 0) < ACTION_SNAP_DISTANCE;
+        diagnosisTarget.setAttribute("color", hoverTarget ? "#22c55e" : "#f59e0b");
+        diagnosisTarget.setAttribute("opacity", hoverTarget ? 0.50 : 0.24);
+        diagnosisTarget.setAttribute("material", "opacity", hoverTarget ? 0.50 : 0.24);
+      }
     }
 
-    const part = dragging;
-    const pos = part.el.object3D.position;
+    function endDrag() {
+      if (!dragging) return;
 
-    dragging = null;
-    hoverSlotId = null;
+      const item = dragging;
+      const kind = dragKind;
+      const pos = item.el.object3D.position.clone();
 
-    if (distanceToSlot(part, pos.x, pos.z) < SNAP_DISTANCE) {
-        snapPart(part);
-    } else {
-        returnToTray(part);
-        setFeedback("Drop it on the glowing slot.", "bad");
-    }
+      dragging = null;
+      dragKind = null;
+      hoverTarget = false;
 
-    refreshPadColors();
-
-}
-
-
-
-/* ==========================================
-   POINTER EVENTS
-========================================== */
-
-function isUiTarget(target) {
-    if (!target) {
-        return false;
-    }
-    if (target === resetBtn || resetBtn.contains(target)) {
-        return true;
-    }
-    if (target.closest && target.closest("#quizBox, #continueBtn, #retryQuizBtn, #startMotorBtn")) {
-        return true;
-    }
-    const homeBtn = document.getElementById("homeBtn");
-    if (homeBtn && (target === homeBtn || homeBtn.contains(target))) {
-        return true;
-    }
-    return false;
-}
-
-
-function onPointerDown(event) {
-
-    unlockAudio();
-
-    if (isUiTarget(event.target)) {
-        return;
-    }
-
-    const point = eventPoint(event);
-
-    if (markerIsTracked() && phase === "scan") {
-        beginAssemble();
-    }
-
-    if (!markerIsTracked()) {
-        return;
-    }
-
-    if (phase === "quiz" || phase === "complete") {
-        return;
-    }
-
-    pointerActive = true;
-
-    if (phase === "assemble") {
-
-        const part = pickPartByScreen(point.x, point.y);
-
-        if (part && !part.placed) {
-            beginDrag(part, point.x, point.y);
+      if (kind === "part") {
+        const close = distance2D(pos.x, pos.z, item.slotPos.x, item.slotPos.z) < PART_SNAP_DISTANCE;
+        if (close) {
+          snapPart(item);
         } else {
-            setFeedback("Touch a blue part on the marker, then slide.", "bad");
+          returnPartToTray(item);
+          setFeedback("Drop the part onto the glowing position.", "bad");
         }
-
+        refreshAssemblyVisuals();
+      } else {
+        diagnosisTarget.setAttribute("color", "#f59e0b");
+        diagnosisTarget.setAttribute("opacity", 0.24);
+        diagnosisTarget.setAttribute("material", "opacity", 0.24);
+        handleActionDrop(item);
+      }
     }
 
-    event.preventDefault();
+    /* =====================================================
+       POINTER EVENTS
+    ====================================================== */
+    function isUiTarget(target) {
+      return Boolean(target && target.closest && target.closest(
+        "#coachPanel, #resetBtn, #homeBtn"
+      ));
+    }
 
-}
+    function onPointerDown(event) {
+      unlockAudio();
 
+      if (isUiTarget(event.target)) return;
+      if (!markerIsTracked()) return;
 
-function onPointerMove(event) {
+      const point = eventPoint(event);
 
-    if (dragging) {
-        const point = eventPoint(event);
-        moveDrag(point.x, point.y);
+      if (phase === "assemble") {
+        const part = pickPart(point.x, point.y);
+        if (part) {
+          beginDrag(part, "part", point.x, point.y);
+        } else {
+          const required = currentRequiredPart();
+          if (required) setFeedback(`Touch the ${required.name.toLowerCase()} on the parts tray.`, "bad");
+        }
+      } else if (phase === "diagnose") {
+        const action = pickAction(point.x, point.y);
+        if (action) {
+          beginDrag(action, "action", point.x, point.y);
+        } else {
+          setFeedback("Touch one maintenance action card and drag it to the fault.", "bad");
+        }
+      }
+
+      if (dragging) {
         event.preventDefault();
-    }
-
-}
-
-
-function onPointerUp(event) {
-
-    if (isUiTarget(event.target) && !dragging) {
-        pointerActive = false;
-        return;
-    }
-
-    const point = eventPoint(event);
-    const wasDragging = Boolean(dragging);
-
-    if (dragging) {
-        endDrag();
-    }
-
-    pointerActive = false;
-
-    if (wasDragging || !markerIsTracked()) {
-        return;
-    }
-
-    if (phase === "operate") {
-        handleSwitchTouch(point.x, point.y);
-    }
-
-}
-
-
-const inputOptions = { capture: true, passive: false };
-
-document.addEventListener("pointerdown", onPointerDown, inputOptions);
-document.addEventListener("pointermove", onPointerMove, inputOptions);
-document.addEventListener("pointerup", onPointerUp, inputOptions);
-document.addEventListener("pointercancel", onPointerUp, inputOptions);
-document.addEventListener("touchstart", onPointerDown, inputOptions);
-document.addEventListener("touchmove", onPointerMove, inputOptions);
-document.addEventListener("touchend", onPointerUp, inputOptions);
-document.addEventListener("touchcancel", onPointerUp, inputOptions);
-
-
-
-function handleSwitchTouch(clientX, clientY) {
-
-    if (!markerIsTracked() || phase !== "operate" || !allPlaced()) {
-        return;
-    }
-
-    switchPart.object3D.updateMatrixWorld(true);
-    switchPart.object3D.getWorldPosition(worldScratch);
-
-    const screen = worldToScreen(worldScratch);
-    const dist = Math.hypot(screen.x - clientX, screen.y - clientY);
-
-    if (dist < 160) {
-        toggleSystem();
-    }
-
-}
-
-
-
-/* ==========================================
-   ANIMATION LOOP
-========================================== */
-
-function animate() {
-
-    requestAnimationFrame(animate);
-
-    if (dropAnimating && !dragging) {
-
-        let settled = true;
-
-        PART_LIST.forEach(function (part) {
-
-            if (part.placed || part === dragging) {
-                return;
-            }
-
-            const pos = part.el.object3D.position;
-            pos.y += (part.trayPos.y - pos.y) * 0.14;
-
-            if (Math.abs(pos.y - part.trayPos.y) > 0.008) {
-                settled = false;
-            } else {
-                pos.y = part.trayPos.y;
-            }
-
-        });
-
-        if (settled) {
-            dropAnimating = false;
+        if (event.pointerId !== undefined && document.body.setPointerCapture) {
+          try { document.body.setPointerCapture(event.pointerId); } catch (_) {}
         }
-
+      }
     }
 
-    const pulse = 0.38 + Math.sin(Date.now() / 220) * 0.16;
+    function onPointerMove(event) {
+      if (!dragging) return;
+      const point = eventPoint(event);
+      moveDrag(point.x, point.y);
+      event.preventDefault();
+    }
 
-    PART_LIST.forEach(function (part) {
+    function onPointerUp(event) {
+      if (!dragging) return;
+      endDrag();
+      event.preventDefault();
+    }
 
-        if (part.placed) {
-            return;
-        }
+    document.addEventListener("pointerdown", onPointerDown, { capture: true, passive: false });
+    document.addEventListener("pointermove", onPointerMove, { capture: true, passive: false });
+    document.addEventListener("pointerup", onPointerUp, { capture: true, passive: false });
+    document.addEventListener("pointercancel", onPointerUp, { capture: true, passive: false });
 
-        const opacity = hoverSlotId === part.id ? 0.72 : pulse;
-        part.pad.setAttribute("opacity", opacity);
-        part.pad.setAttribute("material", "opacity", opacity);
-
+    /* =====================================================
+       BUTTON EVENTS
+    ====================================================== */
+    startTestBtn.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      startMachineTest();
     });
 
-    if (!systemRunning || !turbineSpinner || !turbineSpinner.object3D) {
-        return;
+    showFixBtn.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      showCorrection();
+    });
+
+    restartBtn.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      resetTraining();
+    });
+
+    resetBtn.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      resetTraining();
+    });
+
+    safetyButtons.forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        handleSafetyAnswer(button);
+      });
+    });
+
+    /* =====================================================
+       ANIMATION LOOP
+    ====================================================== */
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Pulse the active assembly pad.
+      if (phase === "assemble") {
+        const required = currentRequiredPart();
+        if (required) {
+          const pulse = 0.34 + Math.sin(Date.now() / 220) * 0.16;
+          const opacity = hoverTarget && dragging === required ? 0.72 : pulse;
+          required.pad.setAttribute("opacity", opacity);
+          required.pad.setAttribute("material", "opacity", opacity);
+        }
+      }
+
+      // Machine running animation.
+      if (machineRunning) {
+        const speed = THREE.MathUtils.degToRad(14);
+        if (motorFan && motorFan.object3D) motorFan.object3D.rotation.x += speed;
+        if (couplingVisual && couplingVisual.object3D) couplingVisual.object3D.rotation.x += speed;
+        if (pumpImpeller && pumpImpeller.object3D) pumpImpeller.object3D.rotation.z += speed;
+      }
+
+      // Coupling correction animation.
+      if (correctionStarted && phase === "correct") {
+        correctionProgress = Math.min(1, correctionProgress + 0.025);
+        const t = 1 - Math.pow(1 - correctionProgress, 3);
+
+        couplingVisual.object3D.position.z = THREE.MathUtils.lerp(0.105, 0, t);
+        couplingVisual.object3D.rotation.y = THREE.MathUtils.lerp(
+          THREE.MathUtils.degToRad(10),
+          0,
+          t
+        );
+
+        if (correctionProgress >= 1) {
+          correctionStarted = false;
+          setVisible(faultIndicator, false);
+          setVisible(successMark, true);
+          phase = "complete";
+          renderPhase();
+          setFeedback("Alignment corrected. Training complete.", "ok");
+        }
+      }
     }
 
-    turbineSpinner.object3D.rotation.x += THREE.MathUtils.degToRad(18);
+    animate();
 
-}
+    /* =====================================================
+       RESET
+    ====================================================== */
+    function resetTraining() {
+      if (testTimer) {
+        clearTimeout(testTimer);
+        testTimer = null;
+      }
 
+      stopHum();
 
-animate();
+      phase = markerVisible ? "assemble" : "scan";
+      mistakes = 0;
+      dragging = null;
+      dragKind = null;
+      hoverTarget = false;
+      machineRunning = false;
+      faultIntroduced = false;
+      diagnosisCorrect = false;
+      powerIsolated = false;
+      correctionStarted = false;
+      correctionProgress = 0;
 
+      setFeedback("", "");
+      showFixBtn.disabled = false;
 
+      safetyButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove("correct", "wrong");
+      });
 
-/* ==========================================
-   RESET
-========================================== */
-
-function resetTraining() {
-
-    dragging = null;
-    hoverSlotId = null;
-    pointerActive = false;
-    mistakes = 0;
-    quizIndex = 0;
-    quizCorrect = 0;
-    startedOnce = false;
-    stoppedOnce = false;
-    setFeedback("", "");
-
-    if (systemRunning) {
-        stopSystem();
-    } else {
-        stopSystemSound();
-        switchModel.setAttribute("rotation", SWITCH_OFF_ROT);
-        resetRotorSpin();
-        setWiresOff();
-    }
-
-    PART_LIST.forEach(function (part) {
+      PART_LIST.forEach(part => {
         part.placed = false;
-        setPartPosition(part, part.trayPos.x, 0.42, part.trayPos.z);
+        setEntityPosition(part.el, part.trayPos);
+        part.carryLabel.setAttribute("visible", true);
+      });
+
+      ACTIONS.forEach(action => {
+        setEntityPosition(action.el, action.trayPos);
+        setVisible(action.el, false);
+      });
+
+      couplingVisual.object3D.position.set(0, 0, 0);
+      couplingVisual.object3D.rotation.set(0, 0, 0);
+      motorFan.object3D.rotation.set(0, 0, 0);
+      pumpImpeller.object3D.rotation.set(0, 0, 0);
+
+      setVisible(faultIndicator, false);
+      setVisible(actionTray, false);
+      setVisible(diagnosisTarget, false);
+      setVisible(isolationTag, false);
+      setVisible(successMark, false);
+
+      renderPhase();
+    }
+
+    /* =====================================================
+       MARKER EVENTS
+    ====================================================== */
+    marker.addEventListener("targetFound", () => {
+      markerVisible = true;
+
+      if (phase === "scan") {
+        phase = "assemble";
+        setFeedback("WP-01 identified. Begin the assembly training.", "ok");
+      }
+
+      renderPhase();
     });
 
-    dropAnimating = true;
+    marker.addEventListener("targetLost", () => {
+      markerVisible = false;
+      setStatus("MARKER LOST", "warning");
+      setFeedback("Marker lost. Point the camera back at the target image.", "bad");
+    });
 
-    refreshPadColors();
+    sceneEl.addEventListener("arError", () => {
+      coachTitle.textContent = "AR could not start";
+      coachBody.textContent = "Check that target.mind is in the same folder as this HTML file and that camera permission is allowed.";
+      setStatus("AR ERROR", "warning");
+    });
 
-    if (markerVisible) {
-        beginAssemble();
-    } else {
-        phase = "scan";
-        refreshAssemblyLook();
-    }
-
-}
-
-
-resetBtn.addEventListener("click", function (event) {
-
-    event.preventDefault();
-    event.stopPropagation();
+    // Initial state
     resetTraining();
-
-});
-
-
-
-/* ==========================================
-   MARKER FOUND / LOST
-========================================== */
-
-marker.addEventListener("targetFound", function () {
-    markerVisible = true;
-    maybeStartDrop();
-    if (phase === "scan") {
-        beginAssemble();
-    } else {
-        updateStatus();
-        renderCoach();
-    }
-});
-
-
-marker.addEventListener("targetLost", function () {
-    markerVisible = false;
-    info.textContent = "Target lost — point the camera at the target image.";
-});
-
-sceneEl.addEventListener("arError", function () {
-    trainBody.textContent = "Could not load target.mind. Put your compiled MindAR file in the project folder and refresh.";
-});
-
-
-continueBtn.addEventListener("click", function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (phase === "operate" && stoppedOnce) {
-        beginQuiz();
-        return;
-    }
-    if (phase === "complete") {
-        resetTraining();
-    }
-});
-
-
-startMotorBtn.addEventListener("click", function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-    unlockAudio();
-    if (phase === "operate") {
-        toggleSystem();
-    }
-});
-
-
-retryQuizBtn.addEventListener("click", function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-    beginQuiz();
-});
-
-
-refreshAssemblyLook();
-
-
-</script>
-
-
+  </script>
 </body>
-
 </html>
