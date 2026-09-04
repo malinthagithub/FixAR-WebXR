@@ -146,9 +146,9 @@
 
 
         #resetBtn {
-            right: 78px;
-            top: 12px;
-            bottom: auto;
+            right: 15px;
+            bottom: 18px;
+            top: auto;
         }
 
 
@@ -177,7 +177,7 @@
 
             pointer-events: none;
 
-            max-height: 34vh;
+            max-height: 26vh;
 
             overflow-y: auto;
         }
@@ -339,47 +339,6 @@
         }
 
 
-        #touchBar {
-            position: fixed;
-            left: 10px;
-            right: 10px;
-            bottom: 12px;
-            z-index: 1200;
-            display: none;
-            gap: 8px;
-        }
-
-
-        #touchBar.visible {
-            display: flex;
-        }
-
-
-        #touchBar button {
-            flex: 1;
-            min-height: 56px;
-            padding: 8px 6px;
-            border-radius: 10px;
-            border: 2px solid #334155;
-            background: #0f172a;
-            color: white;
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-
-        #touchBar button.needed {
-            border-color: #38bdf8;
-            background: #38bdf8;
-            color: #07111f;
-        }
-
-
-        #touchBar button.done {
-            opacity: 0.4;
-        }
-
-
         #arjs-video {
             pointer-events: none !important;
         }
@@ -430,7 +389,7 @@
     <h2 id="trainTitle">Battery-powered turbine trainer</h2>
 
     <p id="trainBody">
-        Scan the Hiro marker. You will identify each component, assemble the circuit in a safe order, start and isolate the drive, then answer a short knowledge check.
+    Scan the Hiro marker, then drag each part from the tray onto its glowing slot.
     </p>
 
     <p id="trainWhy">
@@ -450,13 +409,6 @@
         Training aid only — follow workplace SOPs and qualified supervision.
     </div>
 
-</div>
-
-
-<div id="touchBar">
-    <button type="button" id="tapBattery" data-part="battery">Battery</button>
-    <button type="button" id="tapSwitch" data-part="switch">Switch</button>
-    <button type="button" id="tapDrive" data-part="drive">Motor + Turbine</button>
 </div>
 
 
@@ -628,10 +580,10 @@
 
             <a-box
                 id="batteryHit"
-                width="0.38"
-                height="0.38"
-                depth="0.38"
-                material="transparent: true; opacity: 0.01; depthWrite: false">
+                width="0.52"
+                height="0.46"
+                depth="0.52"
+                material="transparent: true; opacity: 0.22; color: #38bdf8; depthWrite: false">
             </a-box>
 
             <a-text
@@ -662,10 +614,10 @@
 
             <a-box
                 id="switchHit"
-                width="0.38"
-                height="0.38"
-                depth="0.38"
-                material="transparent: true; opacity: 0.01; depthWrite: false">
+                width="0.52"
+                height="0.46"
+                depth="0.52"
+                material="transparent: true; opacity: 0.22; color: #38bdf8; depthWrite: false">
             </a-box>
 
             <a-text
@@ -727,10 +679,10 @@
 
             <a-box
                 id="driveHit"
-                width="0.48"
-                height="0.42"
-                depth="0.58"
-                material="transparent: true; opacity: 0.01; depthWrite: false">
+                width="0.58"
+                height="0.48"
+                depth="0.64"
+                material="transparent: true; opacity: 0.22; color: #38bdf8; depthWrite: false">
             </a-box>
 
             <a-text
@@ -840,10 +792,6 @@ const completeList = document.getElementById("completeList");
 const continueBtn = document.getElementById("continueBtn");
 const retryQuizBtn = document.getElementById("retryQuizBtn");
 const trayLabel = document.getElementById("trayLabel");
-const touchBar = document.getElementById("touchBar");
-const tapBattery = document.getElementById("tapBattery");
-const tapSwitch = document.getElementById("tapSwitch");
-const tapDrive = document.getElementById("tapDrive");
 
 const batteryPart = document.getElementById("batteryPart");
 const switchPart = document.getElementById("switchPart");
@@ -883,8 +831,9 @@ const ON_RETURN_COLOR = "#166534";
 const OFF_RETURN_COLOR = "#7f1d1d";
 
 const MODEL_Y = 0.05;
-const DRAG_Y = 0.16;
-const SNAP_DISTANCE = 0.28;
+const DRAG_Y = 0.22;
+const SNAP_DISTANCE = 0.38;
+const GRAB_DISTANCE = 0.50;
 const MOTOR_BASE_Y = 90;
 const TURBINE_BASE_Y = 90;
 const SWITCH_OFF_ROT = "0 -40 0";
@@ -933,45 +882,23 @@ const PARTS = {
 const PART_LIST = [PARTS.battery, PARTS.switch, PARTS.drive];
 
 
-const IDENTIFY_STEPS = [
-    {
-        id: "battery",
-        title: "1. Identify the power source",
-        body: "Tap the BATTERY button at the bottom of the screen.",
-        why: "The battery supplies energy. Without it the motor cannot run."
-    },
-    {
-        id: "switch",
-        title: "1. Identify the isolator",
-        body: "Tap the SWITCH button at the bottom of the screen.",
-        why: "The switch starts the circuit and isolates power. Do not energise a machine you cannot switch off."
-    },
-    {
-        id: "drive",
-        title: "1. Identify the coupled drive",
-        body: "Tap the MOTOR + TURBINE button at the bottom of the screen.",
-        why: "The motor and turbine share one shaft. When the motor turns, the turbine turns with it."
-    }
-];
-
-
 const ASSEMBLE_STEPS = [
     {
         id: "battery",
-        title: "2. Fit the power source",
-        body: "Tap BATTERY below to fit it onto its slot.",
+        title: "1. Drag the battery",
+        body: "Hold the glowing battery box and drop it on the battery slot.",
         why: "Fit the supply first so the rest of the circuit has a power source."
     },
     {
         id: "switch",
-        title: "2. Fit the isolator",
-        body: "Tap SWITCH below to fit it onto its slot.",
+        title: "1. Drag the switch",
+        body: "Hold the switch and drop it on the glowing switch slot.",
         why: "The switch sits between the battery and the motor so you can isolate the drive."
     },
     {
         id: "drive",
-        title: "2. Fit the coupled drive",
-        body: "Tap MOTOR + TURBINE below to fit it onto its slot.",
+        title: "1. Drag the motor-turbine",
+        body: "Hold the coupled drive and drop it on the glowing drive slot.",
         why: "The load goes on last. The circuit is then complete, but still isolated until you use the switch."
     }
 ];
@@ -1189,13 +1116,9 @@ function maybeStartDrop() {
     }
 
     if (markerVisible && phase === "scan") {
-        beginIdentify();
+        beginAssemble();
     }
 
-}
-
-function currentIdentifyStep() {
-    return IDENTIFY_STEPS[identifyIndex] || null;
 }
 
 
@@ -1245,14 +1168,6 @@ function setButtonVisible(button, visible) {
 }
 
 
-function beginIdentify() {
-    phase = "identify";
-    identifyIndex = 0;
-    identified = { battery: false, switch: false, drive: false };
-    refreshAssemblyLook();
-}
-
-
 function beginAssemble() {
     phase = "assemble";
     refreshAssemblyLook();
@@ -1284,128 +1199,6 @@ function finishTraining() {
     }
 
     refreshAssemblyLook();
-
-}
-
-
-function tryAdvanceAfterIdentify() {
-
-    identifyIndex += 1;
-
-    if (identifyIndex >= IDENTIFY_STEPS.length) {
-        setFeedback("All parts identified. Now assemble in a safe order.", "ok");
-        beginAssemble();
-        return;
-    }
-
-    refreshAssemblyLook();
-
-}
-
-
-function handleIdentifyTap(part) {
-
-    const step = currentIdentifyStep();
-
-    if (!step) {
-        return;
-    }
-
-    if (!part) {
-        setFeedback("Use the buttons at the bottom of the screen.", "bad");
-        return;
-    }
-
-    if (part.id === step.id) {
-        identified[part.id] = true;
-        setFeedback("Correct — that is the " + step.id + ".", "ok");
-        tryAdvanceAfterIdentify();
-        return;
-    }
-
-    addMistake();
-    setFeedback("That is the " + part.id + ". You need the " + step.id + ".", "bad");
-
-}
-
-
-function handlePartAction(partId) {
-
-    const part = PARTS[partId];
-
-    if (!part) {
-        return;
-    }
-
-    if (phase === "scan") {
-        setFeedback("Point the camera at the Hiro marker first.", "bad");
-        return;
-    }
-
-    if (phase === "identify") {
-        handleIdentifyTap(part);
-        return;
-    }
-
-    if (phase === "assemble") {
-        snapPart(part);
-        return;
-    }
-
-    if (phase === "operate" && partId === "switch") {
-        toggleSystem();
-    }
-
-}
-
-
-function refreshTouchBar() {
-
-    const showBar = phase === "identify" || phase === "assemble" || phase === "operate";
-
-    if (showBar) {
-        touchBar.classList.add("visible");
-    } else {
-        touchBar.classList.remove("visible");
-    }
-
-    const neededId = phase === "identify"
-        ? (currentIdentifyStep() && currentIdentifyStep().id)
-        : phase === "assemble"
-            ? (currentAssembleStep() && currentAssembleStep().id)
-            : phase === "operate"
-                ? "switch"
-                : null;
-
-    const buttons = [
-        { el: tapBattery, id: "battery", label: "Battery" },
-        { el: tapSwitch, id: "switch", label: "Switch" },
-        { el: tapDrive, id: "drive", label: "Motor + Turbine" }
-    ];
-
-    buttons.forEach(function (button) {
-
-        button.el.classList.remove("needed", "done");
-        button.el.textContent = button.label;
-
-        if (phase === "assemble" && PARTS[button.id].placed) {
-            button.el.classList.add("done");
-            button.el.textContent = "Fitted";
-        }
-
-        if (button.id === neededId) {
-            button.el.classList.add("needed");
-        }
-
-        if (phase === "operate") {
-            if (button.id === "switch") {
-                button.el.textContent = systemRunning ? "Isolate" : "Start motor";
-            } else {
-                button.el.classList.add("done");
-            }
-        }
-
-    });
 
 }
 
@@ -1495,32 +1288,21 @@ function renderCoach() {
     setButtonVisible(continueBtn, false);
     setButtonVisible(retryQuizBtn, false);
     trainScore.textContent = "Mistakes " + mistakes;
-    refreshTouchBar();
 
     if (phase === "scan") {
-        trainStep.textContent = "Step 0 of 4";
+        trainStep.textContent = "Step 0 of 3";
         progressBar.style.width = "6%";
         trainTitle.textContent = "Battery-powered turbine trainer";
-        trainBody.textContent = "Scan the Hiro marker. You will identify each component, assemble the circuit in a safe order, start and isolate the drive, then answer a short knowledge check.";
+        trainBody.textContent = "Scan the Hiro marker. Drag each part from the tray onto its glowing slot, then start and isolate the drive.";
         trainWhy.textContent = "This is a familiarisation module, not a workplace procedure.";
-        return;
-    }
-
-    if (phase === "identify") {
-        const step = currentIdentifyStep();
-        trainStep.textContent = "Step 1 of 4 · Identify " + (identifyIndex + 1) + "/3";
-        progressBar.style.width = (10 + identifyIndex * 10) + "%";
-        trainTitle.textContent = step.title;
-        trainBody.textContent = step.body;
-        trainWhy.textContent = "Why it matters: " + step.why;
         return;
     }
 
     if (phase === "assemble") {
         const step = currentAssembleStep();
         const done = placedCount();
-        trainStep.textContent = "Step 2 of 4 · Assemble " + done + "/3";
-        progressBar.style.width = (40 + done * 8) + "%";
+        trainStep.textContent = "Step 1 of 3 · Assemble " + done + "/3";
+        progressBar.style.width = (12 + done * 18) + "%";
         if (step) {
             trainTitle.textContent = step.title;
             trainBody.textContent = step.body;
@@ -1530,18 +1312,18 @@ function renderCoach() {
     }
 
     if (phase === "operate") {
-        trainStep.textContent = "Step 3 of 4 · Operate";
+        trainStep.textContent = "Step 2 of 3 · Operate";
         progressBar.style.width = startedOnce ? "78%" : "68%";
         if (!startedOnce) {
-            trainTitle.textContent = "3. Energise the drive";
-            trainBody.textContent = "The circuit is complete. Tap START MOTOR at the bottom.";
-            trainWhy.textContent = "Why it matters: the switch is the isolator. The motor should only run when you choose to close it.";
+            trainTitle.textContent = "2. Start the motor";
+            trainBody.textContent = "Drag is done. Now tap the 3D switch on the marker to start the motor.";
+            trainWhy.textContent = "Why it matters: the switch is the isolator.";
         } else if (systemRunning) {
-            trainTitle.textContent = "3. Watch the coupled shaft";
-            trainBody.textContent = "The motor and turbine rotate together because they share one shaft. Tap ISOLATE at the bottom.";
-            trainWhy.textContent = "Why it matters: after a test run you isolate the machine before leaving it.";
+            trainTitle.textContent = "2. Watch the coupled shaft";
+            trainBody.textContent = "Motor and turbine spin together. Tap the 3D switch again to isolate power.";
+            trainWhy.textContent = "Why it matters: after a test run you isolate the machine.";
         } else {
-            trainTitle.textContent = "3. Power isolated";
+            trainTitle.textContent = "2. Power isolated";
             trainBody.textContent = "The drive is stopped. Continue to the knowledge check.";
             trainWhy.textContent = "Why it matters: starting and isolating are both part of safe operation.";
             continueBtn.textContent = "Start knowledge check";
@@ -1552,9 +1334,9 @@ function renderCoach() {
 
     if (phase === "quiz") {
         const item = QUIZ[quizIndex];
-        trainStep.textContent = "Step 4 of 4 · Check " + (quizIndex + 1) + "/3";
+        trainStep.textContent = "Step 3 of 3 · Check " + (quizIndex + 1) + "/3";
         progressBar.style.width = (84 + quizIndex * 5) + "%";
-        trainTitle.textContent = "4. Knowledge check";
+        trainTitle.textContent = "3. Knowledge check";
         trainBody.textContent = item.question;
         trainWhy.textContent = "Choose the best answer.";
         renderQuiz();
@@ -1571,8 +1353,7 @@ function renderCoach() {
             ? "You identified the parts, assembled in a safe order, ran the coupled drive, and isolated it."
             : "Score at least 2 / 3 on the knowledge check after you have started and isolated the drive.";
         completeList.innerHTML =
-            "<li>Identify battery, switch, and coupled drive</li>" +
-            "<li>Assemble power → isolator → load</li>" +
+            "<li>Drag battery, then switch, then the coupled drive onto their slots</li>" +
             "<li>Energise, observe coupling, then isolate</li>";
         completeList.classList.add("visible");
         continueBtn.textContent = "Restart module";
@@ -1612,20 +1393,15 @@ function updateStatus() {
         return;
     }
 
-    if (phase === "identify") {
-        info.textContent = "Tap the highlighted button at the bottom.";
-        return;
-    }
-
     if (phase === "assemble") {
-        info.textContent = "Tap the highlighted button to fit that part.";
+        info.textContent = "Drag the glowing part onto its slot.";
         return;
     }
 
     if (phase === "operate") {
         info.textContent = systemRunning
-            ? "Watch the coupled drive, then tap ISOLATE."
-            : "Tap START MOTOR at the bottom.";
+            ? "Watch the coupled drive, then tap the 3D switch to isolate."
+            : "Tap the 3D switch on the marker to start the motor.";
         return;
     }
 
@@ -1662,12 +1438,7 @@ function updateSystemBadge() {
     }
 
     if (phase === "assemble") {
-        systemStatus.textContent = "ASSEMBLE " + placedCount() + "/3";
-        return;
-    }
-
-    if (phase === "identify") {
-        systemStatus.textContent = "IDENTIFY " + (identifyIndex + 1) + "/3";
+        systemStatus.textContent = "DRAG " + placedCount() + "/3";
         return;
     }
 
@@ -1705,32 +1476,21 @@ function setTrayVisible(visible) {
 function refreshAssemblyLook() {
 
     const assembleStep = currentAssembleStep();
-    const identifyStep = currentIdentifyStep();
 
     PART_LIST.forEach(function (part) {
 
-        let showSlot = !part.placed;
-
-        if (phase === "identify") {
-            showSlot = identifyStep && part.id === identifyStep.id;
-        } else if (phase === "assemble") {
-            showSlot = assembleStep && part.id === assembleStep.id;
-        } else if (phase === "operate" || phase === "quiz" || phase === "complete") {
-            showSlot = false;
-        }
+        const showSlot = phase === "assemble" && assembleStep && part.id === assembleStep.id;
 
         setSlotVisible(part, showSlot);
-        part.carryLabel.setAttribute("visible", !part.placed && phase !== "identify");
+        part.carryLabel.setAttribute("visible", !part.placed);
+        part.hitEl.setAttribute("visible", phase === "assemble" && !part.placed);
 
     });
 
-    const showTray = phase === "identify" || phase === "assemble" || phase === "scan";
-    setTrayVisible(showTray && !allPlaced());
+    setTrayVisible(phase === "assemble" || phase === "scan" ? !allPlaced() : false);
 
-    if (phase === "identify") {
-        trayLabel.setAttribute("value", "USE THE BUTTONS BELOW");
-    } else if (phase === "assemble") {
-        trayLabel.setAttribute("value", "TAP THE BUTTONS BELOW");
+    if (phase === "assemble") {
+        trayLabel.setAttribute("value", "DRAG ONTO THE GLOWING SLOT");
     } else {
         trayLabel.setAttribute("value", "PARTS TRAY");
     }
@@ -2066,16 +1826,17 @@ function pickPart(clientX, clientY) {
 
 function beginDrag(part, clientX, clientY) {
 
-    const localPoint = getMarkerPlanePoint(clientX, clientY);
+    let localPoint = getMarkerPlanePoint(clientX, clientY);
 
     if (!localPoint) {
-        return;
+        localPoint = part.el.object3D.position.clone();
     }
 
     if (part.placed) {
         return;
     }
 
+    dropAnimating = false;
     dragging = part;
     dragOffsetX = part.el.object3D.position.x - localPoint.x;
     dragOffsetZ = part.el.object3D.position.z - localPoint.z;
@@ -2149,9 +1910,6 @@ function isUiTarget(target) {
     if (target === resetBtn || resetBtn.contains(target)) {
         return true;
     }
-    if (touchBar && touchBar.contains(target)) {
-        return true;
-    }
     if (target.closest && target.closest("#quizBox, #continueBtn, #retryQuizBtn")) {
         return true;
     }
@@ -2160,6 +1918,39 @@ function isUiTarget(target) {
         return true;
     }
     return false;
+}
+
+
+function pickNearestPart(localPoint) {
+
+    if (!localPoint) {
+        return null;
+    }
+
+    let best = null;
+    let bestDist = GRAB_DISTANCE;
+
+    PART_LIST.forEach(function (part) {
+
+        if (part.placed) {
+            return;
+        }
+
+        const pos = part.el.object3D.position;
+        const dist = Math.sqrt(
+            (pos.x - localPoint.x) * (pos.x - localPoint.x) +
+            (pos.z - localPoint.z) * (pos.z - localPoint.z)
+        );
+
+        if (dist < bestDist) {
+            bestDist = dist;
+            best = part;
+        }
+
+    });
+
+    return best;
+
 }
 
 
@@ -2179,6 +1970,21 @@ function onPointerDown(event) {
 
     pointerActive = true;
 
+    if (phase === "assemble") {
+
+        const localPoint = getMarkerPlanePoint(event.clientX, event.clientY);
+        let part = pickPart(event.clientX, event.clientY);
+
+        if ((!part || part.placed) && localPoint) {
+            part = pickNearestPart(localPoint);
+        }
+
+        if (part && !part.placed) {
+            beginDrag(part, event.clientX, event.clientY);
+        }
+
+    }
+
     if (event.pointerType === "touch") {
         event.preventDefault();
     }
@@ -2187,6 +1993,10 @@ function onPointerDown(event) {
 
 
 function onPointerMove(event) {
+
+    if (dragging) {
+        moveDrag(event.clientX, event.clientY);
+    }
 
     if (event.pointerType === "touch" && pointerActive) {
         event.preventDefault();
@@ -2199,38 +2009,25 @@ function onPointerUp(event) {
 
     if (isUiTarget(event.target)) {
         pointerActive = false;
+        if (dragging) {
+            endDrag();
+        }
         return;
     }
 
-    const shouldHandleTap = pointerActive && markerVisible;
+    const wasDragging = Boolean(dragging);
+
+    if (dragging) {
+        endDrag();
+    }
 
     pointerActive = false;
 
-    if (!shouldHandleTap) {
-        return;
-    }
-
-    const part = pickPart(event.clientX, event.clientY);
-
-    if (phase === "identify") {
-        handleIdentifyTap(part);
-        return;
-    }
-
-    if (phase === "assemble") {
-        if (part) {
-            snapPart(part);
-        } else {
-            setFeedback("Use the highlighted button at the bottom.", "bad");
-        }
+    if (wasDragging || !markerVisible) {
         return;
     }
 
     if (phase === "operate") {
-        if (part && part.id === "switch") {
-            toggleSystem();
-            return;
-        }
         handleSwitchTouch(event.clientX, event.clientY);
     }
 
@@ -2348,8 +2145,6 @@ function resetTraining() {
     mistakes = 0;
     quizIndex = 0;
     quizCorrect = 0;
-    identifyIndex = 0;
-    identified = { battery: false, switch: false, drive: false };
     startedOnce = false;
     stoppedOnce = false;
     setFeedback("", "");
@@ -2373,8 +2168,8 @@ function resetTraining() {
 
     refreshPadColors();
 
-    if (markerVisible && modelsReady()) {
-        beginIdentify();
+    if (markerVisible) {
+        beginAssemble();
     } else {
         phase = "scan";
         refreshAssemblyLook();
@@ -2400,8 +2195,8 @@ resetBtn.addEventListener("click", function (event) {
 marker.addEventListener("markerFound", function () {
     markerVisible = true;
     maybeStartDrop();
-    if (phase === "scan" && modelsReady()) {
-        beginIdentify();
+    if (phase === "scan") {
+        beginAssemble();
     } else {
         updateStatus();
         renderCoach();
@@ -2432,15 +2227,6 @@ retryQuizBtn.addEventListener("click", function (event) {
     event.preventDefault();
     event.stopPropagation();
     beginQuiz();
-});
-
-
-[tapBattery, tapSwitch, tapDrive].forEach(function (button) {
-    button.addEventListener("click", function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        handlePartAction(button.getAttribute("data-part"));
-    });
 });
 
 
