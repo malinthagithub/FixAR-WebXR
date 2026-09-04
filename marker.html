@@ -242,7 +242,8 @@
 
         .quiz-btn,
         #continueBtn,
-        #retryQuizBtn {
+        #retryQuizBtn,
+        #startMotorBtn {
             width: 100%;
             padding: 10px 12px;
             border-radius: 8px;
@@ -273,7 +274,8 @@
 
 
         #continueBtn,
-        #retryQuizBtn {
+        #retryQuizBtn,
+        #startMotorBtn {
             display: none;
             margin-top: 6px;
             text-align: center;
@@ -283,8 +285,24 @@
         }
 
 
+        #startMotorBtn {
+            border-color: #22c55e;
+            background: #22c55e;
+            font-size: 16px;
+            min-height: 48px;
+        }
+
+
+        #startMotorBtn.running {
+            border-color: #ef4444;
+            background: #ef4444;
+            color: white;
+        }
+
+
         #continueBtn.visible,
-        #retryQuizBtn.visible {
+        #retryQuizBtn.visible,
+        #startMotorBtn.visible {
             display: block;
         }
 
@@ -374,6 +392,7 @@
 
     <ul id="completeList"></ul>
 
+    <button id="startMotorBtn" type="button">Start motor</button>
     <button id="continueBtn" type="button">Continue</button>
     <button id="retryQuizBtn" type="button">Retry knowledge check</button>
 
@@ -763,6 +782,7 @@ const quizBox = document.getElementById("quizBox");
 const completeList = document.getElementById("completeList");
 const continueBtn = document.getElementById("continueBtn");
 const retryQuizBtn = document.getElementById("retryQuizBtn");
+const startMotorBtn = document.getElementById("startMotorBtn");
 const trayLabel = document.getElementById("trayLabel");
 
 const batteryPart = document.getElementById("batteryPart");
@@ -1260,6 +1280,8 @@ function renderCoach() {
     completeList.innerHTML = "";
     setButtonVisible(continueBtn, false);
     setButtonVisible(retryQuizBtn, false);
+    setButtonVisible(startMotorBtn, false);
+    startMotorBtn.classList.remove("running");
     trainScore.textContent = "Mistakes " + mistakes;
 
     if (phase === "scan") {
@@ -1289,12 +1311,17 @@ function renderCoach() {
         progressBar.style.width = startedOnce ? "78%" : "68%";
         if (!startedOnce) {
             trainTitle.textContent = "2. Start the motor";
-            trainBody.textContent = "Drag is done. Now tap the 3D switch on the marker to start the motor.";
-            trainWhy.textContent = "Why it matters: the switch is the isolator.";
+            trainBody.textContent = "All parts are in place. Press Start motor.";
+            trainWhy.textContent = "The switch sends power from the battery to the coupled drive.";
+            startMotorBtn.textContent = "Start motor";
+            setButtonVisible(startMotorBtn, true);
         } else if (systemRunning) {
-            trainTitle.textContent = "2. Watch the coupled shaft";
-            trainBody.textContent = "Motor and turbine spin together. Tap the 3D switch again to isolate power.";
-            trainWhy.textContent = "Why it matters: after a test run you isolate the machine.";
+            trainTitle.textContent = "2. Motor running";
+            trainBody.textContent = "Watch the motor and turbine spin together. Press Stop motor to isolate power.";
+            trainWhy.textContent = "They share one shaft, so both rotate together.";
+            startMotorBtn.textContent = "Stop motor";
+            startMotorBtn.classList.add("running");
+            setButtonVisible(startMotorBtn, true);
         } else {
             trainTitle.textContent = "2. Power isolated";
             trainBody.textContent = "The drive is stopped. Continue to the knowledge check.";
@@ -1373,8 +1400,8 @@ function updateStatus() {
 
     if (phase === "operate") {
         info.textContent = systemRunning
-            ? "Watch the coupled drive, then tap the 3D switch to isolate."
-            : "Tap the 3D switch on the marker to start the motor.";
+            ? "Press Stop motor when you have watched the drive."
+            : "Press Start motor.";
         return;
     }
 
@@ -1885,7 +1912,7 @@ function isUiTarget(target) {
     if (target === resetBtn || resetBtn.contains(target)) {
         return true;
     }
-    if (target.closest && target.closest("#quizBox, #continueBtn, #retryQuizBtn")) {
+    if (target.closest && target.closest("#quizBox, #continueBtn, #retryQuizBtn, #startMotorBtn")) {
         return true;
     }
     const homeBtn = document.getElementById("homeBtn");
@@ -2158,6 +2185,15 @@ continueBtn.addEventListener("click", function (event) {
     }
     if (phase === "complete") {
         resetTraining();
+    }
+});
+
+
+startMotorBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (phase === "operate") {
+        toggleSystem();
     }
 });
 
