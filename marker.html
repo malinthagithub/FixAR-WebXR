@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-<title>FixAR | Equipment Preview</title>
+<title>FixAR Marker Training</title>
 
 
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -19,35 +19,38 @@
 
 body{
 
-    margin:0;
-    overflow:hidden;
-    font-family:Arial,sans-serif;
+margin:0;
+overflow:hidden;
+font-family:Arial,sans-serif;
 
 }
 
 
 .instruction{
 
-    position:fixed;
-    top:15px;
-    left:50%;
-    transform:translateX(-50%);
+position:fixed;
 
-    width:calc(100% - 40px);
-    max-width:420px;
+top:15px;
 
-    padding:12px 16px;
+left:50%;
 
-    background:rgba(0,0,0,0.78);
-    color:white;
+transform:translateX(-50%);
 
-    border-radius:10px;
+width:calc(100% - 40px);
 
-    text-align:center;
+max-width:420px;
 
-    font-size:14px;
+padding:12px;
 
-    z-index:20;
+background:rgba(0,0,0,0.8);
+
+color:white;
+
+border-radius:10px;
+
+text-align:center;
+
+z-index:20;
 
 }
 
@@ -55,64 +58,57 @@ body{
 
 .controls{
 
-    position:fixed;
+position:fixed;
 
-    bottom:20px;
+bottom:20px;
 
-    left:50%;
+left:50%;
 
-    transform:translateX(-50%);
+transform:translateX(-50%);
 
-    display:flex;
+display:flex;
 
-    gap:8px;
+gap:8px;
 
-    flex-wrap:wrap;
+flex-wrap:wrap;
 
-    justify-content:center;
+justify-content:center;
 
-    z-index:20;
-
-}
-
-
-
-.controls button{
-
-    border:none;
-
-    border-radius:10px;
-
-    padding:12px 15px;
-
-    font-size:14px;
-
-    font-weight:bold;
-
-    background:rgba(15,23,42,0.9);
-
-    color:white;
-
-    border:1px solid #38bdf8;
+z-index:20;
 
 }
 
 
 
-.controls button.active{
+button{
 
-    background:#38bdf8;
+padding:12px 15px;
 
-    color:#07111f;
+border-radius:10px;
+
+background:#111827;
+
+color:white;
+
+border:1px solid #38bdf8;
+
+font-weight:bold;
+
+}
+
+
+.active{
+
+background:#38bdf8;
+
+color:black;
 
 }
 
 
 </style>
 
-
 </head>
-
 
 
 <body>
@@ -124,6 +120,7 @@ body{
 Point the camera at the Hiro marker
 
 </div>
+
 
 
 
@@ -189,11 +186,12 @@ position="0 0 0"
 
 rotation="0 0 0"
 
-scale="0.5 0.5 0.5"
+scale="0.05 0.05 0.05"
 
 visible="true">
 
 </a-entity>
+
 
 
 
@@ -210,11 +208,12 @@ position="0 0 0"
 
 rotation="0 0 0"
 
-scale="0.5 0.5 0.5"
+scale="0.05 0.05 0.05"
 
 visible="false">
 
 </a-entity>
+
 
 
 
@@ -231,7 +230,7 @@ position="0 0 0"
 
 rotation="0 0 0"
 
-scale="0.5 0.5 0.5"
+scale="0.05 0.05 0.05"
 
 visible="false">
 
@@ -240,7 +239,8 @@ visible="false">
 
 
 
-<!-- Motor Terminals -->
+
+<!-- Motor terminals -->
 
 <a-sphere
 
@@ -288,7 +288,39 @@ visible="false">
 
 </a-sphere>
 
+<!-- Wires -->
 
+<a-cylinder
+id="redWire"
+radius="0.03"
+height="0.5"
+color="red"
+position="-0.4 0.3 0"
+rotation="0 0 90"
+visible="false">
+</a-cylinder>
+
+
+<a-cylinder
+id="blackWire"
+radius="0.03"
+height="0.5"
+color="black"
+position="-0.4 0.2 0"
+rotation="0 0 90"
+visible="false">
+</a-cylinder>
+
+
+<a-cylinder
+id="greenWire"
+radius="0.03"
+height="0.5"
+color="green"
+position="-0.4 0.1 0"
+rotation="0 0 90"
+visible="false">
+</a-cylinder>
 
 </a-marker>
 
@@ -298,7 +330,10 @@ visible="false">
 <a-entity camera></a-entity>
 
 
+
 </a-scene>
+
+
 
 
 
@@ -328,7 +363,6 @@ const motorBtn =
 document.getElementById("motorBtn");
 
 
-
 const wireBtn =
 document.getElementById("wireBtn");
 
@@ -349,7 +383,16 @@ document.getElementById("terminalL2");
 const terminalGround =
 document.getElementById("terminalGround");
 
+const redWire =
+document.getElementById("redWire");
 
+
+const blackWire =
+document.getElementById("blackWire");
+
+
+const greenWire =
+document.getElementById("greenWire");
 
 const instruction =
 document.getElementById("instruction");
@@ -360,12 +403,10 @@ document.getElementById("hiroMarker");
 
 
 
-let selectedEquipment =
-"Conveyor";
+let selectedEquipment = "Conveyor";
 
 
-let markerVisible =
-false;
+let markerVisible = false;
 
 
 
@@ -374,43 +415,27 @@ false;
 function hideAllModels(){
 
 
-    conveyorModel.setAttribute(
-        "visible",
-        false
-    );
+    conveyorModel.object3D.visible = false;
 
 
-    machineModel.setAttribute(
-        "visible",
-        false
-    );
+    machineModel.object3D.visible = false;
 
 
-    motorModel.setAttribute(
-        "visible",
-        false
-    );
+    motorModel.object3D.visible = false;
 
 
-    terminalL1.setAttribute(
-        "visible",
-        false
-    );
+
+    terminalL1.object3D.visible = false;
 
 
-    terminalL2.setAttribute(
-        "visible",
-        false
-    );
+    terminalL2.object3D.visible = false;
 
 
-    terminalGround.setAttribute(
-        "visible",
-        false
-    );
+    terminalGround.object3D.visible = false;
 
 
 }
+
 
 
 
@@ -420,25 +445,18 @@ function hideAllModels(){
 function showMotorTerminals(){
 
 
-    terminalL1.setAttribute(
-        "visible",
-        true
-    );
+    terminalL1.object3D.visible = true;
 
 
-    terminalL2.setAttribute(
-        "visible",
-        true
-    );
+    terminalL2.object3D.visible = true;
 
 
-    terminalGround.setAttribute(
-        "visible",
-        true
-    );
+    terminalGround.object3D.visible = true;
 
 
 }
+
+
 
 
 
@@ -452,10 +470,7 @@ function updateStatus(){
 
 
         instruction.textContent =
-
-        "Marker detected - "
-        +
-        selectedEquipment;
+        "Marker detected - " + selectedEquipment;
 
 
     }
@@ -464,7 +479,6 @@ function updateStatus(){
 
 
         instruction.textContent =
-
         "Point the camera at the Hiro marker";
 
 
@@ -480,7 +494,7 @@ function updateStatus(){
 
 
 
-// Conveyor button
+// Conveyor
 
 
 conveyorBtn.addEventListener(
@@ -493,30 +507,19 @@ function(){
     hideAllModels();
 
 
-    conveyorModel.setAttribute(
-        "visible",
-        true
-    );
+    conveyorModel.object3D.visible = true;
 
 
-    selectedEquipment =
-    "Conveyor";
+    selectedEquipment = "Conveyor";
 
 
 
-    conveyorBtn.classList.add(
-        "active"
-    );
+    conveyorBtn.classList.add("active");
 
+    machineBtn.classList.remove("active");
 
-    machineBtn.classList.remove(
-        "active"
-    );
+    motorBtn.classList.remove("active");
 
-
-    motorBtn.classList.remove(
-        "active"
-    );
 
 
     updateStatus();
@@ -533,7 +536,8 @@ function(){
 
 
 
-// Water Pump button
+
+// Water Pump
 
 
 machineBtn.addEventListener(
@@ -546,30 +550,19 @@ function(){
     hideAllModels();
 
 
-    machineModel.setAttribute(
-        "visible",
-        true
-    );
+    machineModel.object3D.visible = true;
 
 
-    selectedEquipment =
-    "Water Pump";
+    selectedEquipment = "Water Pump";
 
 
 
-    machineBtn.classList.add(
-        "active"
-    );
+    machineBtn.classList.add("active");
 
+    conveyorBtn.classList.remove("active");
 
-    conveyorBtn.classList.remove(
-        "active"
-    );
+    motorBtn.classList.remove("active");
 
-
-    motorBtn.classList.remove(
-        "active"
-    );
 
 
     updateStatus();
@@ -587,8 +580,7 @@ function(){
 
 
 
-
-// Motor button
+// Motor
 
 
 motorBtn.addEventListener(
@@ -601,33 +593,22 @@ function(){
     hideAllModels();
 
 
-    motorModel.setAttribute(
-        "visible",
-        true
-    );
+    motorModel.object3D.visible = true;
 
 
     showMotorTerminals();
 
 
-    selectedEquipment =
-    "Motor";
+    selectedEquipment = "Motor";
 
 
 
-    motorBtn.classList.add(
-        "active"
-    );
+    motorBtn.classList.add("active");
 
+    conveyorBtn.classList.remove("active");
 
-    conveyorBtn.classList.remove(
-        "active"
-    );
+    machineBtn.classList.remove("active");
 
-
-    machineBtn.classList.remove(
-        "active"
-    );
 
 
     updateStatus();
@@ -645,7 +626,7 @@ function(){
 
 
 
-// Connect Wire button
+// Connect Wire
 
 
 wireBtn.addEventListener(
@@ -663,6 +644,7 @@ function(){
 
 
         return;
+
 
     }
 
@@ -684,7 +666,7 @@ function(){
 
 
 
-// Power button
+// Power ON
 
 
 powerBtn.addEventListener(
@@ -735,8 +717,7 @@ hiroMarker.addEventListener(
 function(){
 
 
-    markerVisible =
-    true;
+    markerVisible = true;
 
 
     updateStatus();
@@ -764,8 +745,7 @@ hiroMarker.addEventListener(
 function(){
 
 
-    markerVisible =
-    false;
+    markerVisible = false;
 
 
     instruction.textContent =
