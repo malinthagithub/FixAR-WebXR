@@ -3,1464 +3,884 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width,
-          initial-scale=1.0,
-          user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1.0,
+      user-scalable=no">
 
-    <title>FixAR | AR Motor Connection Training</title>
+<title>FixAR | Motor Wiring Training</title>
 
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
-    <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+<style>
 
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #07111f;
+}
 
-    <style>
+#info {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
 
-        * {
-            box-sizing: border-box;
-        }
+    width: calc(100% - 20px);
+    max-width: 460px;
 
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+    padding: 10px 12px;
 
-            font-family: Arial, Helvetica, sans-serif;
+    background: rgba(0,0,0,0.84);
 
-            background: #07111f;
-        }
+    color: white;
 
+    border: 1px solid #38bdf8;
+    border-radius: 10px;
 
-        /* ==============================
-           TOP STATUS
-        ============================== */
+    text-align: center;
+    font-size: 13px;
 
-        #info {
+    z-index: 1000;
 
-            position: fixed;
+    pointer-events: none;
+}
 
-            top: 12px;
-            left: 50%;
+#resetBtn {
+    position: fixed;
+    right: 12px;
+    bottom: 18px;
 
-            transform: translateX(-50%);
+    z-index: 1000;
 
-            width: calc(100% - 20px);
-            max-width: 470px;
+    padding: 10px 14px;
 
-            padding: 10px 12px;
+    border: 1px solid #38bdf8;
+    border-radius: 8px;
 
-            background: rgba(0, 0, 0, 0.85);
+    background: rgba(7,17,31,0.92);
 
-            border: 1px solid #38bdf8;
-            border-radius: 10px;
+    color: white;
 
-            color: white;
+    font-weight: bold;
+}
 
-            text-align: center;
-
-            font-size: 13px;
-            line-height: 1.35;
-
-            z-index: 1000;
-
-            pointer-events: none;
-        }
-
-
-        /* ==============================
-           SMALL RESET BUTTON
-        ============================== */
-
-        #resetBtn {
-
-            position: fixed;
-
-            right: 12px;
-            bottom: 18px;
-
-            z-index: 1000;
-
-            padding: 10px 14px;
-
-            border: 1px solid #38bdf8;
-            border-radius: 9px;
-
-            background: rgba(7, 17, 31, 0.92);
-
-            color: white;
-
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-    </style>
+</style>
 
 </head>
 
-
 <body>
 
+<div id="info">
+Scan the Hiro marker to begin.
+</div>
+
+<button id="resetBtn">
+Reset
+</button>
+
+<a-scene
+    embedded
+    renderer="antialias:true; colorManagement:true;"
+    arjs="sourceType:webcam; debugUIEnabled:false;">
+
+
+<a-marker
+    id="hiroMarker"
+    preset="hiro">
+
+
+<!-- =========================
+     MOTOR MODEL
+========================= -->
+
+<a-entity
+    id="motorModel"
+    gltf-model="url(models/machine.glb)"
+    position="0 0 0"
+    rotation="0 0 0"
+    scale="0.5 0.5 0.5">
+</a-entity>
+
+
+<!-- =========================
+     WIRE PLUGS
+========================= -->
+
+<a-sphere
+    id="redPlug"
+    class="clickable"
+    position="-0.45 0.28 0.28"
+    radius="0.05"
+    color="#ef4444">
+</a-sphere>
+
+<a-text
+    value="RED"
+    position="-0.45 0.38 0.28"
+    scale="0.28 0.28 0.28"
+    color="#ffffff"
+    align="center">
+</a-text>
+
+
+<a-sphere
+    id="blackPlug"
+    class="clickable"
+    position="-0.45 0.17 0.28"
+    radius="0.05"
+    color="#111827">
+</a-sphere>
+
+<a-text
+    value="BLACK"
+    position="-0.45 0.07 0.28"
+    scale="0.24 0.24 0.24"
+    color="#ffffff"
+    align="center">
+</a-text>
+
+
+<a-sphere
+    id="greenPlug"
+    class="clickable"
+    position="-0.45 0.06 0.28"
+    radius="0.05"
+    color="#22c55e">
+</a-sphere>
+
+<a-text
+    value="GND"
+    position="-0.45 -0.04 0.28"
+    scale="0.28 0.28 0.28"
+    color="#ffffff"
+    align="center">
+</a-text>
+
+
+<!-- =========================
+     MOTOR TERMINALS
+========================= -->
+
+<a-sphere
+    id="terminalL1"
+    class="clickable"
+    position="0.25 0.25 0.32"
+    radius="0.04"
+    color="#ef4444">
+</a-sphere>
+
+<a-text
+    value="L1"
+    position="0.25 0.33 0.32"
+    scale="0.30 0.30 0.30"
+    color="#ffffff"
+    align="center">
+</a-text>
+
+
+<a-sphere
+    id="terminalL2"
+    class="clickable"
+    position="0.34 0.18 0.32"
+    radius="0.04"
+    color="#111827">
+</a-sphere>
+
+<a-text
+    value="L2"
+    position="0.34 0.27 0.32"
+    scale="0.30 0.30 0.30"
+    color="#ffffff"
+    align="center">
+</a-text>
+
+
+<a-sphere
+    id="terminalGND"
+    class="clickable"
+    position="0.43 0.11 0.32"
+    radius="0.04"
+    color="#22c55e">
+</a-sphere>
+
+<a-text
+    value="GND"
+    position="0.43 0.20 0.32"
+    scale="0.28 0.28 0.28"
+    color="#ffffff"
+    align="center">
+</a-text>
+
+
+<!-- =========================
+     CONNECTED WIRES
+========================= -->
+
+<a-cylinder
+    id="redWire"
+    radius="0.012"
+    height="0.1"
+    color="#ef4444"
+    visible="false">
+</a-cylinder>
+
+<a-cylinder
+    id="blackWire"
+    radius="0.012"
+    height="0.1"
+    color="#111827"
+    visible="false">
+</a-cylinder>
 
-    <div id="info">
+<a-cylinder
+    id="greenWire"
+    radius="0.012"
+    height="0.1"
+    color="#22c55e"
+    visible="false">
+</a-cylinder>
 
-        Scan the Hiro marker to begin AR motor connection training.
 
-    </div>
+<!-- =========================
+     3D POWER SWITCH
+========================= -->
 
+<a-cylinder
+    id="powerSwitch"
+    class="clickable"
+    position="0 -0.22 0.30"
+    radius="0.09"
+    height="0.06"
+    rotation="90 0 0"
+    color="#991b1b">
+</a-cylinder>
 
-    <button id="resetBtn">
+<a-text
+    id="switchText"
+    value="OFF"
+    position="0 -0.22 0.36"
+    scale="0.30 0.30 0.30"
+    color="#ffffff"
+    align="center">
+</a-text>
 
-        Reset
 
-    </button>
+</a-marker>
 
 
+<!-- CAMERA + TOUCH RAYCASTER -->
 
-    <a-scene
+<a-entity
+    camera
+    cursor="rayOrigin: mouse; fuse:false"
+    raycaster="objects:.clickable">
+</a-entity>
 
-        embedded
 
-        renderer="
-            antialias: true;
-            colorManagement: true;
-        "
+</a-scene>
 
-        arjs="
-            sourceType: webcam;
-            debugUIEnabled: false;
-        ">
 
+<script>
 
-        <a-marker
-            id="hiroMarker"
-            preset="hiro">
+const info =
+    document.getElementById("info");
 
+const marker =
+    document.getElementById("hiroMarker");
 
-            <!-- ======================================
-                 MOTOR MODEL
-            ======================================= -->
+const redPlug =
+    document.getElementById("redPlug");
 
-            <a-entity
+const blackPlug =
+    document.getElementById("blackPlug");
 
-                id="motorModel"
+const greenPlug =
+    document.getElementById("greenPlug");
 
-                gltf-model="url(models/machine.glb)"
+const terminalL1 =
+    document.getElementById("terminalL1");
 
-                position="0 0 0"
+const terminalL2 =
+    document.getElementById("terminalL2");
 
-                rotation="0 0 0"
+const terminalGND =
+    document.getElementById("terminalGND");
 
-                scale="0.5 0.5 0.5">
+const redWire =
+    document.getElementById("redWire");
 
-            </a-entity>
+const blackWire =
+    document.getElementById("blackWire");
 
+const greenWire =
+    document.getElementById("greenWire");
 
+const powerSwitch =
+    document.getElementById("powerSwitch");
 
-            <!-- ======================================
-                 SIMULATED TERMINAL BOARD
-            ======================================= -->
+const switchText =
+    document.getElementById("switchText");
 
-            <a-box
+const resetBtn =
+    document.getElementById("resetBtn");
 
-                position="0.38 0.20 0.38"
 
-                width="0.34"
+let selectedWire = null;
 
-                height="0.28"
+let motorRunning = false;
 
-                depth="0.05"
 
-                color="#334155">
+const connected = {
 
-            </a-box>
+    red: false,
+    black: false,
+    green: false
 
+};
 
 
-            <!-- L1 TERMINAL -->
+const correctTerminal = {
 
-            <a-sphere
+    red: "L1",
+    black: "L2",
+    green: "GND"
 
-                id="terminalL1"
+};
 
-                class="clickable"
 
-                position="0.29 0.25 0.42"
+const wireData = {
 
-                radius="0.045"
+    red: {
 
-                color="#ef4444">
+        plug: redPlug,
 
-            </a-sphere>
+        wire: redWire,
 
+        start:
+            new THREE.Vector3(
+                -0.45,
+                0.28,
+                0.28
+            ),
 
-            <a-text
+        end:
+            new THREE.Vector3(
+                0.25,
+                0.25,
+                0.32
+            )
 
-                value="L1"
+    },
 
-                position="0.25 0.33 0.42"
 
-                scale="0.35 0.35 0.35"
+    black: {
 
-                color="#ffffff"
+        plug: blackPlug,
 
-                align="center">
+        wire: blackWire,
 
-            </a-text>
+        start:
+            new THREE.Vector3(
+                -0.45,
+                0.17,
+                0.28
+            ),
 
+        end:
+            new THREE.Vector3(
+                0.34,
+                0.18,
+                0.32
+            )
 
+    },
 
-            <!-- L2 TERMINAL -->
 
-            <a-sphere
+    green: {
 
-                id="terminalL2"
+        plug: greenPlug,
 
-                class="clickable"
+        wire: greenWire,
 
-                position="0.38 0.20 0.42"
+        start:
+            new THREE.Vector3(
+                -0.45,
+                0.06,
+                0.28
+            ),
 
-                radius="0.045"
+        end:
+            new THREE.Vector3(
+                0.43,
+                0.11,
+                0.32
+            )
 
-                color="#111827">
+    }
 
-            </a-sphere>
+};
 
 
-            <a-text
+function clearSelection(){
 
-                value="L2"
+    redPlug.setAttribute(
+        "scale",
+        "1 1 1"
+    );
 
-                position="0.38 0.29 0.42"
+    blackPlug.setAttribute(
+        "scale",
+        "1 1 1"
+    );
 
-                scale="0.35 0.35 0.35"
+    greenPlug.setAttribute(
+        "scale",
+        "1 1 1"
+    );
 
-                color="#ffffff"
+}
 
-                align="center">
 
-            </a-text>
+function selectWire(name){
 
+    if(
+        connected[name]
+    ){
 
+        info.textContent =
+            "This wire is already connected.";
 
-            <!-- GND TERMINAL -->
+        return;
+    }
 
-            <a-sphere
 
-                id="terminalGND"
+    selectedWire =
+        name;
 
-                class="clickable"
 
-                position="0.47 0.15 0.42"
+    clearSelection();
 
-                radius="0.045"
 
-                color="#22c55e">
-
-            </a-sphere>
-
-
-            <a-text
-
-                value="GND"
-
-                position="0.50 0.24 0.42"
-
-                scale="0.30 0.30 0.30"
-
-                color="#ffffff"
-
-                align="center">
-
-            </a-text>
-
-
-
-            <!-- ======================================
-                 3D WIRE PLUGS
-            ======================================= -->
-
-
-            <!-- RED PLUG -->
-
-            <a-sphere
-
-                id="redPlug"
-
-                class="clickable"
-
-                position="-0.48 0.29 0.40"
-
-                radius="0.055"
-
-                color="#ef4444">
-
-            </a-sphere>
-
-
-            <a-text
-
-                value="RED"
-
-                position="-0.48 0.39 0.40"
-
-                scale="0.30 0.30 0.30"
-
-                color="#ffffff"
-
-                align="center">
-
-            </a-text>
-
-
-
-            <!-- BLACK PLUG -->
-
-            <a-sphere
-
-                id="blackPlug"
-
-                class="clickable"
-
-                position="-0.48 0.19 0.40"
-
-                radius="0.055"
-
-                color="#111827">
-
-            </a-sphere>
-
-
-            <a-text
-
-                value="BLACK"
-
-                position="-0.48 0.09 0.40"
-
-                scale="0.25 0.25 0.25"
-
-                color="#ffffff"
-
-                align="center">
-
-            </a-text>
-
-
-
-            <!-- GREEN PLUG -->
-
-            <a-sphere
-
-                id="greenPlug"
-
-                class="clickable"
-
-                position="-0.48 0.09 0.40"
-
-                radius="0.055"
-
-                color="#22c55e">
-
-            </a-sphere>
-
-
-            <a-text
-
-                value="GND"
-
-                position="-0.48 -0.01 0.40"
-
-                scale="0.30 0.30 0.30"
-
-                color="#ffffff"
-
-                align="center">
-
-            </a-text>
-
-
-
-            <!-- ======================================
-                 CONNECTED 3D WIRES
-            ======================================= -->
-
-            <a-cylinder
-
-                id="redWire"
-
-                radius="0.014"
-
-                height="0.1"
-
-                color="#ef4444"
-
-                visible="false">
-
-            </a-cylinder>
-
-
-
-            <a-cylinder
-
-                id="blackWire"
-
-                radius="0.014"
-
-                height="0.1"
-
-                color="#111827"
-
-                visible="false">
-
-            </a-cylinder>
-
-
-
-            <a-cylinder
-
-                id="greenWire"
-
-                radius="0.014"
-
-                height="0.1"
-
-                color="#22c55e"
-
-                visible="false">
-
-            </a-cylinder>
-
-
-
-            <!-- ======================================
-                 3D POWER SWITCH
-            ======================================= -->
-
-            <a-box
-
-                id="powerSwitch"
-
-                class="clickable"
-
-                position="-0.10 -0.25 0.38"
-
-                width="0.34"
-
-                height="0.16"
-
-                depth="0.08"
-
-                color="#991b1b">
-
-            </a-box>
-
-
-            <a-text
-
-                id="switchText"
-
-                value="POWER OFF"
-
-                position="-0.10 -0.245 0.425"
-
-                scale="0.28 0.28 0.28"
-
-                color="#ffffff"
-
-                align="center">
-
-            </a-text>
-
-
-
-            <!-- ======================================
-                 RUNNING SHAFT INDICATOR
-            ======================================= -->
-
-            <a-cylinder
-
-                id="shaft"
-
-                position="-0.20 0.17 0.30"
-
-                radius="0.045"
-
-                height="0.18"
-
-                rotation="90 0 0"
-
-                color="#cbd5e1">
-
-            </a-cylinder>
-
-
-
-        </a-marker>
-
-
-
-        <!-- ======================================
-             CAMERA + TOUCH RAYCASTER
-        ======================================= -->
-
-        <a-entity
-
-            camera
-
-            cursor="
-                rayOrigin: mouse;
-                fuse: false;
-            "
-
-            raycaster="
-                objects: .clickable;
-            ">
-
-        </a-entity>
-
-
-    </a-scene>
-
-
-
-    <script>
-
-
-        /* ==============================
-           ELEMENTS
-        ============================== */
-
-        const info =
-            document.getElementById(
-                "info"
-            );
-
-
-        const marker =
-            document.getElementById(
-                "hiroMarker"
-            );
-
-
-        const redPlug =
-            document.getElementById(
-                "redPlug"
-            );
-
-
-        const blackPlug =
-            document.getElementById(
-                "blackPlug"
-            );
-
-
-        const greenPlug =
-            document.getElementById(
-                "greenPlug"
-            );
-
-
-        const terminalL1 =
-            document.getElementById(
-                "terminalL1"
-            );
-
-
-        const terminalL2 =
-            document.getElementById(
-                "terminalL2"
-            );
-
-
-        const terminalGND =
-            document.getElementById(
-                "terminalGND"
-            );
-
-
-        const redWire =
-            document.getElementById(
-                "redWire"
-            );
-
-
-        const blackWire =
-            document.getElementById(
-                "blackWire"
-            );
-
-
-        const greenWire =
-            document.getElementById(
-                "greenWire"
-            );
-
-
-        const powerSwitch =
-            document.getElementById(
-                "powerSwitch"
-            );
-
-
-        const switchText =
-            document.getElementById(
-                "switchText"
-            );
-
-
-        const shaft =
-            document.getElementById(
-                "shaft"
-            );
-
-
-        const resetBtn =
-            document.getElementById(
-                "resetBtn"
-            );
-
-
-
-        /* ==============================
-           STATE
-        ============================== */
-
-        let selectedWire =
-            null;
-
-
-        let motorRunning =
-            false;
-
-
-        const connected = {
-
-            red: false,
-
-            black: false,
-
-            green: false
-
-        };
-
-
-
-        /* ==============================
-           CORRECT SIMULATION MAPPING
-        ============================== */
-
-        const correctTerminal = {
-
-            red: "L1",
-
-            black: "L2",
-
-            green: "GND"
-
-        };
-
-
-
-        /* ==============================
-           3D POSITIONS
-        ============================== */
-
-        const wirePositions = {
-
-
-            red: {
-
-                start:
-                    new THREE.Vector3(
-                        -0.48,
-                        0.29,
-                        0.40
-                    ),
-
-                end:
-                    new THREE.Vector3(
-                        0.29,
-                        0.25,
-                        0.42
-                    ),
-
-                wire:
-                    redWire,
-
-                plug:
-                    redPlug
-
-            },
-
-
-            black: {
-
-                start:
-                    new THREE.Vector3(
-                        -0.48,
-                        0.19,
-                        0.40
-                    ),
-
-                end:
-                    new THREE.Vector3(
-                        0.38,
-                        0.20,
-                        0.42
-                    ),
-
-                wire:
-                    blackWire,
-
-                plug:
-                    blackPlug
-
-            },
-
-
-            green: {
-
-                start:
-                    new THREE.Vector3(
-                        -0.48,
-                        0.09,
-                        0.40
-                    ),
-
-                end:
-                    new THREE.Vector3(
-                        0.47,
-                        0.15,
-                        0.42
-                    ),
-
-                wire:
-                    greenWire,
-
-                plug:
-                    greenPlug
-
-            }
-
-        };
-
-
-
-        /* ==============================
-           CLEAR SELECTION
-        ============================== */
-
-        function clearSelection() {
-
-
-            redPlug.setAttribute(
-                "scale",
-                "1 1 1"
-            );
-
-
-            blackPlug.setAttribute(
-                "scale",
-                "1 1 1"
-            );
-
-
-            greenPlug.setAttribute(
-                "scale",
-                "1 1 1"
-            );
-
-        }
-
-
-
-        /* ==============================
-           SELECT WIRE
-        ============================== */
-
-        function selectWire(
-            wireName
-        ) {
-
-
-            if (
-                connected[
-                    wireName
-                ]
-            ) {
-
-
-                info.textContent =
-
-                    "This training wire is already connected.";
-
-
-                return;
-
-            }
-
-
-            selectedWire =
-                wireName;
-
-
-            clearSelection();
-
-
-            const data =
-                wirePositions[
-                    wireName
-                ];
-
-
-            data.plug.setAttribute(
-                "scale",
-                "1.35 1.35 1.35"
-            );
-
-
-            if (
-                wireName === "red"
-            ) {
-
-
-                info.textContent =
-
-                    "Red wire selected — tap the L1 terminal.";
-
-
-            }
-
-
-            if (
-                wireName === "black"
-            ) {
-
-
-                info.textContent =
-
-                    "Black wire selected — tap the L2 terminal.";
-
-
-            }
-
-
-            if (
-                wireName === "green"
-            ) {
-
-
-                info.textContent =
-
-                    "Ground wire selected — tap the GND terminal.";
-
-            }
-
-        }
-
-
-
-        /* ==============================
-           WIRE PLUG EVENTS
-        ============================== */
-
-        redPlug.addEventListener(
-
-            "click",
-
-            function () {
-
-
-                selectWire(
-                    "red"
-                );
-
-            }
-
+    wireData[name]
+        .plug
+        .setAttribute(
+            "scale",
+            "1.35 1.35 1.35"
         );
 
 
+    if(name === "red"){
 
-        blackPlug.addEventListener(
+        info.textContent =
+            "Red wire selected — tap L1.";
 
-            "click",
-
-            function () {
+    }
 
 
-                selectWire(
-                    "black"
-                );
+    if(name === "black"){
 
-            }
+        info.textContent =
+            "Black wire selected — tap L2.";
 
+    }
+
+
+    if(name === "green"){
+
+        info.textContent =
+            "Ground wire selected — tap GND.";
+
+    }
+
+}
+
+
+redPlug.addEventListener(
+    "click",
+    function(){
+
+        selectWire("red");
+
+    }
+);
+
+
+blackPlug.addEventListener(
+    "click",
+    function(){
+
+        selectWire("black");
+
+    }
+);
+
+
+greenPlug.addEventListener(
+    "click",
+    function(){
+
+        selectWire("green");
+
+    }
+);
+
+
+function createWire(name){
+
+    const data =
+        wireData[name];
+
+
+    const start =
+        data.start.clone();
+
+
+    const end =
+        data.end.clone();
+
+
+    const direction =
+        end.clone()
+        .sub(start);
+
+
+    const length =
+        direction.length();
+
+
+    const midpoint =
+        start.clone()
+        .add(end)
+        .multiplyScalar(0.5);
+
+
+    const wire =
+        data.wire;
+
+
+    wire.object3D.position.copy(
+        midpoint
+    );
+
+
+    wire.setAttribute(
+        "height",
+        length
+    );
+
+
+    direction.normalize();
+
+
+    const yAxis =
+        new THREE.Vector3(
+            0,
+            1,
+            0
         );
 
 
-
-        greenPlug.addEventListener(
-
-            "click",
-
-            function () {
+    const quaternion =
+        new THREE.Quaternion();
 
 
-                selectWire(
-                    "green"
-                );
+    quaternion.setFromUnitVectors(
+        yAxis,
+        direction
+    );
 
-            }
 
+    wire.object3D.quaternion.copy(
+        quaternion
+    );
+
+
+    wire.setAttribute(
+        "visible",
+        true
+    );
+
+}
+
+
+function attemptConnection(
+    terminalName
+){
+
+    if(
+        !selectedWire
+    ){
+
+        info.textContent =
+            "Tap a wire plug first.";
+
+        return;
+    }
+
+
+    if(
+        correctTerminal[selectedWire]
+        !==
+        terminalName
+    ){
+
+        info.textContent =
+            "Incorrect terminal — try again.";
+
+        return;
+    }
+
+
+    connected[selectedWire] =
+        true;
+
+
+    createWire(
+        selectedWire
+    );
+
+
+    wireData[selectedWire]
+        .plug
+        .setAttribute(
+            "visible",
+            false
         );
 
 
-
-        /* ==============================
-           CREATE 3D CONNECTION
-        ============================== */
-
-        function makeCable(
-            wireName
-        ) {
+    info.textContent =
+        "✓ Wire connected successfully.";
 
 
-            const data =
-                wirePositions[
-                    wireName
-                ];
+    selectedWire =
+        null;
 
 
-            const start =
-                data.start.clone();
+    clearSelection();
 
 
-            const end =
-                data.end.clone();
+    checkComplete();
+
+}
 
 
-            const direction =
-                end.clone()
-                    .sub(
-                        start
-                    );
+terminalL1.addEventListener(
+    "click",
+    function(){
+
+        attemptConnection("L1");
+
+    }
+);
 
 
-            const length =
-                direction.length();
+terminalL2.addEventListener(
+    "click",
+    function(){
+
+        attemptConnection("L2");
+
+    }
+);
 
 
-            const midpoint =
-                start.clone()
-                    .add(
-                        end
-                    )
-                    .multiplyScalar(
-                        0.5
-                    );
+terminalGND.addEventListener(
+    "click",
+    function(){
+
+        attemptConnection("GND");
+
+    }
+);
 
 
-            const cable =
-                data.wire;
+function checkComplete(){
+
+    if(
+        connected.red
+        &&
+        connected.black
+        &&
+        connected.green
+    ){
+
+        powerSwitch.setAttribute(
+            "color",
+            "#f59e0b"
+        );
 
 
-            cable.object3D.position.copy(
-                midpoint
-            );
+        info.textContent =
+            "✓ All connections complete — tap the power switch.";
+
+    }
+
+}
 
 
-            cable.setAttribute(
-                "height",
-                length
-            );
+powerSwitch.addEventListener(
+    "click",
+    function(){
 
+        if(
+            !connected.red
+            ||
+            !connected.black
+            ||
+            !connected.green
+        ){
 
-            direction.normalize();
+            info.textContent =
+                "Connect all three wires first.";
 
-
-            const yAxis =
-                new THREE.Vector3(
-                    0,
-                    1,
-                    0
-                );
-
-
-            const quaternion =
-                new THREE.Quaternion();
-
-
-            quaternion.setFromUnitVectors(
-
-                yAxis,
-
-                direction
-
-            );
-
-
-            cable.object3D.quaternion.copy(
-                quaternion
-            );
-
-
-            cable.setAttribute(
-                "visible",
-                true
-            );
-
+            return;
         }
 
 
-
-        /* ==============================
-           CHECK CONNECTION
-        ============================== */
-
-        function attemptConnection(
-            terminalName
-        ) {
+        motorRunning =
+            !motorRunning;
 
 
-            if (
-                !selectedWire
-            ) {
+        if(
+            motorRunning
+        ){
 
-
-                info.textContent =
-
-                    "Tap a 3D wire plug first.";
-
-
-                return;
-
-            }
-
-
-            if (
-
-                correctTerminal[
-                    selectedWire
-                ]
-                !==
-                terminalName
-
-            ) {
-
-
-                info.textContent =
-
-                    "Incorrect simulated terminal — try again.";
-
-
-                return;
-
-            }
-
-
-            connected[
-                selectedWire
-            ] =
-                true;
-
-
-            makeCable(
-                selectedWire
+            powerSwitch.setAttribute(
+                "color",
+                "#22c55e"
             );
 
 
-            const data =
-                wirePositions[
-                    selectedWire
-                ];
-
-
-            data.plug.setAttribute(
-                "visible",
-                false
+            switchText.setAttribute(
+                "value",
+                "ON"
             );
 
 
             info.textContent =
-
-                "✓ Correct connection completed.";
-
-
-            selectedWire =
-                null;
-
-
-            clearSelection();
-
-
-            updatePowerState();
+                "✓ Motor simulation running.";
 
         }
 
+        else{
 
-
-        /* ==============================
-           TERMINAL EVENTS
-        ============================== */
-
-        terminalL1.addEventListener(
-
-            "click",
-
-            function () {
-
-
-                attemptConnection(
-                    "L1"
-                );
-
-            }
-
-        );
-
-
-
-        terminalL2.addEventListener(
-
-            "click",
-
-            function () {
-
-
-                attemptConnection(
-                    "L2"
-                );
-
-            }
-
-        );
-
-
-
-        terminalGND.addEventListener(
-
-            "click",
-
-            function () {
-
-
-                attemptConnection(
-                    "GND"
-                );
-
-            }
-
-        );
-
-
-
-        /* ==============================
-           ALL CONNECTIONS CHECK
-        ============================== */
-
-        function allConnected() {
-
-
-            return (
-
-                connected.red
-
-                &&
-
-                connected.black
-
-                &&
-
-                connected.green
-
+            powerSwitch.setAttribute(
+                "color",
+                "#f59e0b"
             );
 
-        }
 
-
-
-        function updatePowerState() {
-
-
-            if (
-                allConnected()
-            ) {
-
-
-                powerSwitch.setAttribute(
-                    "color",
-                    "#f59e0b"
-                );
-
-
-                info.textContent =
-
-                    "✓ All simulated connections complete — tap the 3D power switch.";
-
-            }
-
-        }
-
-
-
-        /* ==============================
-           3D SWITCH
-        ============================== */
-
-        powerSwitch.addEventListener(
-
-            "click",
-
-            function () {
-
-
-                if (
-                    !allConnected()
-                ) {
-
-
-                    info.textContent =
-
-                        "Complete all three simulated connections first.";
-
-
-                    return;
-
-                }
-
-
-                motorRunning =
-                    !motorRunning;
-
-
-                if (
-                    motorRunning
-                ) {
-
-
-                    powerSwitch.setAttribute(
-                        "color",
-                        "#16a34a"
-                    );
-
-
-                    switchText.setAttribute(
-                        "value",
-                        "POWER ON"
-                    );
-
-
-                    info.textContent =
-
-                        "✓ Motor simulation running.";
-
-
-                } else {
-
-
-                    powerSwitch.setAttribute(
-                        "color",
-                        "#f59e0b"
-                    );
-
-
-                    switchText.setAttribute(
-                        "value",
-                        "POWER OFF"
-                    );
-
-
-                    info.textContent =
-
-                        "Motor simulation stopped.";
-
-                }
-
-            }
-
-        );
-
-
-
-        /* ==============================
-           SHAFT ANIMATION
-        ============================== */
-
-        function animate() {
-
-
-            if (
-                motorRunning
-            ) {
-
-
-                shaft.object3D.rotation.z +=
-                    0.20;
-
-            }
-
-
-            requestAnimationFrame(
-                animate
+            switchText.setAttribute(
+                "value",
+                "OFF"
             );
 
+
+            info.textContent =
+                "Motor simulation stopped.";
+
         }
 
-
-        animate();
-
-
-
-        /* ==============================
-           RESET
-        ============================== */
-
-        resetBtn.addEventListener(
-
-            "click",
-
-            function () {
+    }
+);
 
 
-                motorRunning =
-                    false;
+resetBtn.addEventListener(
+    "click",
+    function(){
+
+        selectedWire = null;
+
+        motorRunning = false;
 
 
-                selectedWire =
-                    null;
+        connected.red = false;
+        connected.black = false;
+        connected.green = false;
 
 
-                connected.red =
-                    false;
+        redWire.setAttribute(
+            "visible",
+            false
+        );
 
+        blackWire.setAttribute(
+            "visible",
+            false
+        );
 
-                connected.black =
-                    false;
-
-
-                connected.green =
-                    false;
-
-
-                redWire.setAttribute(
-                    "visible",
-                    false
-                );
-
-
-                blackWire.setAttribute(
-                    "visible",
-                    false
-                );
-
-
-                greenWire.setAttribute(
-                    "visible",
-                    false
-                );
-
-
-                redPlug.setAttribute(
-                    "visible",
-                    true
-                );
-
-
-                blackPlug.setAttribute(
-                    "visible",
-                    true
-                );
-
-
-                greenPlug.setAttribute(
-                    "visible",
-                    true
-                );
-
-
-                clearSelection();
-
-
-                powerSwitch.setAttribute(
-                    "color",
-                    "#991b1b"
-                );
-
-
-                switchText.setAttribute(
-                    "value",
-                    "POWER OFF"
-                );
-
-
-                info.textContent =
-
-                    "Training reset — tap a 3D wire plug to begin.";
-
-            }
-
+        greenWire.setAttribute(
+            "visible",
+            false
         );
 
 
+        redPlug.setAttribute(
+            "visible",
+            true
+        );
 
-        /* ==============================
-           MARKER EVENTS
-        ============================== */
+        blackPlug.setAttribute(
+            "visible",
+            true
+        );
 
-        marker.addEventListener(
-
-            "markerFound",
-
-            function () {
-
-
-                if (
-                    allConnected()
-                ) {
-
-
-                    info.textContent =
-
-                        "Connections ready — tap the 3D power switch.";
-
-
-                } else {
-
-
-                    info.textContent =
-
-                        "Motor detected — tap one of the 3D wire plugs.";
-
-                }
-
-            }
-
+        greenPlug.setAttribute(
+            "visible",
+            true
         );
 
 
-        marker.addEventListener(
-
-            "markerLost",
-
-            function () {
+        clearSelection();
 
 
-                info.textContent =
-
-                    "Marker lost — point the camera at the Hiro marker.";
-
-            }
-
+        powerSwitch.setAttribute(
+            "color",
+            "#991b1b"
         );
 
 
-    </script>
+        switchText.setAttribute(
+            "value",
+            "OFF"
+        );
+
+
+        info.textContent =
+            "Training reset — tap a wire plug.";
+
+    }
+);
+
+
+marker.addEventListener(
+    "markerFound",
+    function(){
+
+        info.textContent =
+            "Motor detected — tap a wire plug.";
+
+    }
+);
+
+
+marker.addEventListener(
+    "markerLost",
+    function(){
+
+        info.textContent =
+            "Marker lost — point the camera at the Hiro marker.";
+
+    }
+);
+
+</script>
 
 
 </body>
