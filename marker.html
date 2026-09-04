@@ -12,13 +12,11 @@
 
     <title>FixAR | Motor Operation Training</title>
 
-
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
-
 
     <style>
 
@@ -28,26 +26,16 @@
 
         html,
         body {
-
             margin: 0;
-
             width: 100%;
             height: 100%;
-
             overflow: hidden;
 
             font-family: Arial, Helvetica, sans-serif;
-
             background: #07111f;
         }
 
-
-        /* ==============================
-           TOP MESSAGE
-        ============================== */
-
         #info {
-
             position: fixed;
 
             top: 12px;
@@ -63,7 +51,6 @@
             background: rgba(0, 0, 0, 0.84);
 
             border: 1px solid #38bdf8;
-
             border-radius: 10px;
 
             color: white;
@@ -71,7 +58,6 @@
             text-align: center;
 
             font-size: 13px;
-
             line-height: 1.35;
 
             z-index: 1000;
@@ -79,13 +65,7 @@
             pointer-events: none;
         }
 
-
-        /* ==============================
-           MOTOR STATUS
-        ============================== */
-
         #motorStatus {
-
             position: fixed;
 
             left: 15px;
@@ -96,33 +76,22 @@
             background: rgba(7, 17, 31, 0.95);
 
             border: 1px solid #ef4444;
-
             border-radius: 9px;
 
             color: #fecaca;
 
             font-size: 11px;
-
             font-weight: bold;
 
             z-index: 1000;
         }
 
-
         #motorStatus.running {
-
             border-color: #22c55e;
-
             color: #86efac;
         }
 
-
-        /* ==============================
-           RESET
-        ============================== */
-
         #resetBtn {
-
             position: fixed;
 
             right: 15px;
@@ -131,7 +100,6 @@
             padding: 10px 14px;
 
             border: 1px solid #38bdf8;
-
             border-radius: 9px;
 
             background: rgba(7, 17, 31, 0.95);
@@ -139,7 +107,6 @@
             color: white;
 
             font-size: 11px;
-
             font-weight: bold;
 
             z-index: 1000;
@@ -149,64 +116,37 @@
 
 </head>
 
-
 <body>
 
-
     <div id="info">
-
         Point the camera at the Hiro marker.
-
     </div>
-
 
     <div id="motorStatus">
-
         MOTOR OFF
-
     </div>
 
-
     <button id="resetBtn">
-
         Reset
-
     </button>
 
 
-
-    <!-- ==============================
-         AR SCENE
-    ============================== -->
-
     <a-scene
-
         embedded
-
-        renderer="
-            antialias: true;
-            colorManagement: true;
-        "
-
-        arjs="
-            sourceType: webcam;
-            debugUIEnabled: false;
-        ">
+        renderer="antialias: true; colorManagement: true;"
+        arjs="sourceType: webcam; debugUIEnabled: false;">
 
 
         <a-marker
-
             id="hiroMarker"
-
             preset="hiro">
 
 
-            <!-- ==============================
-                 REAL MOTOR MODEL
-            ============================== -->
+            <!-- =========================
+                 MOTOR MODEL
+            ========================== -->
 
             <a-entity
-
                 id="motorModel"
 
                 gltf-model="url(models/machine.glb)"
@@ -216,407 +156,367 @@
                 rotation="0 0 0"
 
                 scale="0.5 0.5 0.5">
-
             </a-entity>
 
 
-
-            <!-- ==============================
-                 REAL SWITCH MODEL
-            ============================== -->
+            <!-- =========================
+                 SWITCH MODEL
+            ========================== -->
 
             <a-entity
-
                 id="switchModel"
-
-                class="clickable"
 
                 gltf-model="url(models/switch.glb)"
 
-                position="-0.45 0.05 0.20"
+                position="-0.55 0.10 0.18"
 
                 rotation="0 0 0"
 
-                scale="0.10 0.10 0.10">
-
+                scale="0.15 0.15 0.15">
             </a-entity>
 
 
+            <!-- =========================
+                 SWITCH CLICK AREA
 
-            <!-- Small label only -->
+                 Invisible box catches
+                 mobile taps.
+            ========================== -->
+
+            <a-box
+                id="switchHitArea"
+
+                class="clickable"
+
+                position="-0.55 0.10 0.18"
+
+                width="0.45"
+
+                height="0.45"
+
+                depth="0.45"
+
+                material="
+                    transparent: true;
+                    opacity: 0.01;
+                    depthWrite: false;
+                ">
+            </a-box>
+
+
+            <!-- =========================
+                 SWITCH LABEL
+            ========================== -->
 
             <a-text
-
                 id="switchLabel"
 
                 value="TAP SWITCH"
 
-                position="-0.45 0.30 0.25"
+                position="-0.55 0.38 0.22"
 
-                scale="0.28 0.28 0.28"
+                scale="0.30 0.30 0.30"
 
-                align="center"
+                color="#ffffff"
 
-                color="#ffffff">
+                align="center">
+            </a-text>
 
+
+            <!-- =========================
+                 MOTOR STATUS LABEL
+            ========================== -->
+
+            <a-text
+                id="motorLabel"
+
+                value="MOTOR OFF"
+
+                position="0 0.42 0.22"
+
+                scale="0.32 0.32 0.32"
+
+                color="#ef4444"
+
+                align="center">
             </a-text>
 
 
         </a-marker>
 
 
-
-        <!-- ==============================
-             CAMERA / TOUCH
-        ============================== -->
+        <!-- =========================
+             CAMERA + CLICK RAYCASTER
+        ========================== -->
 
         <a-entity
-
             camera
 
-            cursor="
-                rayOrigin: mouse;
-                fuse: false;
-            "
+            cursor="rayOrigin: mouse; fuse: false"
 
-            raycaster="
-                objects: .clickable;
-            ">
-
+            raycaster="objects: .clickable">
         </a-entity>
 
 
     </a-scene>
 
 
-
     <script>
 
-
-        /* ==============================
+        /* =========================
            ELEMENTS
-        ============================== */
+        ========================== */
 
         const info =
             document.getElementById(
                 "info"
             );
 
-
         const motorStatus =
             document.getElementById(
                 "motorStatus"
             );
-
 
         const resetBtn =
             document.getElementById(
                 "resetBtn"
             );
 
-
         const marker =
             document.getElementById(
                 "hiroMarker"
             );
-
 
         const motorModel =
             document.getElementById(
                 "motorModel"
             );
 
-
         const switchModel =
             document.getElementById(
                 "switchModel"
             );
 
+        const switchHitArea =
+            document.getElementById(
+                "switchHitArea"
+            );
 
         const switchLabel =
             document.getElementById(
                 "switchLabel"
             );
 
+        const motorLabel =
+            document.getElementById(
+                "motorLabel"
+            );
 
 
-        /* ==============================
+        /* =========================
            STATE
-        ============================== */
+        ========================== */
 
-        let markerVisible =
-            false;
+        let markerVisible = false;
 
+        let motorLoaded = false;
 
-        let motorLoaded =
-            false;
+        let switchLoaded = false;
 
+        let motorRunning = false;
 
-        let switchLoaded =
-            false;
-
-
-        let motorRunning =
-            false;
+        let animationTime = 0;
 
 
-        let animationTime =
-            0;
-
-
-
-        /* ==============================
-           MODEL LOAD STATUS
-        ============================== */
+        /* =========================
+           MOTOR LOAD
+        ========================== */
 
         motorModel.addEventListener(
-
             "model-loaded",
 
             function () {
 
-
-                motorLoaded =
-                    true;
-
+                motorLoaded = true;
 
                 console.log(
-                    "Motor loaded"
+                    "Motor model loaded"
                 );
 
-
-                updateMessage();
-
+                updateStatusMessage();
             }
-
         );
-
-
-
-        switchModel.addEventListener(
-
-            "model-loaded",
-
-            function () {
-
-
-                switchLoaded =
-                    true;
-
-
-                console.log(
-                    "Switch loaded"
-                );
-
-
-                updateMessage();
-
-            }
-
-        );
-
 
 
         motorModel.addEventListener(
-
             "model-error",
 
             function (event) {
 
-
                 console.error(
-                    "Motor model error",
+                    "Motor loading error",
                     event
                 );
-
 
                 info.textContent =
                     "Motor model failed to load.";
-
             }
-
         );
 
 
+        /* =========================
+           SWITCH LOAD
+        ========================== */
 
         switchModel.addEventListener(
+            "model-loaded",
 
+            function () {
+
+                switchLoaded = true;
+
+                console.log(
+                    "Switch model loaded"
+                );
+
+                updateStatusMessage();
+            }
+        );
+
+
+        switchModel.addEventListener(
             "model-error",
 
             function (event) {
 
-
                 console.error(
-                    "Switch model error",
+                    "Switch loading error",
                     event
                 );
 
-
                 info.textContent =
-                    "Switch model failed to load. Check models/switch.glb";
-
+                    "Switch model failed to load.";
             }
-
         );
 
 
+        /* =========================
+           STATUS
+        ========================== */
 
-        /* ==============================
-           STATUS MESSAGE
-        ============================== */
+        function updateStatusMessage() {
 
-        function updateMessage() {
-
-
-            if (
-                !markerVisible
-            ) {
-
+            if (!markerVisible) {
 
                 info.textContent =
                     "Point the camera at the Hiro marker.";
 
-
                 return;
-
             }
 
-
-            if (
-                !motorLoaded
-            ) {
-
+            if (!motorLoaded) {
 
                 info.textContent =
-                    "Marker detected — loading motor model...";
-
+                    "Marker detected — loading motor...";
 
                 return;
-
             }
 
-
-            if (
-                !switchLoaded
-            ) {
-
+            if (!switchLoaded) {
 
                 info.textContent =
-                    "Motor loaded — loading switch model...";
-
+                    "Motor loaded — loading switch...";
 
                 return;
-
             }
 
-
-            if (
-                motorRunning
-            ) {
-
+            if (motorRunning) {
 
                 info.textContent =
                     "Motor simulation running — tap the 3D switch to stop.";
 
-
             } else {
-
 
                 info.textContent =
                     "Motor ready — tap the 3D switch to start.";
-
             }
-
         }
 
 
-
-        /* ==============================
+        /* =========================
            START MOTOR
-        ============================== */
+        ========================== */
 
         function startMotor() {
 
-
-            motorRunning =
-                true;
-
+            motorRunning = true;
 
             motorStatus.textContent =
                 "MOTOR RUNNING";
-
 
             motorStatus.classList.add(
                 "running"
             );
 
+            motorLabel.setAttribute(
+                "value",
+                "MOTOR RUNNING"
+            );
+
+            motorLabel.setAttribute(
+                "color",
+                "#22c55e"
+            );
 
             switchLabel.setAttribute(
                 "value",
-                "ON - TAP TO STOP"
+                "TAP TO STOP"
             );
-
-
-            /*
-                Move the switch slightly to
-                visually show ON position.
-            */
 
             switchModel.setAttribute(
-
                 "rotation",
-
                 "0 0 -18"
-
             );
-
 
             info.textContent =
                 "✓ Motor simulation running.";
-
         }
 
 
-
-        /* ==============================
+        /* =========================
            STOP MOTOR
-        ============================== */
+        ========================== */
 
         function stopMotor() {
 
-
-            motorRunning =
-                false;
-
+            motorRunning = false;
 
             motorStatus.textContent =
                 "MOTOR OFF";
-
 
             motorStatus.classList.remove(
                 "running"
             );
 
+            motorLabel.setAttribute(
+                "value",
+                "MOTOR OFF"
+            );
+
+            motorLabel.setAttribute(
+                "color",
+                "#ef4444"
+            );
 
             switchLabel.setAttribute(
                 "value",
                 "TAP SWITCH"
             );
 
-
             switchModel.setAttribute(
-
                 "rotation",
-
                 "0 0 0"
-
             );
-
-
-            /*
-                Restore exact motor position
-                after running vibration.
-            */
 
             motorModel.object3D.position.set(
                 0,
@@ -624,229 +524,153 @@
                 0
             );
 
-
             motorModel.object3D.rotation.set(
                 0,
                 0,
                 0
             );
 
-
             info.textContent =
                 "Motor simulation stopped.";
-
         }
 
 
+        /* =========================
+           SWITCH CLICK
+        ========================== */
 
-        /* ==============================
-           TAP REAL 3D SWITCH
-        ============================== */
-
-        switchModel.addEventListener(
-
+        switchHitArea.addEventListener(
             "click",
 
             function () {
 
-
-                if (
-                    !markerVisible
-                ) {
-
-
+                if (!markerVisible) {
                     return;
-
                 }
 
-
-                if (
-                    !motorLoaded
-                    ||
-                    !switchLoaded
-                ) {
-
+                if (!motorLoaded) {
 
                     info.textContent =
-                        "Wait until both models finish loading.";
-
+                        "Wait until the motor finishes loading.";
 
                     return;
-
                 }
 
+                if (!switchLoaded) {
 
-                if (
-                    motorRunning
-                ) {
+                    info.textContent =
+                        "Wait until the switch finishes loading.";
 
+                    return;
+                }
+
+                if (motorRunning) {
 
                     stopMotor();
 
-
                 } else {
 
-
                     startMotor();
-
                 }
-
             }
-
         );
 
 
-
-        /* ==============================
+        /* =========================
            MOTOR RUNNING ANIMATION
-        ============================== */
+        ========================== */
 
         function animate() {
-
 
             requestAnimationFrame(
                 animate
             );
 
-
-            if (
-                !motorRunning
-            ) {
-
-
+            if (!motorRunning) {
                 return;
-
             }
 
-
-            animationTime +=
-                0.15;
-
-
-            /*
-                Very small vibration.
-                This represents the motor
-                operating without adding
-                fake cylinders or boxes.
-            */
+            animationTime += 0.18;
 
             const vibrationX =
-
                 Math.sin(
                     animationTime
-                )
-                *
-                0.004;
-
+                ) * 0.004;
 
             const vibrationZ =
-
                 Math.cos(
                     animationTime * 1.3
-                )
-                *
-                0.003;
-
+                ) * 0.003;
 
             motorModel.object3D.position.x =
                 vibrationX;
 
-
             motorModel.object3D.position.z =
                 vibrationZ;
-
         }
 
 
         animate();
 
 
-
-        /* ==============================
+        /* =========================
            RESET
-        ============================== */
+        ========================== */
 
         resetBtn.addEventListener(
-
             "click",
 
             function () {
 
-
                 stopMotor();
 
-
-                if (
-                    markerVisible
-                ) {
-
+                if (markerVisible) {
 
                     info.textContent =
                         "Training reset — tap the 3D switch to start.";
 
-
                 } else {
-
 
                     info.textContent =
                         "Training reset — point the camera at the Hiro marker.";
-
                 }
-
             }
-
         );
 
 
-
-        /* ==============================
+        /* =========================
            MARKER FOUND
-        ============================== */
+        ========================== */
 
         marker.addEventListener(
-
             "markerFound",
 
             function () {
 
+                markerVisible = true;
 
-                markerVisible =
-                    true;
-
-
-                updateMessage();
-
+                updateStatusMessage();
             }
-
         );
 
 
-
-        /* ==============================
+        /* =========================
            MARKER LOST
-        ============================== */
+        ========================== */
 
         marker.addEventListener(
-
             "markerLost",
 
             function () {
 
-
-                markerVisible =
-                    false;
-
+                markerVisible = false;
 
                 info.textContent =
                     "Marker lost — point the camera at the Hiro marker.";
-
             }
-
         );
 
-
     </script>
-
 
 </body>
 
