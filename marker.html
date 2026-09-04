@@ -3,372 +3,105 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width,
+          initial-scale=1.0,
+          user-scalable=no">
 
-<title>FixAR | Motor Connection Training</title>
+    <title>FixAR | AR Motor Connection Training</title>
 
 
-<!-- A-Frame -->
-<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-<!-- AR.js -->
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
 
-<style>
+    <style>
 
-* {
-    box-sizing: border-box;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-html,
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
 
-    font-family: Arial, Helvetica, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
 
-    background: #07111f;
-}
+            background: #07111f;
+        }
 
 
-/* ==========================================
-   TOP STATUS
-========================================== */
+        /* ==============================
+           TOP STATUS
+        ============================== */
 
-#info {
+        #info {
 
-    position: fixed;
+            position: fixed;
 
-    top: 12px;
-    left: 50%;
+            top: 12px;
+            left: 50%;
 
-    transform: translateX(-50%);
+            transform: translateX(-50%);
 
-    width: calc(100% - 20px);
-    max-width: 470px;
+            width: calc(100% - 20px);
+            max-width: 470px;
 
-    padding: 10px 12px;
+            padding: 10px 12px;
 
-    background: rgba(0, 0, 0, 0.84);
+            background: rgba(0, 0, 0, 0.85);
 
-    color: white;
+            border: 1px solid #38bdf8;
+            border-radius: 10px;
 
-    border: 1px solid #38bdf8;
+            color: white;
 
-    border-radius: 10px;
+            text-align: center;
 
-    text-align: center;
+            font-size: 13px;
+            line-height: 1.35;
 
-    font-size: 13px;
-    line-height: 1.35;
+            z-index: 1000;
 
-    z-index: 1000;
+            pointer-events: none;
+        }
 
-    pointer-events: none;
-}
 
+        /* ==============================
+           SMALL RESET BUTTON
+        ============================== */
 
-/* ==========================================
-   TRAINING PANEL
-========================================== */
+        #resetBtn {
 
-#panel {
+            position: fixed;
 
-    position: fixed;
+            right: 12px;
+            bottom: 18px;
 
-    left: 50%;
-    bottom: 14px;
+            z-index: 1000;
 
-    transform: translateX(-50%);
+            padding: 10px 14px;
 
-    width: calc(100% - 16px);
-    max-width: 470px;
+            border: 1px solid #38bdf8;
+            border-radius: 9px;
 
-    padding: 11px;
+            background: rgba(7, 17, 31, 0.92);
 
-    background: rgba(7, 17, 31, 0.96);
+            color: white;
 
-    border: 1px solid #38bdf8;
+            font-size: 11px;
+            font-weight: bold;
+        }
 
-    border-radius: 12px;
-
-    z-index: 1000;
-}
-
-
-#panel h3 {
-
-    margin: 0 0 9px;
-
-    color: white;
-
-    text-align: center;
-
-    font-size: 14px;
-}
-
-
-/* ==========================================
-   WIRE CARDS
-========================================== */
-
-#wireArea {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 7px;
-}
-
-
-.wire {
-
-    min-height: 44px;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 6px;
-
-    background: #111827;
-
-    color: white;
-
-    border: 1px solid #64748b;
-
-    border-radius: 9px;
-
-    font-size: 11px;
-    font-weight: bold;
-
-    text-align: center;
-
-    cursor: grab;
-
-    touch-action: none;
-
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-
-.wire:active {
-
-    cursor: grabbing;
-}
-
-
-#redWireCard {
-
-    border-color: #ef4444;
-}
-
-
-#blackWireCard {
-
-    border-color: #94a3b8;
-}
-
-
-#greenWireCard {
-
-    border-color: #22c55e;
-}
-
-
-.wire.connected {
-
-    opacity: 0.45;
-
-    pointer-events: none;
-}
-
-
-/* ==========================================
-   DROP TERMINALS
-========================================== */
-
-#terminalArea {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 7px;
-
-    margin-top: 7px;
-}
-
-
-.terminal {
-
-    min-height: 45px;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 6px;
-
-    background: #1e293b;
-
-    color: white;
-
-    border: 1px dashed #64748b;
-
-    border-radius: 9px;
-
-    font-size: 11px;
-    font-weight: bold;
-
-    text-align: center;
-}
-
-
-.terminal.ready {
-
-    border: 2px solid #fbbf24;
-
-    background: #422f0a;
-}
-
-
-.terminal.done {
-
-    border: 1px solid #22c55e;
-
-    background: #14532d;
-
-    color: white;
-}
-
-
-/* ==========================================
-   POWER BUTTON
-========================================== */
-
-#powerBtn {
-
-    width: 100%;
-
-    min-height: 43px;
-
-    margin-top: 8px;
-
-    border: none;
-
-    border-radius: 9px;
-
-    background: #475569;
-
-    color: white;
-
-    font-size: 12px;
-    font-weight: bold;
-
-    opacity: 0.65;
-}
-
-
-#powerBtn.enabled {
-
-    background: #991b1b;
-
-    opacity: 1;
-}
-
-
-#powerBtn.running {
-
-    background: #16a34a;
-
-    opacity: 1;
-}
-
-
-#progress {
-
-    margin-top: 7px;
-
-    text-align: center;
-
-    color: #cbd5e1;
-
-    font-size: 10px;
-}
-
-
-/* ==========================================
-   DRAGGING VISUAL
-========================================== */
-
-.dragClone {
-
-    position: fixed;
-
-    z-index: 99999;
-
-    pointer-events: none;
-
-    transform: translate(-50%, -50%);
-
-    min-width: 100px;
-
-    padding: 11px 12px;
-
-    border-radius: 8px;
-
-    background: #111827;
-
-    color: white;
-
-    border: 2px solid white;
-
-    font-size: 11px;
-    font-weight: bold;
-
-    text-align: center;
-
-    opacity: 0.94;
-}
-
-
-/* ==========================================
-   SMALL PHONE
-========================================== */
-
-@media (max-width: 360px) {
-
-    .wire,
-    .terminal {
-
-        font-size: 10px;
-
-    }
-
-    #panel {
-
-        bottom: 8px;
-
-    }
-
-}
-
-</style>
+    </style>
 
 </head>
 
@@ -376,1599 +109,1358 @@ body {
 <body>
 
 
-<!-- ==========================================
-     STATUS
-========================================== -->
+    <div id="info">
 
-<div id="info">
+        Scan the Hiro marker to begin AR motor connection training.
 
-Scan the Hiro marker to begin motor connection training.
+    </div>
 
-</div>
 
+    <button id="resetBtn">
 
+        Reset
 
-<!-- ==========================================
-     TRAINING PANEL
-========================================== -->
+    </button>
 
-<div id="panel">
 
 
-<h3>
-Motor Connection Training
-</h3>
+    <a-scene
 
+        embedded
 
+        renderer="
+            antialias: true;
+            colorManagement: true;
+        "
 
-<div id="wireArea">
+        arjs="
+            sourceType: webcam;
+            debugUIEnabled: false;
+        ">
 
 
-<div
-    id="redWireCard"
-    class="wire"
-    data-wire="red">
+        <a-marker
+            id="hiroMarker"
+            preset="hiro">
 
-🔴 Red Wire
 
-</div>
+            <!-- ======================================
+                 MOTOR MODEL
+            ======================================= -->
 
+            <a-entity
 
-<div
-    id="blackWireCard"
-    class="wire"
-    data-wire="black">
+                id="motorModel"
 
-⚫ Black Wire
+                gltf-model="url(models/machine.glb)"
 
-</div>
+                position="0 0 0"
 
+                rotation="0 0 0"
 
-<div
-    id="greenWireCard"
-    class="wire"
-    data-wire="green">
+                scale="0.5 0.5 0.5">
 
-🟢 Ground
+            </a-entity>
 
-</div>
 
 
-</div>
+            <!-- ======================================
+                 SIMULATED TERMINAL BOARD
+            ======================================= -->
 
+            <a-box
 
+                position="0.38 0.20 0.38"
 
-<div id="terminalArea">
+                width="0.34"
 
+                height="0.28"
 
-<div
-    id="terminalL1"
-    class="terminal"
-    data-terminal="L1">
+                depth="0.05"
 
-Drop → L1
+                color="#334155">
 
-</div>
+            </a-box>
 
 
-<div
-    id="terminalL2"
-    class="terminal"
-    data-terminal="L2">
 
-Drop → L2
+            <!-- L1 TERMINAL -->
 
-</div>
+            <a-sphere
 
+                id="terminalL1"
 
-<div
-    id="terminalGND"
-    class="terminal"
-    data-terminal="GND">
+                class="clickable"
 
-Drop → GND
+                position="0.29 0.25 0.42"
 
-</div>
+                radius="0.045"
 
+                color="#ef4444">
 
-</div>
+            </a-sphere>
 
 
+            <a-text
 
-<button
-    id="powerBtn"
-    disabled>
+                value="L1"
 
-POWER OFF
+                position="0.25 0.33 0.42"
 
-</button>
+                scale="0.35 0.35 0.35"
 
+                color="#ffffff"
 
+                align="center">
 
-<div id="progress">
+            </a-text>
 
-Connections: 0 / 3
 
-</div>
 
+            <!-- L2 TERMINAL -->
 
-</div>
+            <a-sphere
 
+                id="terminalL2"
 
+                class="clickable"
 
-<!-- ==========================================
-     AR SCENE
-========================================== -->
+                position="0.38 0.20 0.42"
 
-<a-scene
+                radius="0.045"
 
-embedded
+                color="#111827">
 
-renderer="
-    antialias: true;
-    colorManagement: true;
-"
+            </a-sphere>
 
-arjs="
-    sourceType: webcam;
-    debugUIEnabled: false;
-">
 
+            <a-text
 
+                value="L2"
 
-<a-marker
-    id="hiroMarker"
-    preset="hiro">
+                position="0.38 0.29 0.42"
 
+                scale="0.35 0.35 0.35"
 
+                color="#ffffff"
 
-<!-- ==========================================
-     MOTOR MODEL
-========================================== -->
+                align="center">
 
-<a-entity
+            </a-text>
 
-    id="motorModel"
 
-    gltf-model="url(models/machine.glb)"
 
-    position="0 0 0"
+            <!-- GND TERMINAL -->
 
-    rotation="0 0 0"
+            <a-sphere
 
-    scale="0.5 0.5 0.5">
+                id="terminalGND"
 
-</a-entity>
+                class="clickable"
 
+                position="0.47 0.15 0.42"
 
+                radius="0.045"
 
-<!-- ==========================================
-     TRAINING TERMINAL BOARD
-========================================== -->
+                color="#22c55e">
 
-<a-box
+            </a-sphere>
 
-    position="0.36 0.18 0.34"
 
-    width="0.28"
+            <a-text
 
-    height="0.24"
+                value="GND"
 
-    depth="0.04"
+                position="0.50 0.24 0.42"
 
-    color="#334155">
+                scale="0.30 0.30 0.30"
 
-</a-box>
+                color="#ffffff"
 
+                align="center">
 
+            </a-text>
 
-<!-- L1 -->
 
-<a-sphere
 
-    id="L1Point"
+            <!-- ======================================
+                 3D WIRE PLUGS
+            ======================================= -->
 
-    position="0.29 0.23 0.37"
 
-    radius="0.025"
+            <!-- RED PLUG -->
 
-    color="#ef4444">
+            <a-sphere
 
-</a-sphere>
+                id="redPlug"
 
+                class="clickable"
 
+                position="-0.48 0.29 0.40"
 
-<!-- L2 -->
+                radius="0.055"
 
-<a-sphere
+                color="#ef4444">
 
-    id="L2Point"
+            </a-sphere>
 
-    position="0.36 0.18 0.37"
 
-    radius="0.025"
+            <a-text
 
-    color="#111827">
+                value="RED"
 
-</a-sphere>
+                position="-0.48 0.39 0.40"
 
+                scale="0.30 0.30 0.30"
 
+                color="#ffffff"
 
-<!-- GND -->
+                align="center">
 
-<a-sphere
+            </a-text>
 
-    id="GNDPoint"
 
-    position="0.43 0.13 0.37"
 
-    radius="0.025"
+            <!-- BLACK PLUG -->
 
-    color="#22c55e">
+            <a-sphere
 
-</a-sphere>
+                id="blackPlug"
 
+                class="clickable"
 
+                position="-0.48 0.19 0.40"
 
-<!-- ==========================================
-     WIRE START POINTS
-========================================== -->
+                radius="0.055"
 
-<a-sphere
+                color="#111827">
 
-    position="-0.30 0.23 0.37"
+            </a-sphere>
 
-    radius="0.018"
 
-    color="#ef4444">
+            <a-text
 
-</a-sphere>
+                value="BLACK"
 
+                position="-0.48 0.09 0.40"
 
-<a-sphere
+                scale="0.25 0.25 0.25"
 
-    position="-0.30 0.18 0.37"
+                color="#ffffff"
 
-    radius="0.018"
+                align="center">
 
-    color="#111827">
+            </a-text>
 
-</a-sphere>
 
 
-<a-sphere
+            <!-- GREEN PLUG -->
 
-    position="-0.30 0.13 0.37"
+            <a-sphere
 
-    radius="0.018"
+                id="greenPlug"
 
-    color="#22c55e">
+                class="clickable"
 
-</a-sphere>
+                position="-0.48 0.09 0.40"
 
+                radius="0.055"
 
+                color="#22c55e">
 
-<!-- ==========================================
-     3D CONNECTED WIRES
-========================================== -->
+            </a-sphere>
 
-<a-cylinder
 
-    id="redWire3D"
+            <a-text
 
-    radius="0.010"
+                value="GND"
 
-    height="0.1"
+                position="-0.48 -0.01 0.40"
 
-    color="#ef4444"
+                scale="0.30 0.30 0.30"
 
-    visible="false">
+                color="#ffffff"
 
-</a-cylinder>
+                align="center">
 
+            </a-text>
 
 
-<a-cylinder
 
-    id="blackWire3D"
+            <!-- ======================================
+                 CONNECTED 3D WIRES
+            ======================================= -->
 
-    radius="0.010"
+            <a-cylinder
 
-    height="0.1"
+                id="redWire"
 
-    color="#111827"
+                radius="0.014"
 
-    visible="false">
+                height="0.1"
 
-</a-cylinder>
+                color="#ef4444"
 
+                visible="false">
 
+            </a-cylinder>
 
-<a-cylinder
 
-    id="greenWire3D"
 
-    radius="0.010"
+            <a-cylinder
 
-    height="0.1"
+                id="blackWire"
 
-    color="#22c55e"
+                radius="0.014"
 
-    visible="false">
+                height="0.1"
 
-</a-cylinder>
+                color="#111827"
 
+                visible="false">
 
+            </a-cylinder>
 
-<!-- ==========================================
-     SHAFT VISUAL
-========================================== -->
 
-<a-cylinder
 
-    id="shaft"
+            <a-cylinder
 
-    position="-0.18 0.15 0.28"
+                id="greenWire"
 
-    radius="0.035"
+                radius="0.014"
 
-    height="0.16"
+                height="0.1"
 
-    rotation="90 0 0"
+                color="#22c55e"
 
-    color="#cbd5e1">
+                visible="false">
 
-</a-cylinder>
+            </a-cylinder>
 
 
 
-</a-marker>
+            <!-- ======================================
+                 3D POWER SWITCH
+            ======================================= -->
 
+            <a-box
 
+                id="powerSwitch"
 
-<a-entity camera></a-entity>
+                class="clickable"
 
+                position="-0.10 -0.25 0.38"
 
-</a-scene>
+                width="0.34"
 
+                height="0.16"
 
+                depth="0.08"
 
-<script>
+                color="#991b1b">
 
+            </a-box>
 
-/* ==========================================
-   ELEMENT REFERENCES
-========================================== */
 
-const info =
-    document.getElementById(
-        "info"
-    );
+            <a-text
 
+                id="switchText"
 
-const marker =
-    document.getElementById(
-        "hiroMarker"
-    );
+                value="POWER OFF"
 
+                position="-0.10 -0.245 0.425"
 
-const redWireCard =
-    document.getElementById(
-        "redWireCard"
-    );
+                scale="0.28 0.28 0.28"
 
+                color="#ffffff"
 
-const blackWireCard =
-    document.getElementById(
-        "blackWireCard"
-    );
+                align="center">
 
+            </a-text>
 
-const greenWireCard =
-    document.getElementById(
-        "greenWireCard"
-    );
 
 
-const terminalL1 =
-    document.getElementById(
-        "terminalL1"
-    );
+            <!-- ======================================
+                 RUNNING SHAFT INDICATOR
+            ======================================= -->
 
+            <a-cylinder
 
-const terminalL2 =
-    document.getElementById(
-        "terminalL2"
-    );
+                id="shaft"
 
+                position="-0.20 0.17 0.30"
 
-const terminalGND =
-    document.getElementById(
-        "terminalGND"
-    );
+                radius="0.045"
 
+                height="0.18"
 
-const powerBtn =
-    document.getElementById(
-        "powerBtn"
-    );
+                rotation="90 0 0"
 
+                color="#cbd5e1">
 
-const progress =
-    document.getElementById(
-        "progress"
-    );
+            </a-cylinder>
 
 
-const redWire3D =
-    document.getElementById(
-        "redWire3D"
-    );
 
+        </a-marker>
 
-const blackWire3D =
-    document.getElementById(
-        "blackWire3D"
-    );
 
 
-const greenWire3D =
-    document.getElementById(
-        "greenWire3D"
-    );
+        <!-- ======================================
+             CAMERA + TOUCH RAYCASTER
+        ======================================= -->
 
+        <a-entity
 
-const shaft =
-    document.getElementById(
-        "shaft"
-    );
+            camera
 
+            cursor="
+                rayOrigin: mouse;
+                fuse: false;
+            "
 
+            raycaster="
+                objects: .clickable;
+            ">
 
-/* ==========================================
-   CONNECTION STATE
-========================================== */
+        </a-entity>
 
-const correctConnections = {
 
-    red: "L1",
+    </a-scene>
 
-    black: "L2",
 
-    green: "GND"
 
-};
+    <script>
 
 
-const connected = {
+        /* ==============================
+           ELEMENTS
+        ============================== */
 
-    red: false,
-
-    black: false,
-
-    green: false
-
-};
-
-
-let draggingWire =
-    null;
-
-
-let dragClone =
-    null;
-
-
-let motorRunning =
-    false;
-
-
-
-/* ==========================================
-   3D WIRE POSITIONS
-========================================== */
-
-const wire3DData = {
-
-
-    red: {
-
-        element:
-            redWire3D,
-
-        start:
-            new THREE.Vector3(
-                -0.30,
-                0.23,
-                0.37
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.29,
-                0.23,
-                0.37
-            )
-
-    },
-
-
-    black: {
-
-        element:
-            blackWire3D,
-
-        start:
-            new THREE.Vector3(
-                -0.30,
-                0.18,
-                0.37
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.36,
-                0.18,
-                0.37
-            )
-
-    },
-
-
-    green: {
-
-        element:
-            greenWire3D,
-
-        start:
-            new THREE.Vector3(
-                -0.30,
-                0.13,
-                0.37
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.43,
-                0.13,
-                0.37
-            )
-
-    }
-
-};
-
-
-
-/* ==========================================
-   CREATE 3D WIRE BETWEEN TWO POINTS
-========================================== */
-
-function connect3DWire(
-    wireName
-) {
-
-
-    const data =
-        wire3DData[
-            wireName
-        ];
-
-
-    const start =
-        data.start.clone();
-
-
-    const end =
-        data.end.clone();
-
-
-    const direction =
-        end.clone()
-            .sub(
-                start
+        const info =
+            document.getElementById(
+                "info"
             );
 
 
-    const length =
-        direction.length();
-
-
-    const midpoint =
-        start.clone()
-            .add(
-                end
-            )
-            .multiplyScalar(
-                0.5
+        const marker =
+            document.getElementById(
+                "hiroMarker"
             );
 
 
-    const wire =
-        data.element;
-
-
-    wire.object3D.position.copy(
-        midpoint
-    );
-
-
-    wire.setAttribute(
-        "height",
-        length
-    );
-
-
-    const yAxis =
-        new THREE.Vector3(
-            0,
-            1,
-            0
-        );
-
-
-    direction.normalize();
-
-
-    const quaternion =
-        new THREE.Quaternion();
-
-
-    quaternion.setFromUnitVectors(
-
-        yAxis,
-
-        direction
-
-    );
-
-
-    wire.object3D.quaternion.copy(
-        quaternion
-    );
-
-
-    wire.setAttribute(
-        "visible",
-        true
-    );
-
-}
-
-
-
-/* ==========================================
-   CLEAR TERMINAL HIGHLIGHTS
-========================================== */
-
-function clearTerminalHighlight() {
-
-
-    terminalL1.classList.remove(
-        "ready"
-    );
-
-
-    terminalL2.classList.remove(
-        "ready"
-    );
-
-
-    terminalGND.classList.remove(
-        "ready"
-    );
-
-}
-
-
-
-/* ==========================================
-   HIGHLIGHT CORRECT DROP AREA
-========================================== */
-
-function highlightCorrectTerminal(
-    wireName
-) {
-
-
-    clearTerminalHighlight();
-
-
-    const targetTerminal =
-        correctConnections[
-            wireName
-        ];
-
-
-    const terminal =
-        document.querySelector(
-
-            '[data-terminal="' +
-            targetTerminal +
-            '"]'
-
-        );
-
-
-    if (
-        terminal
-    ) {
-
-
-        terminal.classList.add(
-            "ready"
-        );
-
-    }
-
-}
-
-
-
-/* ==========================================
-   DRAG CLONE
-========================================== */
-
-function createDragClone(
-    card,
-    x,
-    y
-) {
-
-
-    dragClone =
-        document.createElement(
-            "div"
-        );
-
-
-    dragClone.className =
-        "dragClone";
-
-
-    dragClone.textContent =
-        card.textContent.trim();
-
-
-    document.body.appendChild(
-        dragClone
-    );
-
-
-    moveDragClone(
-        x,
-        y
-    );
-
-}
-
-
-
-function moveDragClone(
-    x,
-    y
-) {
-
-
-    if (
-        !dragClone
-    ) {
-
-
-        return;
-
-    }
-
-
-    dragClone.style.left =
-        x + "px";
-
-
-    dragClone.style.top =
-        y + "px";
-
-}
-
-
-
-/* ==========================================
-   START DRAG
-========================================== */
-
-function startDrag(
-    card,
-    x,
-    y
-) {
-
-
-    const wireName =
-        card.dataset.wire;
-
-
-    if (
-        connected[
-            wireName
-        ]
-    ) {
-
-
-        return;
-
-    }
-
-
-    draggingWire =
-        wireName;
-
-
-    createDragClone(
-
-        card,
-
-        x,
-
-        y
-
-    );
-
-
-    highlightCorrectTerminal(
-        wireName
-    );
-
-
-    info.textContent =
-
-        "Drag the selected wire to the matching terminal.";
-
-}
-
-
-
-/* ==========================================
-   FIND DROP TERMINAL
-========================================== */
-
-function findTerminalAtPoint(
-    x,
-    y
-) {
-
-
-    /*
-        Hide the floating drag clone
-        so elementFromPoint can see
-        the terminal underneath.
-    */
-
-    if (
-        dragClone
-    ) {
-
-
-        dragClone.style.display =
-            "none";
-
-    }
-
-
-    const element =
-        document.elementFromPoint(
-            x,
-            y
-        );
-
-
-    if (
-        dragClone
-    ) {
-
-
-        dragClone.style.display =
-            "block";
-
-    }
-
-
-    if (
-        !element
-    ) {
-
-
-        return null;
-
-    }
-
-
-    return element.closest(
-        ".terminal"
-    );
-
-}
-
-
-
-/* ==========================================
-   COMPLETE CORRECT CONNECTION
-========================================== */
-
-function completeConnection(
-    wireName,
-    terminal
-) {
-
-
-    connected[
-        wireName
-    ] =
-        true;
-
-
-    const wireCard =
-        document.querySelector(
-
-            '[data-wire="' +
-            wireName +
-            '"]'
-
-        );
-
-
-    wireCard.classList.add(
-        "connected"
-    );
-
-
-    terminal.classList.remove(
-        "ready"
-    );
-
-
-    terminal.classList.add(
-        "done"
-    );
-
-
-    terminal.textContent =
-
-        "✓ "
-        +
-        terminal.dataset.terminal;
-
-
-    connect3DWire(
-        wireName
-    );
-
-
-    info.textContent =
-
-        "✓ Correct simulated connection completed.";
-
-
-    updateProgress();
-
-}
-
-
-
-/* ==========================================
-   END DRAG
-========================================== */
-
-function finishDrag(
-    x,
-    y
-) {
-
-
-    if (
-        !draggingWire
-    ) {
-
-
-        return;
-
-    }
-
-
-    const wireName =
-        draggingWire;
-
-
-    const terminal =
-        findTerminalAtPoint(
-            x,
-            y
-        );
-
-
-    clearTerminalHighlight();
-
-
-    if (
-        terminal
-    ) {
-
-
-        const terminalName =
-            terminal.dataset.terminal;
-
-
-        if (
-
-            correctConnections[
-                wireName
-            ]
-            ===
-            terminalName
-
-        ) {
-
-
-            completeConnection(
-
-                wireName,
-
-                terminal
-
+        const redPlug =
+            document.getElementById(
+                "redPlug"
             );
 
 
-        } else {
+        const blackPlug =
+            document.getElementById(
+                "blackPlug"
+            );
 
 
-            info.textContent =
-
-                "Incorrect terminal — try again.";
-
-        }
-
-
-    } else {
+        const greenPlug =
+            document.getElementById(
+                "greenPlug"
+            );
 
 
-        info.textContent =
-
-            "Drop the wire inside one of the terminal boxes.";
-
-    }
-
-
-    if (
-        dragClone
-    ) {
+        const terminalL1 =
+            document.getElementById(
+                "terminalL1"
+            );
 
 
-        dragClone.remove();
+        const terminalL2 =
+            document.getElementById(
+                "terminalL2"
+            );
 
 
-        dragClone =
+        const terminalGND =
+            document.getElementById(
+                "terminalGND"
+            );
+
+
+        const redWire =
+            document.getElementById(
+                "redWire"
+            );
+
+
+        const blackWire =
+            document.getElementById(
+                "blackWire"
+            );
+
+
+        const greenWire =
+            document.getElementById(
+                "greenWire"
+            );
+
+
+        const powerSwitch =
+            document.getElementById(
+                "powerSwitch"
+            );
+
+
+        const switchText =
+            document.getElementById(
+                "switchText"
+            );
+
+
+        const shaft =
+            document.getElementById(
+                "shaft"
+            );
+
+
+        const resetBtn =
+            document.getElementById(
+                "resetBtn"
+            );
+
+
+
+        /* ==============================
+           STATE
+        ============================== */
+
+        let selectedWire =
             null;
 
-    }
 
-
-    draggingWire =
-        null;
-
-}
-
-
-
-/* ==========================================
-   UPDATE PROGRESS
-========================================== */
-
-function updateProgress() {
-
-
-    let completed =
-        0;
-
-
-    if (
-        connected.red
-    ) {
-
-        completed++;
-
-    }
-
-
-    if (
-        connected.black
-    ) {
-
-        completed++;
-
-    }
-
-
-    if (
-        connected.green
-    ) {
-
-        completed++;
-
-    }
-
-
-    progress.textContent =
-
-        "Connections: "
-        +
-        completed
-        +
-        " / 3";
-
-
-    if (
-        completed === 3
-    ) {
-
-
-        powerBtn.disabled =
+        let motorRunning =
             false;
 
 
-        powerBtn.classList.add(
-            "enabled"
-        );
+        const connected = {
 
+            red: false,
 
-        info.textContent =
+            black: false,
 
-            "✓ All simulated connections completed. Power control is ready.";
+            green: false
 
-    }
-
-}
+        };
 
 
 
-/* ==========================================
-   WIRE CARDS
-========================================== */
+        /* ==============================
+           CORRECT SIMULATION MAPPING
+        ============================== */
 
-const wireCards = [
+        const correctTerminal = {
 
-    redWireCard,
+            red: "L1",
 
-    blackWireCard,
+            black: "L2",
 
-    greenWireCard
+            green: "GND"
 
-];
-
-
-
-/* ==========================================
-   MOBILE TOUCH START
-========================================== */
-
-wireCards.forEach(
-
-    function (
-        card
-    ) {
+        };
 
 
-        card.addEventListener(
 
-            "touchstart",
+        /* ==============================
+           3D POSITIONS
+        ============================== */
 
-            function (
-                event
-            ) {
-
-
-                event.preventDefault();
+        const wirePositions = {
 
 
-                const touch =
-                    event.touches[
-                        0
-                    ];
+            red: {
 
+                start:
+                    new THREE.Vector3(
+                        -0.48,
+                        0.29,
+                        0.40
+                    ),
 
-                startDrag(
+                end:
+                    new THREE.Vector3(
+                        0.29,
+                        0.25,
+                        0.42
+                    ),
 
-                    card,
+                wire:
+                    redWire,
 
-                    touch.clientX,
-
-                    touch.clientY
-
-                );
+                plug:
+                    redPlug
 
             },
 
-            {
-                passive: false
+
+            black: {
+
+                start:
+                    new THREE.Vector3(
+                        -0.48,
+                        0.19,
+                        0.40
+                    ),
+
+                end:
+                    new THREE.Vector3(
+                        0.38,
+                        0.20,
+                        0.42
+                    ),
+
+                wire:
+                    blackWire,
+
+                plug:
+                    blackPlug
+
+            },
+
+
+            green: {
+
+                start:
+                    new THREE.Vector3(
+                        -0.48,
+                        0.09,
+                        0.40
+                    ),
+
+                end:
+                    new THREE.Vector3(
+                        0.47,
+                        0.15,
+                        0.42
+                    ),
+
+                wire:
+                    greenWire,
+
+                plug:
+                    greenPlug
+
             }
 
-        );
+        };
 
 
-        /*
-            Desktop mouse support.
-        */
 
-        card.addEventListener(
+        /* ==============================
+           CLEAR SELECTION
+        ============================== */
 
-            "mousedown",
+        function clearSelection() {
 
-            function (
-                event
+
+            redPlug.setAttribute(
+                "scale",
+                "1 1 1"
+            );
+
+
+            blackPlug.setAttribute(
+                "scale",
+                "1 1 1"
+            );
+
+
+            greenPlug.setAttribute(
+                "scale",
+                "1 1 1"
+            );
+
+        }
+
+
+
+        /* ==============================
+           SELECT WIRE
+        ============================== */
+
+        function selectWire(
+            wireName
+        ) {
+
+
+            if (
+                connected[
+                    wireName
+                ]
             ) {
 
 
-                event.preventDefault();
+                info.textContent =
+
+                    "This training wire is already connected.";
 
 
-                startDrag(
+                return;
 
-                    card,
+            }
 
-                    event.clientX,
 
-                    event.clientY
+            selectedWire =
+                wireName;
 
+
+            clearSelection();
+
+
+            const data =
+                wirePositions[
+                    wireName
+                ];
+
+
+            data.plug.setAttribute(
+                "scale",
+                "1.35 1.35 1.35"
+            );
+
+
+            if (
+                wireName === "red"
+            ) {
+
+
+                info.textContent =
+
+                    "Red wire selected — tap the L1 terminal.";
+
+
+            }
+
+
+            if (
+                wireName === "black"
+            ) {
+
+
+                info.textContent =
+
+                    "Black wire selected — tap the L2 terminal.";
+
+
+            }
+
+
+            if (
+                wireName === "green"
+            ) {
+
+
+                info.textContent =
+
+                    "Ground wire selected — tap the GND terminal.";
+
+            }
+
+        }
+
+
+
+        /* ==============================
+           WIRE PLUG EVENTS
+        ============================== */
+
+        redPlug.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                selectWire(
+                    "red"
                 );
 
             }
 
         );
 
-    }
-
-);
 
 
+        blackPlug.addEventListener(
 
-/* ==========================================
-   GLOBAL TOUCH MOVE
+            "click",
 
-   Important for iPhone/mobile:
-   drag continues even when finger leaves card.
-========================================== */
-
-document.addEventListener(
-
-    "touchmove",
-
-    function (
-        event
-    ) {
+            function () {
 
 
-        if (
-            !draggingWire
-        ) {
+                selectWire(
+                    "black"
+                );
 
-
-            return;
-
-        }
-
-
-        event.preventDefault();
-
-
-        const touch =
-            event.touches[
-                0
-            ];
-
-
-        moveDragClone(
-
-            touch.clientX,
-
-            touch.clientY
+            }
 
         );
 
-    },
-
-    {
-        passive: false
-    }
-
-);
 
 
+        greenPlug.addEventListener(
 
-/* ==========================================
-   GLOBAL TOUCH END
-========================================== */
+            "click",
 
-document.addEventListener(
-
-    "touchend",
-
-    function (
-        event
-    ) {
+            function () {
 
 
-        if (
-            !draggingWire
-        ) {
+                selectWire(
+                    "green"
+                );
 
-
-            return;
-
-        }
-
-
-        event.preventDefault();
-
-
-        const touch =
-            event.changedTouches[
-                0
-            ];
-
-
-        finishDrag(
-
-            touch.clientX,
-
-            touch.clientY
+            }
 
         );
 
-    },
-
-    {
-        passive: false
-    }
-
-);
 
 
+        /* ==============================
+           CREATE 3D CONNECTION
+        ============================== */
 
-/* ==========================================
-   GLOBAL MOUSE MOVE
-========================================== */
-
-document.addEventListener(
-
-    "mousemove",
-
-    function (
-        event
-    ) {
-
-
-        if (
-            !draggingWire
+        function makeCable(
+            wireName
         ) {
 
 
-            return;
-
-        }
-
-
-        moveDragClone(
-
-            event.clientX,
-
-            event.clientY
-
-        );
-
-    }
-
-);
+            const data =
+                wirePositions[
+                    wireName
+                ];
 
 
-
-/* ==========================================
-   GLOBAL MOUSE UP
-========================================== */
-
-document.addEventListener(
-
-    "mouseup",
-
-    function (
-        event
-    ) {
+            const start =
+                data.start.clone();
 
 
-        if (
-            !draggingWire
-        ) {
+            const end =
+                data.end.clone();
 
 
-            return;
-
-        }
-
-
-        finishDrag(
-
-            event.clientX,
-
-            event.clientY
-
-        );
-
-    }
-
-);
+            const direction =
+                end.clone()
+                    .sub(
+                        start
+                    );
 
 
-
-/* ==========================================
-   POWER SWITCH
-========================================== */
-
-powerBtn.addEventListener(
-
-    "click",
-
-    function () {
+            const length =
+                direction.length();
 
 
-        if (
-            powerBtn.disabled
-        ) {
+            const midpoint =
+                start.clone()
+                    .add(
+                        end
+                    )
+                    .multiplyScalar(
+                        0.5
+                    );
 
 
-            return;
-
-        }
-
-
-        motorRunning =
-            !motorRunning;
+            const cable =
+                data.wire;
 
 
-        if (
-            motorRunning
-        ) {
-
-
-            powerBtn.textContent =
-                "POWER ON";
-
-
-            powerBtn.classList.remove(
-                "enabled"
+            cable.object3D.position.copy(
+                midpoint
             );
 
 
-            powerBtn.classList.add(
-                "running"
+            cable.setAttribute(
+                "height",
+                length
+            );
+
+
+            direction.normalize();
+
+
+            const yAxis =
+                new THREE.Vector3(
+                    0,
+                    1,
+                    0
+                );
+
+
+            const quaternion =
+                new THREE.Quaternion();
+
+
+            quaternion.setFromUnitVectors(
+
+                yAxis,
+
+                direction
+
+            );
+
+
+            cable.object3D.quaternion.copy(
+                quaternion
+            );
+
+
+            cable.setAttribute(
+                "visible",
+                true
+            );
+
+        }
+
+
+
+        /* ==============================
+           CHECK CONNECTION
+        ============================== */
+
+        function attemptConnection(
+            terminalName
+        ) {
+
+
+            if (
+                !selectedWire
+            ) {
+
+
+                info.textContent =
+
+                    "Tap a 3D wire plug first.";
+
+
+                return;
+
+            }
+
+
+            if (
+
+                correctTerminal[
+                    selectedWire
+                ]
+                !==
+                terminalName
+
+            ) {
+
+
+                info.textContent =
+
+                    "Incorrect simulated terminal — try again.";
+
+
+                return;
+
+            }
+
+
+            connected[
+                selectedWire
+            ] =
+                true;
+
+
+            makeCable(
+                selectedWire
+            );
+
+
+            const data =
+                wirePositions[
+                    selectedWire
+                ];
+
+
+            data.plug.setAttribute(
+                "visible",
+                false
             );
 
 
             info.textContent =
 
-                "✓ Motor training simulation running.";
+                "✓ Correct connection completed.";
 
 
-        } else {
+            selectedWire =
+                null;
 
 
-            powerBtn.textContent =
-                "POWER OFF";
+            clearSelection();
 
 
-            powerBtn.classList.remove(
-                "running"
-            );
-
-
-            powerBtn.classList.add(
-                "enabled"
-            );
-
-
-            info.textContent =
-
-                "Motor training simulation stopped.";
+            updatePowerState();
 
         }
 
-    }
-
-);
 
 
+        /* ==============================
+           TERMINAL EVENTS
+        ============================== */
 
-/* ==========================================
-   SHAFT ANIMATION
-========================================== */
+        terminalL1.addEventListener(
 
-function animate() {
+            "click",
 
-
-    if (
-        motorRunning
-    ) {
+            function () {
 
 
-        shaft.object3D.rotation.z +=
-            0.18;
+                attemptConnection(
+                    "L1"
+                );
 
-    }
+            }
 
-
-    requestAnimationFrame(
-        animate
-    );
-
-}
-
-
-animate();
+        );
 
 
 
-/* ==========================================
-   MARKER FOUND
-========================================== */
+        terminalL2.addEventListener(
 
-marker.addEventListener(
+            "click",
 
-    "markerFound",
-
-    function () {
+            function () {
 
 
-        if (
-            motorRunning
-        ) {
+                attemptConnection(
+                    "L2"
+                );
+
+            }
+
+        );
 
 
-            info.textContent =
 
-                "Motor training simulation running.";
+        terminalGND.addEventListener(
+
+            "click",
+
+            function () {
 
 
-        } else {
+                attemptConnection(
+                    "GND"
+                );
+
+            }
+
+        );
 
 
-            info.textContent =
 
-                "Motor detected — touch and drag each wire to its matching terminal.";
+        /* ==============================
+           ALL CONNECTIONS CHECK
+        ============================== */
+
+        function allConnected() {
+
+
+            return (
+
+                connected.red
+
+                &&
+
+                connected.black
+
+                &&
+
+                connected.green
+
+            );
 
         }
 
-    }
-
-);
 
 
-
-/* ==========================================
-   MARKER LOST
-========================================== */
-
-marker.addEventListener(
-
-    "markerLost",
-
-    function () {
+        function updatePowerState() {
 
 
-        info.textContent =
-
-            "Marker lost — point the camera at the Hiro marker.";
-
-    }
-
-);
+            if (
+                allConnected()
+            ) {
 
 
-</script>
+                powerSwitch.setAttribute(
+                    "color",
+                    "#f59e0b"
+                );
+
+
+                info.textContent =
+
+                    "✓ All simulated connections complete — tap the 3D power switch.";
+
+            }
+
+        }
+
+
+
+        /* ==============================
+           3D SWITCH
+        ============================== */
+
+        powerSwitch.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                if (
+                    !allConnected()
+                ) {
+
+
+                    info.textContent =
+
+                        "Complete all three simulated connections first.";
+
+
+                    return;
+
+                }
+
+
+                motorRunning =
+                    !motorRunning;
+
+
+                if (
+                    motorRunning
+                ) {
+
+
+                    powerSwitch.setAttribute(
+                        "color",
+                        "#16a34a"
+                    );
+
+
+                    switchText.setAttribute(
+                        "value",
+                        "POWER ON"
+                    );
+
+
+                    info.textContent =
+
+                        "✓ Motor simulation running.";
+
+
+                } else {
+
+
+                    powerSwitch.setAttribute(
+                        "color",
+                        "#f59e0b"
+                    );
+
+
+                    switchText.setAttribute(
+                        "value",
+                        "POWER OFF"
+                    );
+
+
+                    info.textContent =
+
+                        "Motor simulation stopped.";
+
+                }
+
+            }
+
+        );
+
+
+
+        /* ==============================
+           SHAFT ANIMATION
+        ============================== */
+
+        function animate() {
+
+
+            if (
+                motorRunning
+            ) {
+
+
+                shaft.object3D.rotation.z +=
+                    0.20;
+
+            }
+
+
+            requestAnimationFrame(
+                animate
+            );
+
+        }
+
+
+        animate();
+
+
+
+        /* ==============================
+           RESET
+        ============================== */
+
+        resetBtn.addEventListener(
+
+            "click",
+
+            function () {
+
+
+                motorRunning =
+                    false;
+
+
+                selectedWire =
+                    null;
+
+
+                connected.red =
+                    false;
+
+
+                connected.black =
+                    false;
+
+
+                connected.green =
+                    false;
+
+
+                redWire.setAttribute(
+                    "visible",
+                    false
+                );
+
+
+                blackWire.setAttribute(
+                    "visible",
+                    false
+                );
+
+
+                greenWire.setAttribute(
+                    "visible",
+                    false
+                );
+
+
+                redPlug.setAttribute(
+                    "visible",
+                    true
+                );
+
+
+                blackPlug.setAttribute(
+                    "visible",
+                    true
+                );
+
+
+                greenPlug.setAttribute(
+                    "visible",
+                    true
+                );
+
+
+                clearSelection();
+
+
+                powerSwitch.setAttribute(
+                    "color",
+                    "#991b1b"
+                );
+
+
+                switchText.setAttribute(
+                    "value",
+                    "POWER OFF"
+                );
+
+
+                info.textContent =
+
+                    "Training reset — tap a 3D wire plug to begin.";
+
+            }
+
+        );
+
+
+
+        /* ==============================
+           MARKER EVENTS
+        ============================== */
+
+        marker.addEventListener(
+
+            "markerFound",
+
+            function () {
+
+
+                if (
+                    allConnected()
+                ) {
+
+
+                    info.textContent =
+
+                        "Connections ready — tap the 3D power switch.";
+
+
+                } else {
+
+
+                    info.textContent =
+
+                        "Motor detected — tap one of the 3D wire plugs.";
+
+                }
+
+            }
+
+        );
+
+
+        marker.addEventListener(
+
+            "markerLost",
+
+            function () {
+
+
+                info.textContent =
+
+                    "Marker lost — point the camera at the Hiro marker.";
+
+            }
+
+        );
+
+
+    </script>
 
 
 </body>
