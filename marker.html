@@ -12,10 +12,8 @@
 
     <title>FixAR | Motor Operation Training</title>
 
-    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-    <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
 
     <style>
@@ -143,7 +141,7 @@
 
 
             <!-- =========================
-                 MOTOR MODEL
+                 MOTOR
             ========================== -->
 
             <a-entity
@@ -160,7 +158,7 @@
 
 
             <!-- =========================
-                 SWITCH MODEL
+                 SWITCH
             ========================== -->
 
             <a-entity
@@ -178,9 +176,6 @@
 
             <!-- =========================
                  SWITCH CLICK AREA
-
-                 Invisible box catches
-                 mobile taps.
             ========================== -->
 
             <a-box
@@ -190,11 +185,11 @@
 
                 position="-0.55 0.10 0.18"
 
-                width="0.45"
+                width="0.50"
 
-                height="0.45"
+                height="0.50"
 
-                depth="0.45"
+                depth="0.50"
 
                 material="
                     transparent: true;
@@ -202,6 +197,21 @@
                     depthWrite: false;
                 ">
             </a-box>
+
+
+            <!-- =========================
+                 POWER CABLE
+            ========================== -->
+
+            <a-cylinder
+                id="powerWire"
+
+                radius="0.018"
+
+                height="0.30"
+
+                color="#334155">
+            </a-cylinder>
 
 
             <!-- =========================
@@ -242,12 +252,27 @@
             </a-text>
 
 
+            <!-- =========================
+                 SIMULATION LABEL
+            ========================== -->
+
+            <a-text
+                value="SIMULATED POWER CONNECTION"
+
+                position="-0.20 -0.18 0.15"
+
+                scale="0.18 0.18 0.18"
+
+                color="#cbd5e1"
+
+                align="center">
+            </a-text>
+
+
         </a-marker>
 
 
-        <!-- =========================
-             CAMERA + CLICK RAYCASTER
-        ========================== -->
+        <!-- CAMERA -->
 
         <a-entity
             camera
@@ -263,59 +288,36 @@
 
     <script>
 
-        /* =========================
-           ELEMENTS
-        ========================== */
-
         const info =
-            document.getElementById(
-                "info"
-            );
+            document.getElementById("info");
 
         const motorStatus =
-            document.getElementById(
-                "motorStatus"
-            );
+            document.getElementById("motorStatus");
 
         const resetBtn =
-            document.getElementById(
-                "resetBtn"
-            );
+            document.getElementById("resetBtn");
 
         const marker =
-            document.getElementById(
-                "hiroMarker"
-            );
+            document.getElementById("hiroMarker");
 
         const motorModel =
-            document.getElementById(
-                "motorModel"
-            );
+            document.getElementById("motorModel");
 
         const switchModel =
-            document.getElementById(
-                "switchModel"
-            );
+            document.getElementById("switchModel");
 
         const switchHitArea =
-            document.getElementById(
-                "switchHitArea"
-            );
+            document.getElementById("switchHitArea");
 
         const switchLabel =
-            document.getElementById(
-                "switchLabel"
-            );
+            document.getElementById("switchLabel");
 
         const motorLabel =
-            document.getElementById(
-                "motorLabel"
-            );
+            document.getElementById("motorLabel");
 
+        const powerWire =
+            document.getElementById("powerWire");
 
-        /* =========================
-           STATE
-        ========================== */
 
         let markerVisible = false;
 
@@ -329,7 +331,273 @@
 
 
         /* =========================
-           MOTOR LOAD
+           MOTOR SOUND
+        ========================== */
+
+        let audioContext = null;
+
+        let motorOscillator1 = null;
+        let motorOscillator2 = null;
+
+        let motorGain = null;
+
+
+        function startMotorSound() {
+
+            if (!audioContext) {
+
+                audioContext =
+                    new (
+                        window.AudioContext ||
+                        window.webkitAudioContext
+                    )();
+            }
+
+
+            if (audioContext.state === "suspended") {
+
+                audioContext.resume();
+            }
+
+
+            if (motorOscillator1) {
+                return;
+            }
+
+
+            motorGain =
+                audioContext.createGain();
+
+
+            motorGain.gain.setValueAtTime(
+                0.0001,
+                audioContext.currentTime
+            );
+
+
+            motorGain.gain.exponentialRampToValueAtTime(
+                0.08,
+                audioContext.currentTime + 0.20
+            );
+
+
+            motorOscillator1 =
+                audioContext.createOscillator();
+
+
+            motorOscillator1.type =
+                "sine";
+
+
+            motorOscillator1.frequency.value =
+                95;
+
+
+            motorOscillator2 =
+                audioContext.createOscillator();
+
+
+            motorOscillator2.type =
+                "triangle";
+
+
+            motorOscillator2.frequency.value =
+                190;
+
+
+            const secondaryGain =
+                audioContext.createGain();
+
+
+            secondaryGain.gain.value =
+                0.025;
+
+
+            motorOscillator1.connect(
+                motorGain
+            );
+
+
+            motorOscillator2.connect(
+                secondaryGain
+            );
+
+
+            secondaryGain.connect(
+                motorGain
+            );
+
+
+            motorGain.connect(
+                audioContext.destination
+            );
+
+
+            motorOscillator1.start();
+
+            motorOscillator2.start();
+        }
+
+
+        function stopMotorSound() {
+
+            if (!audioContext) {
+                return;
+            }
+
+
+            if (motorGain) {
+
+                motorGain.gain.cancelScheduledValues(
+                    audioContext.currentTime
+                );
+
+
+                motorGain.gain.setValueAtTime(
+                    Math.max(
+                        motorGain.gain.value,
+                        0.0001
+                    ),
+                    audioContext.currentTime
+                );
+
+
+                motorGain.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    audioContext.currentTime + 0.15
+                );
+            }
+
+
+            if (motorOscillator1) {
+
+                const osc1 =
+                    motorOscillator1;
+
+
+                motorOscillator1 =
+                    null;
+
+
+                setTimeout(
+                    function () {
+
+                        try {
+                            osc1.stop();
+                        } catch (error) {
+                        }
+
+                    },
+                    180
+                );
+            }
+
+
+            if (motorOscillator2) {
+
+                const osc2 =
+                    motorOscillator2;
+
+
+                motorOscillator2 =
+                    null;
+
+
+                setTimeout(
+                    function () {
+
+                        try {
+                            osc2.stop();
+                        } catch (error) {
+                        }
+
+                    },
+                    180
+                );
+            }
+        }
+
+
+        /* =========================
+           CREATE WIRE BETWEEN
+           SWITCH AND MOTOR
+        ========================== */
+
+        function setupPowerWire() {
+
+            const start =
+                new THREE.Vector3(
+                    -0.42,
+                    0.10,
+                    0.18
+                );
+
+
+            const end =
+                new THREE.Vector3(
+                    -0.05,
+                    0.10,
+                    0.10
+                );
+
+
+            const direction =
+                end.clone().sub(start);
+
+
+            const length =
+                direction.length();
+
+
+            const midpoint =
+                start.clone()
+                    .add(end)
+                    .multiplyScalar(0.5);
+
+
+            powerWire.object3D.position.copy(
+                midpoint
+            );
+
+
+            powerWire.setAttribute(
+                "height",
+                length
+            );
+
+
+            direction.normalize();
+
+
+            const yAxis =
+                new THREE.Vector3(
+                    0,
+                    1,
+                    0
+                );
+
+
+            const quaternion =
+                new THREE.Quaternion();
+
+
+            quaternion.setFromUnitVectors(
+                yAxis,
+                direction
+            );
+
+
+            powerWire.object3D.quaternion.copy(
+                quaternion
+            );
+        }
+
+
+        setupPowerWire();
+
+
+        /* =========================
+           MODEL LOAD
         ========================== */
 
         motorModel.addEventListener(
@@ -339,9 +607,17 @@
 
                 motorLoaded = true;
 
-                console.log(
-                    "Motor model loaded"
-                );
+                updateStatusMessage();
+            }
+        );
+
+
+        switchModel.addEventListener(
+            "model-loaded",
+
+            function () {
+
+                switchLoaded = true;
 
                 updateStatusMessage();
             }
@@ -351,12 +627,7 @@
         motorModel.addEventListener(
             "model-error",
 
-            function (event) {
-
-                console.error(
-                    "Motor loading error",
-                    event
-                );
+            function () {
 
                 info.textContent =
                     "Motor model failed to load.";
@@ -364,35 +635,10 @@
         );
 
 
-        /* =========================
-           SWITCH LOAD
-        ========================== */
-
-        switchModel.addEventListener(
-            "model-loaded",
-
-            function () {
-
-                switchLoaded = true;
-
-                console.log(
-                    "Switch model loaded"
-                );
-
-                updateStatusMessage();
-            }
-        );
-
-
         switchModel.addEventListener(
             "model-error",
 
-            function (event) {
-
-                console.error(
-                    "Switch loading error",
-                    event
-                );
+            function () {
 
                 info.textContent =
                     "Switch model failed to load.";
@@ -401,7 +647,7 @@
 
 
         /* =========================
-           STATUS
+           MESSAGE
         ========================== */
 
         function updateStatusMessage() {
@@ -414,6 +660,7 @@
                 return;
             }
 
+
             if (!motorLoaded) {
 
                 info.textContent =
@@ -421,6 +668,7 @@
 
                 return;
             }
+
 
             if (!switchLoaded) {
 
@@ -430,15 +678,16 @@
                 return;
             }
 
+
             if (motorRunning) {
 
                 info.textContent =
-                    "Motor simulation running — tap the 3D switch to stop.";
+                    "Motor running — tap the switch to stop.";
 
             } else {
 
                 info.textContent =
-                    "Motor ready — tap the 3D switch to start.";
+                    "Power cable connected — tap the 3D switch to start.";
             }
         }
 
@@ -451,35 +700,51 @@
 
             motorRunning = true;
 
+
+            startMotorSound();
+
+
             motorStatus.textContent =
                 "MOTOR RUNNING";
+
 
             motorStatus.classList.add(
                 "running"
             );
+
 
             motorLabel.setAttribute(
                 "value",
                 "MOTOR RUNNING"
             );
 
+
             motorLabel.setAttribute(
                 "color",
                 "#22c55e"
             );
+
 
             switchLabel.setAttribute(
                 "value",
                 "TAP TO STOP"
             );
 
+
             switchModel.setAttribute(
                 "rotation",
                 "0 0 -18"
             );
 
+
+            powerWire.setAttribute(
+                "color",
+                "#22c55e"
+            );
+
+
             info.textContent =
-                "✓ Motor simulation running.";
+                "✓ Motor running — power connection active.";
         }
 
 
@@ -491,32 +756,48 @@
 
             motorRunning = false;
 
+
+            stopMotorSound();
+
+
             motorStatus.textContent =
                 "MOTOR OFF";
+
 
             motorStatus.classList.remove(
                 "running"
             );
+
 
             motorLabel.setAttribute(
                 "value",
                 "MOTOR OFF"
             );
 
+
             motorLabel.setAttribute(
                 "color",
                 "#ef4444"
             );
+
 
             switchLabel.setAttribute(
                 "value",
                 "TAP SWITCH"
             );
 
+
             switchModel.setAttribute(
                 "rotation",
                 "0 0 0"
             );
+
+
+            powerWire.setAttribute(
+                "color",
+                "#334155"
+            );
+
 
             motorModel.object3D.position.set(
                 0,
@@ -524,14 +805,9 @@
                 0
             );
 
-            motorModel.object3D.rotation.set(
-                0,
-                0,
-                0
-            );
 
             info.textContent =
-                "Motor simulation stopped.";
+                "Motor stopped — power connection inactive.";
         }
 
 
@@ -548,21 +824,15 @@
                     return;
                 }
 
-                if (!motorLoaded) {
+
+                if (!motorLoaded || !switchLoaded) {
 
                     info.textContent =
-                        "Wait until the motor finishes loading.";
+                        "Wait until the models finish loading.";
 
                     return;
                 }
 
-                if (!switchLoaded) {
-
-                    info.textContent =
-                        "Wait until the switch finishes loading.";
-
-                    return;
-                }
 
                 if (motorRunning) {
 
@@ -577,7 +847,7 @@
 
 
         /* =========================
-           MOTOR RUNNING ANIMATION
+           MOTOR ANIMATION
         ========================== */
 
         function animate() {
@@ -586,27 +856,25 @@
                 animate
             );
 
+
             if (!motorRunning) {
                 return;
             }
 
-            animationTime += 0.18;
 
-            const vibrationX =
-                Math.sin(
-                    animationTime
-                ) * 0.004;
+            animationTime +=
+                0.18;
 
-            const vibrationZ =
+
+            motorModel.object3D.position.x =
+                Math.sin(animationTime) *
+                0.004;
+
+
+            motorModel.object3D.position.z =
                 Math.cos(
                     animationTime * 1.3
                 ) * 0.003;
-
-            motorModel.object3D.position.x =
-                vibrationX;
-
-            motorModel.object3D.position.z =
-                vibrationZ;
         }
 
 
@@ -624,10 +892,11 @@
 
                 stopMotor();
 
+
                 if (markerVisible) {
 
                     info.textContent =
-                        "Training reset — tap the 3D switch to start.";
+                        "Training reset — tap the 3D switch.";
 
                 } else {
 
@@ -639,7 +908,7 @@
 
 
         /* =========================
-           MARKER FOUND
+           MARKER
         ========================== */
 
         marker.addEventListener(
@@ -653,10 +922,6 @@
             }
         );
 
-
-        /* =========================
-           MARKER LOST
-        ========================== */
 
         marker.addEventListener(
             "markerLost",
