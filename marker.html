@@ -10,7 +10,7 @@
           initial-scale=1.0,
           user-scalable=no">
 
-    <title>FixAR | Motor Circuit Training</title>
+    <title>FixAR | Motor Assembly Training</title>
 
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -35,12 +35,18 @@
 
             overflow: hidden;
 
+            font-family: Arial, Helvetica, sans-serif;
+
             background: #07111f;
 
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+            touch-action: none;
+        }
+
+
+        canvas {
+
+            touch-action: none !important;
+
         }
 
 
@@ -58,7 +64,7 @@
 
             padding: 11px 13px;
 
-            background: rgba(0,0,0,0.84);
+            background: rgba(0, 0, 0, 0.84);
 
             border: 1px solid #38bdf8;
 
@@ -82,12 +88,12 @@
 
             position: fixed;
 
-            left: 14px;
+            left: 15px;
             bottom: 18px;
 
             padding: 10px 14px;
 
-            background: rgba(7,17,31,0.94);
+            background: rgba(7, 17, 31, 0.95);
 
             border: 1px solid #38bdf8;
 
@@ -102,33 +108,7 @@
         }
 
 
-        #motorStatus {
-
-            position: fixed;
-
-            left: 50%;
-            bottom: 18px;
-
-            transform: translateX(-50%);
-
-            padding: 10px 14px;
-
-            background: rgba(7,17,31,0.94);
-
-            border: 1px solid #ef4444;
-
-            border-radius: 9px;
-
-            color: #fecaca;
-
-            font-size: 11px;
-            font-weight: bold;
-
-            z-index: 1000;
-        }
-
-
-        #motorStatus.running {
+        #progress.complete {
 
             border-color: #22c55e;
 
@@ -140,16 +120,16 @@
 
             position: fixed;
 
-            right: 14px;
+            right: 15px;
             bottom: 18px;
 
             padding: 10px 14px;
 
-            background: rgba(7,17,31,0.94);
-
             border: 1px solid #38bdf8;
 
             border-radius: 9px;
+
+            background: rgba(7, 17, 31, 0.95);
 
             color: white;
 
@@ -176,14 +156,7 @@
 
 <div id="progress">
 
-    Connections: 0 / 3
-
-</div>
-
-
-<div id="motorStatus">
-
-    MOTOR OFF
+    Assembly: 0 / 3
 
 </div>
 
@@ -198,17 +171,20 @@
 
 <a-scene
 
+    id="scene"
+
     embedded
 
     renderer="
-        antialias:true;
-        colorManagement:true;
+        antialias: true;
+        colorManagement: true;
     "
 
     arjs="
-        sourceType:webcam;
-        debugUIEnabled:false;
+        sourceType: webcam;
+        debugUIEnabled: false;
     ">
+
 
 
     <a-marker
@@ -217,9 +193,9 @@
 
 
 
-        <!-- =================================================
-             MOTOR
-        ================================================== -->
+        <!-- =====================================================
+             MOTOR MODEL
+        ====================================================== -->
 
         <a-entity
 
@@ -227,7 +203,7 @@
 
             gltf-model="url(models/machine.glb)"
 
-            position="0.15 0.08 0"
+            position="0.15 0 0"
 
             rotation="0 0 0"
 
@@ -237,451 +213,282 @@
 
 
 
-        <!-- =================================================
-             SWITCH
-        ================================================== -->
+        <!-- =====================================================
+             TARGET 1 - SHAFT
+        ====================================================== -->
 
-        <a-entity
+        <a-cylinder
 
-            id="switchModel"
+            id="shaftTarget"
 
-            gltf-model="url(models/switch.glb)"
+            position="0.55 0.18 0.12"
 
-            position="-0.58 0.10 0.12"
+            radius="0.11"
 
-            rotation="0 0 0"
+            height="0.025"
 
-            scale="0.15 0.15 0.15">
+            color="#f59e0b"
 
-        </a-entity>
+            opacity="0.40">
+
+        </a-cylinder>
+
+
+        <a-text
+
+            value="SHAFT"
+
+            position="0.55 0.34 0.14"
+
+            scale="0.25 0.25 0.25"
+
+            color="#ffffff"
+
+            align="center">
+
+        </a-text>
 
 
 
-        <!-- Invisible touch zone around switch -->
+        <!-- =====================================================
+             TARGET 2 - FAN
+        ====================================================== -->
+
+        <a-cylinder
+
+            id="fanTarget"
+
+            position="0.30 0.18 -0.34"
+
+            radius="0.12"
+
+            height="0.025"
+
+            color="#f59e0b"
+
+            opacity="0.40">
+
+        </a-cylinder>
+
+
+        <a-text
+
+            value="FAN"
+
+            position="0.30 0.34 -0.34"
+
+            scale="0.25 0.25 0.25"
+
+            color="#ffffff"
+
+            align="center">
+
+        </a-text>
+
+
+
+        <!-- =====================================================
+             TARGET 3 - COVER
+        ====================================================== -->
 
         <a-box
 
-            id="switchHit"
+            id="coverTarget"
 
-            class="clickable"
+            position="-0.02 0.18 0.33"
 
-            position="-0.58 0.10 0.12"
+            width="0.24"
 
-            width="0.45"
+            height="0.04"
 
-            height="0.40"
+            depth="0.18"
 
-            depth="0.40"
+            color="#f59e0b"
 
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
+            opacity="0.40">
 
         </a-box>
 
 
-
         <a-text
 
-            id="switchText"
+            value="COVER"
 
-            value="SWITCH OFF"
-
-            position="-0.58 0.38 0.20"
-
-            scale="0.27 0.27 0.27"
-
-            align="center"
-
-            color="#ef4444">
-
-        </a-text>
-
-
-
-        <!-- =================================================
-             THREE LOOSE WIRE PLUGS
-        ================================================== -->
-
-
-        <!-- RED -->
-
-        <a-sphere
-
-            id="redPlug"
-
-            position="-0.56 -0.12 0.22"
-
-            radius="0.05"
-
-            color="#ef4444">
-
-        </a-sphere>
-
-
-        <a-sphere
-
-            id="redHit"
-
-            class="clickable"
-
-            position="-0.56 -0.12 0.22"
-
-            radius="0.09"
-
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
-
-        </a-sphere>
-
-
-        <a-text
-
-            value="WIRE A"
-
-            position="-0.56 -0.22 0.23"
+            position="-0.02 0.34 0.34"
 
             scale="0.23 0.23 0.23"
 
-            align="center"
+            color="#ffffff"
 
-            color="#ffffff">
-
-        </a-text>
-
-
-
-        <!-- BLACK -->
-
-        <a-sphere
-
-            id="blackPlug"
-
-            position="-0.32 -0.12 0.22"
-
-            radius="0.05"
-
-            color="#202020">
-
-        </a-sphere>
-
-
-        <a-sphere
-
-            id="blackHit"
-
-            class="clickable"
-
-            position="-0.32 -0.12 0.22"
-
-            radius="0.09"
-
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
-
-        </a-sphere>
-
-
-        <a-text
-
-            value="WIRE B"
-
-            position="-0.32 -0.22 0.23"
-
-            scale="0.23 0.23 0.23"
-
-            align="center"
-
-            color="#ffffff">
+            align="center">
 
         </a-text>
 
 
 
-        <!-- GREEN -->
-
-        <a-sphere
-
-            id="greenPlug"
-
-            position="-0.08 -0.12 0.22"
-
-            radius="0.05"
-
-            color="#22c55e">
-
-        </a-sphere>
-
-
-        <a-sphere
-
-            id="greenHit"
-
-            class="clickable"
-
-            position="-0.08 -0.12 0.22"
-
-            radius="0.09"
-
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
-
-        </a-sphere>
-
-
-        <a-text
-
-            value="WIRE C"
-
-            position="-0.08 -0.22 0.23"
-
-            scale="0.23 0.23 0.23"
-
-            align="center"
-
-            color="#ffffff">
-
-        </a-text>
-
-
-
-        <!-- =================================================
-             MOTOR CONNECTION POINTS
-        ================================================== -->
-
-
-        <!-- PORT A -->
-
-        <a-sphere
-
-            id="terminalA"
-
-            position="0.38 0.24 0.30"
-
-            radius="0.04"
-
-            color="#ef4444">
-
-        </a-sphere>
-
-
-        <a-sphere
-
-            id="terminalAHit"
-
-            class="clickable"
-
-            position="0.38 0.24 0.30"
-
-            radius="0.085"
-
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
-
-        </a-sphere>
-
-
-        <a-text
-
-            value="A"
-
-            position="0.38 0.33 0.31"
-
-            scale="0.28 0.28 0.28"
-
-            align="center"
-
-            color="#ffffff">
-
-        </a-text>
-
-
-
-        <!-- PORT B -->
-
-        <a-sphere
-
-            id="terminalB"
-
-            position="0.48 0.17 0.30"
-
-            radius="0.04"
-
-            color="#202020">
-
-        </a-sphere>
-
-
-        <a-sphere
-
-            id="terminalBHit"
-
-            class="clickable"
-
-            position="0.48 0.17 0.30"
-
-            radius="0.085"
-
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
-
-        </a-sphere>
-
-
-        <a-text
-
-            value="B"
-
-            position="0.48 0.26 0.31"
-
-            scale="0.28 0.28 0.28"
-
-            align="center"
-
-            color="#ffffff">
-
-        </a-text>
-
-
-
-        <!-- PORT C -->
-
-        <a-sphere
-
-            id="terminalC"
-
-            position="0.58 0.10 0.30"
-
-            radius="0.04"
-
-            color="#22c55e">
-
-        </a-sphere>
-
-
-        <a-sphere
-
-            id="terminalCHit"
-
-            class="clickable"
-
-            position="0.58 0.10 0.30"
-
-            radius="0.085"
-
-            material="
-                transparent:true;
-                opacity:0.01;
-                depthWrite:false;
-            ">
-
-        </a-sphere>
-
-
-        <a-text
-
-            value="C"
-
-            position="0.58 0.19 0.31"
-
-            scale="0.28 0.28 0.28"
-
-            align="center"
-
-            color="#ffffff">
-
-        </a-text>
-
-
-
-        <!-- =================================================
-             CONNECTED CABLES
-        ================================================== -->
+        <!-- =====================================================
+             DRAGGABLE SHAFT
+        ====================================================== -->
 
         <a-cylinder
 
-            id="redWire"
+            id="shaftPart"
 
-            radius="0.012"
+            class="draggable"
 
-            height="0.1"
+            data-part="shaft"
 
-            color="#ef4444"
+            position="-0.65 0.18 0.28"
 
-            visible="false">
+            radius="0.055"
+
+            height="0.25"
+
+            rotation="0 0 90"
+
+            color="#cbd5e1">
 
         </a-cylinder>
 
 
+        <a-text
+
+            value="SHAFT"
+
+            position="-0.65 0.36 0.28"
+
+            scale="0.22 0.22 0.22"
+
+            color="#ffffff"
+
+            align="center">
+
+        </a-text>
+
+
+
+        <!-- =====================================================
+             DRAGGABLE FAN
+        ====================================================== -->
+
         <a-cylinder
 
-            id="blackWire"
+            id="fanPart"
 
-            radius="0.012"
+            class="draggable"
 
-            height="0.1"
+            data-part="fan"
 
-            color="#202020"
+            position="-0.65 0.18 0"
 
-            visible="false">
+            radius="0.11"
+
+            height="0.04"
+
+            color="#38bdf8">
 
         </a-cylinder>
 
 
-        <a-cylinder
+        <!-- simple blades -->
 
-            id="greenWire"
+        <a-box
 
-            radius="0.012"
+            id="fanBlade1"
 
-            height="0.1"
+            position="-0.65 0.205 0"
 
-            color="#22c55e"
+            width="0.26"
 
-            visible="false">
+            height="0.025"
 
-        </a-cylinder>
+            depth="0.035"
+
+            color="#38bdf8">
+
+        </a-box>
+
+
+        <a-box
+
+            id="fanBlade2"
+
+            position="-0.65 0.205 0"
+
+            width="0.035"
+
+            height="0.025"
+
+            depth="0.26"
+
+            color="#38bdf8">
+
+        </a-box>
+
+
+        <a-text
+
+            value="FAN"
+
+            position="-0.65 0.36 0"
+
+            scale="0.22 0.22 0.22"
+
+            color="#ffffff"
+
+            align="center">
+
+        </a-text>
+
+
+
+        <!-- =====================================================
+             DRAGGABLE COVER
+        ====================================================== -->
+
+        <a-box
+
+            id="coverPart"
+
+            class="draggable"
+
+            data-part="cover"
+
+            position="-0.65 0.18 -0.30"
+
+            width="0.28"
+
+            height="0.10"
+
+            depth="0.20"
+
+            color="#64748b">
+
+        </a-box>
+
+
+        <a-text
+
+            value="COVER"
+
+            position="-0.65 0.36 -0.30"
+
+            scale="0.22 0.22 0.22"
+
+            color="#ffffff"
+
+            align="center">
+
+        </a-text>
 
 
     </a-marker>
 
 
 
-    <!-- =================================================
-         CAMERA + TOUCH RAYCASTER
-    ================================================== -->
+    <!-- CAMERA -->
 
-    <a-entity
-
-        camera
-
-        cursor="
-            rayOrigin:mouse;
-            fuse:false;
-        "
-
-        raycaster="
-            objects:.clickable;
-        ">
-
-    </a-entity>
+    <a-entity camera></a-entity>
 
 
 </a-scene>
@@ -691,9 +498,21 @@
 <script>
 
 
-/* =================================================
-   HTML / AR ELEMENTS
-================================================= */
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const scene =
+    document.getElementById(
+        "scene"
+    );
+
+
+const marker =
+    document.getElementById(
+        "hiroMarker"
+    );
+
 
 const info =
     document.getElementById(
@@ -707,766 +526,754 @@ const progress =
     );
 
 
-const motorStatus =
-    document.getElementById(
-        "motorStatus"
-    );
-
-
 const resetBtn =
     document.getElementById(
         "resetBtn"
     );
 
 
-const marker =
+const shaftPart =
     document.getElementById(
-        "hiroMarker"
+        "shaftPart"
     );
 
 
-const motorModel =
+const fanPart =
     document.getElementById(
-        "motorModel"
+        "fanPart"
     );
 
 
-const switchModel =
+const fanBlade1 =
     document.getElementById(
-        "switchModel"
+        "fanBlade1"
     );
 
 
-const switchHit =
+const fanBlade2 =
     document.getElementById(
-        "switchHit"
+        "fanBlade2"
     );
 
 
-const switchText =
+const coverPart =
     document.getElementById(
-        "switchText"
-    );
-
-
-const redPlug =
-    document.getElementById(
-        "redPlug"
-    );
-
-
-const blackPlug =
-    document.getElementById(
-        "blackPlug"
-    );
-
-
-const greenPlug =
-    document.getElementById(
-        "greenPlug"
-    );
-
-
-const redHit =
-    document.getElementById(
-        "redHit"
-    );
-
-
-const blackHit =
-    document.getElementById(
-        "blackHit"
-    );
-
-
-const greenHit =
-    document.getElementById(
-        "greenHit"
-    );
-
-
-const terminalAHit =
-    document.getElementById(
-        "terminalAHit"
-    );
-
-
-const terminalBHit =
-    document.getElementById(
-        "terminalBHit"
-    );
-
-
-const terminalCHit =
-    document.getElementById(
-        "terminalCHit"
-    );
-
-
-const redWire =
-    document.getElementById(
-        "redWire"
-    );
-
-
-const blackWire =
-    document.getElementById(
-        "blackWire"
-    );
-
-
-const greenWire =
-    document.getElementById(
-        "greenWire"
+        "coverPart"
     );
 
 
 
-/* =================================================
-   STATE
-================================================= */
+/* =====================================================
+   INITIAL POSITIONS
+===================================================== */
+
+const initialPositions = {
+
+
+    shaft:
+        new THREE.Vector3(
+            -0.65,
+            0.18,
+            0.28
+        ),
+
+
+    fan:
+        new THREE.Vector3(
+            -0.65,
+            0.18,
+            0
+        ),
+
+
+    cover:
+        new THREE.Vector3(
+            -0.65,
+            0.18,
+            -0.30
+        )
+
+};
+
+
+
+/* =====================================================
+   TARGET POSITIONS
+===================================================== */
+
+const targetPositions = {
+
+
+    shaft:
+        new THREE.Vector3(
+            0.55,
+            0.18,
+            0.12
+        ),
+
+
+    fan:
+        new THREE.Vector3(
+            0.30,
+            0.18,
+            -0.34
+        ),
+
+
+    cover:
+        new THREE.Vector3(
+            -0.02,
+            0.18,
+            0.33
+        )
+
+};
+
+
+
+/* =====================================================
+   PART DATA
+===================================================== */
+
+const partData = {
+
+
+    shaft: {
+
+        entity:
+            shaftPart,
+
+        completed:
+            false
+
+    },
+
+
+    fan: {
+
+        entity:
+            fanPart,
+
+        completed:
+            false
+
+    },
+
+
+    cover: {
+
+        entity:
+            coverPart,
+
+        completed:
+            false
+
+    }
+
+};
+
+
+
+/* =====================================================
+   DRAG STATE
+===================================================== */
+
+let draggedPart =
+    null;
+
 
 let markerVisible =
     false;
 
 
-let motorLoaded =
-    false;
-
-
-let switchLoaded =
-    false;
-
-
-let selectedWire =
+let canvas =
     null;
 
 
-let motorRunning =
-    false;
+const raycaster =
+    new THREE.Raycaster();
 
 
-let vibrationTime =
-    0;
+const pointer =
+    new THREE.Vector2();
 
 
-const connected = {
-
-    red: false,
-
-    black: false,
-
-    green: false
-
-};
+const dragPlane =
+    new THREE.Plane();
 
 
+const planeNormal =
+    new THREE.Vector3();
 
-/* =================================================
-   TRAINING MAPPING
 
-   These are simulated AR ports,
-   NOT real motor wiring terminals.
-================================================= */
+const planePoint =
+    new THREE.Vector3();
 
-const correctPorts = {
 
-    red: "A",
-
-    black: "B",
-
-    green: "C"
-
-};
+const worldIntersection =
+    new THREE.Vector3();
 
 
 
-/* =================================================
-   WIRE DATA
-================================================= */
+/* =====================================================
+   FIND WHICH PART WAS TOUCHED
+===================================================== */
 
-const wireData = {
-
-
-    red: {
-
-        plug:
-            redPlug,
-
-        cable:
-            redWire,
-
-        start:
-            new THREE.Vector3(
-                -0.56,
-                -0.12,
-                0.22
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.38,
-                0.24,
-                0.30
-            )
-
-    },
+function getTouchedPart(
+    clientX,
+    clientY
+) {
 
 
-    black: {
+    if (
+        !canvas
+    ) {
 
-        plug:
-            blackPlug,
-
-        cable:
-            blackWire,
-
-        start:
-            new THREE.Vector3(
-                -0.32,
-                -0.12,
-                0.22
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.48,
-                0.17,
-                0.30
-            )
-
-    },
-
-
-    green: {
-
-        plug:
-            greenPlug,
-
-        cable:
-            greenWire,
-
-        start:
-            new THREE.Vector3(
-                -0.08,
-                -0.12,
-                0.22
-            ),
-
-        end:
-            new THREE.Vector3(
-                0.58,
-                0.10,
-                0.30
-            )
+        return null;
 
     }
 
-};
+
+    const rect =
+        canvas.getBoundingClientRect();
 
 
+    pointer.x =
 
-/* =================================================
-   MODEL LOADING
-================================================= */
-
-motorModel.addEventListener(
-
-    "model-loaded",
-
-    function () {
-
-
-        motorLoaded =
-            true;
-
-
-        updateMessage();
-
-    }
-
-);
+        (
+            (
+                clientX
+                -
+                rect.left
+            )
+            /
+            rect.width
+        )
+        *
+        2
+        -
+        1;
 
 
-switchModel.addEventListener(
+    pointer.y =
 
-    "model-loaded",
-
-    function () {
-
-
-        switchLoaded =
-            true;
-
-
-        updateMessage();
-
-    }
-
-);
-
-
-
-/* =================================================
-   SELECT WIRE
-================================================= */
-
-function clearWireSelection() {
+        -
+        (
+            (
+                clientY
+                -
+                rect.top
+            )
+            /
+            rect.height
+        )
+        *
+        2
+        +
+        1;
 
 
-    redPlug.setAttribute(
-        "scale",
-        "1 1 1"
+    raycaster.setFromCamera(
+
+        pointer,
+
+        scene.camera
+
     );
 
 
-    blackPlug.setAttribute(
-        "scale",
-        "1 1 1"
+    const objects = [
+
+        shaftPart.object3D,
+
+        fanPart.object3D,
+
+        coverPart.object3D
+
+    ];
+
+
+    const hits =
+        raycaster.intersectObjects(
+            objects,
+            true
+        );
+
+
+    if (
+        hits.length === 0
+    ) {
+
+        return null;
+
+    }
+
+
+    const hitObject =
+        hits[0].object;
+
+
+    for (
+        const partName
+        of
+        Object.keys(
+            partData
+        )
+    ) {
+
+
+        const root =
+            partData[
+                partName
+            ].entity.object3D;
+
+
+        let object =
+            hitObject;
+
+
+        while (
+            object
+        ) {
+
+
+            if (
+                object === root
+            ) {
+
+
+                return partName;
+
+            }
+
+
+            object =
+                object.parent;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+
+/* =====================================================
+   CREATE MARKER DRAG PLANE
+===================================================== */
+
+function updateDragPlane() {
+
+
+    marker.object3D.updateMatrixWorld(
+        true
     );
 
 
-    greenPlug.setAttribute(
-        "scale",
-        "1 1 1"
+    /*
+       Marker local Y axis becomes
+       plane normal in world space.
+    */
+
+    planeNormal
+        .set(
+            0,
+            1,
+            0
+        )
+        .applyQuaternion(
+            marker.object3D
+                .getWorldQuaternion(
+                    new THREE.Quaternion()
+                )
+        )
+        .normalize();
+
+
+    planePoint
+        .set(
+            0,
+            0.18,
+            0
+        );
+
+
+    marker.object3D.localToWorld(
+        planePoint
+    );
+
+
+    dragPlane.setFromNormalAndCoplanarPoint(
+
+        planeNormal,
+
+        planePoint
+
     );
 
 }
 
 
 
-function selectWire(
-    wireName
+/* =====================================================
+   MOVE DRAGGED PART
+===================================================== */
+
+function moveDraggedPart(
+    clientX,
+    clientY
 ) {
 
 
     if (
-        connected[
-            wireName
-        ]
+        !draggedPart
+        ||
+        !canvas
     ) {
-
-
-        info.textContent =
-            "This simulated wire is already connected.";
-
 
         return;
 
     }
 
 
-    selectedWire =
-        wireName;
+    const rect =
+        canvas.getBoundingClientRect();
 
 
-    clearWireSelection();
+    pointer.x =
+
+        (
+            (
+                clientX
+                -
+                rect.left
+            )
+            /
+            rect.width
+        )
+        *
+        2
+        -
+        1;
 
 
-    wireData[
-        wireName
-    ]
-    .plug
-    .setAttribute(
+    pointer.y =
 
-        "scale",
+        -
+        (
+            (
+                clientY
+                -
+                rect.top
+            )
+            /
+            rect.height
+        )
+        *
+        2
+        +
+        1;
 
-        "1.4 1.4 1.4"
+
+    raycaster.setFromCamera(
+
+        pointer,
+
+        scene.camera
 
     );
 
 
+    updateDragPlane();
+
+
+    const found =
+        raycaster.ray.intersectPlane(
+
+            dragPlane,
+
+            worldIntersection
+
+        );
+
+
     if (
-        wireName === "red"
+        !found
+    ) {
+
+        return;
+
+    }
+
+
+    const localPosition =
+        marker.object3D.worldToLocal(
+
+            worldIntersection.clone()
+
+        );
+
+
+    /*
+       Keep part at fixed training height.
+    */
+
+    localPosition.y =
+        0.18;
+
+
+    const entity =
+        partData[
+            draggedPart
+        ].entity;
+
+
+    entity.object3D.position.copy(
+        localPosition
+    );
+
+
+    /*
+       Fan blades follow the fan.
+    */
+
+    if (
+        draggedPart === "fan"
     ) {
 
 
-        info.textContent =
-            "Wire A selected — tap motor port A.";
+        fanBlade1.object3D.position.copy(
+            localPosition
+        );
 
 
-    } else if (
-        wireName === "black"
+        fanBlade1.object3D.position.y +=
+            0.025;
+
+
+        fanBlade2.object3D.position.copy(
+            localPosition
+        );
+
+
+        fanBlade2.object3D.position.y +=
+            0.025;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DROP PART
+===================================================== */
+
+function finishDrag() {
+
+
+    if (
+        !draggedPart
+    ) {
+
+        return;
+
+    }
+
+
+    const data =
+        partData[
+            draggedPart
+        ];
+
+
+    const target =
+        targetPositions[
+            draggedPart
+        ];
+
+
+    const current =
+        data.entity.object3D.position;
+
+
+    const distance =
+        current.distanceTo(
+            target
+        );
+
+
+    /*
+       Drop close enough to target.
+    */
+
+    if (
+        distance < 0.20
     ) {
 
 
+        data.entity.object3D.position.copy(
+            target
+        );
+
+
+        data.completed =
+            true;
+
+
+        if (
+            draggedPart === "fan"
+        ) {
+
+
+            fanBlade1.object3D.position.copy(
+                target
+            );
+
+
+            fanBlade1.object3D.position.y +=
+                0.025;
+
+
+            fanBlade2.object3D.position.copy(
+                target
+            );
+
+
+            fanBlade2.object3D.position.y +=
+                0.025;
+
+        }
+
+
         info.textContent =
-            "Wire B selected — tap motor port B.";
+
+            "✓ "
+            +
+            draggedPart.toUpperCase()
+            +
+            " placed correctly.";
+
+
+        updateProgress();
 
 
     } else {
 
 
-        info.textContent =
-            "Wire C selected — tap motor port C.";
+        /*
+           Wrong position:
+           return to start.
+        */
 
-    }
-
-}
-
-
-
-redHit.addEventListener(
-
-    "click",
-
-    function () {
+        const initial =
+            initialPositions[
+                draggedPart
+            ];
 
 
-        selectWire(
-            "red"
-        );
-
-    }
-
-);
-
-
-blackHit.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        selectWire(
-            "black"
-        );
-
-    }
-
-);
-
-
-greenHit.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        selectWire(
-            "green"
-        );
-
-    }
-
-);
-
-
-
-/* =================================================
-   CREATE VISIBLE CABLE
-================================================= */
-
-function createCable(
-    wireName
-) {
-
-
-    const data =
-        wireData[
-            wireName
-        ];
-
-
-    const start =
-        data.start.clone();
-
-
-    const end =
-        data.end.clone();
-
-
-    const direction =
-        end.clone()
-           .sub(
-               start
-           );
-
-
-    const length =
-        direction.length();
-
-
-    const midpoint =
-        start.clone()
-             .add(
-                 end
-             )
-             .multiplyScalar(
-                 0.5
-             );
-
-
-    const cable =
-        data.cable;
-
-
-    cable.object3D.position.copy(
-        midpoint
-    );
-
-
-    cable.setAttribute(
-        "height",
-        length
-    );
-
-
-    direction.normalize();
-
-
-    const yAxis =
-        new THREE.Vector3(
-            0,
-            1,
-            0
+        data.entity.object3D.position.copy(
+            initial
         );
 
 
-    const q =
-        new THREE.Quaternion();
+        if (
+            draggedPart === "fan"
+        ) {
 
 
-    q.setFromUnitVectors(
-        yAxis,
-        direction
-    );
+            fanBlade1.object3D.position.copy(
+                initial
+            );
 
 
-    cable.object3D.quaternion.copy(
-        q
-    );
+            fanBlade1.object3D.position.y +=
+                0.025;
 
 
-    cable.setAttribute(
-        "visible",
-        true
-    );
-
-}
+            fanBlade2.object3D.position.copy(
+                initial
+            );
 
 
+            fanBlade2.object3D.position.y +=
+                0.025;
 
-/* =================================================
-   CONNECT
-================================================= */
-
-function connectSelectedWire(
-    portName
-) {
-
-
-    if (
-        !selectedWire
-    ) {
+        }
 
 
         info.textContent =
-            "First tap one of the loose wires.";
 
-
-        return;
+            "Wrong position — the part returned to its starting point.";
 
     }
 
 
-    if (
-
-        correctPorts[
-            selectedWire
-        ]
-        !==
-        portName
-
-    ) {
-
-
-        info.textContent =
-            "Incorrect simulated connection — choose the matching port.";
-
-
-        return;
-
-    }
-
-
-    const wireName =
-        selectedWire;
-
-
-    connected[
-        wireName
-    ] =
-        true;
-
-
-    createCable(
-        wireName
-    );
-
-
-    wireData[
-        wireName
-    ]
-    .plug
-    .setAttribute(
-
-        "visible",
-
-        false
-
-    );
-
-
-    selectedWire =
+    draggedPart =
         null;
 
-
-    clearWireSelection();
-
-
-    updateProgress();
-
-
-    info.textContent =
-        "✓ Connection completed.";
-
 }
 
 
 
-terminalAHit.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        connectSelectedWire(
-            "A"
-        );
-
-    }
-
-);
-
-
-terminalBHit.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        connectSelectedWire(
-            "B"
-        );
-
-    }
-
-);
-
-
-terminalCHit.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        connectSelectedWire(
-            "C"
-        );
-
-    }
-
-);
-
-
-
-/* =================================================
-   CONNECTION PROGRESS
-================================================= */
-
-function allConnected() {
-
-
-    return (
-
-        connected.red
-
-        &&
-
-        connected.black
-
-        &&
-
-        connected.green
-
-    );
-
-}
-
-
+/* =====================================================
+   PROGRESS
+===================================================== */
 
 function updateProgress() {
 
 
-    let amount =
+    let completed =
         0;
 
 
-    if (
-        connected.red
-    ) {
-        amount++;
-    }
+    Object.values(
+        partData
+    ).forEach(
+
+        function (
+            data
+        ) {
 
 
-    if (
-        connected.black
-    ) {
-        amount++;
-    }
+            if (
+                data.completed
+            ) {
 
+                completed++;
 
-    if (
-        connected.green
-    ) {
-        amount++;
-    }
+            }
+
+        }
+
+    );
 
 
     progress.textContent =
 
-        "Connections: "
+        "Assembly: "
         +
-        amount
+        completed
         +
         " / 3";
 
 
     if (
-        amount === 3
+        completed === 3
     ) {
 
 
-        switchText.setAttribute(
-            "value",
-            "READY - TAP SWITCH"
-        );
-
-
-        switchText.setAttribute(
-            "color",
-            "#f59e0b"
+        progress.classList.add(
+            "complete"
         );
 
 
         info.textContent =
-            "✓ Circuit training complete — tap the 3D switch.";
+
+            "✓ Motor assembly training completed — 3/3 parts placed correctly.";
 
     }
 
@@ -1474,540 +1281,37 @@ function updateProgress() {
 
 
 
-/* =================================================
-   MOTOR SOUND
-================================================= */
-
-let audioContext =
-    null;
-
-
-let hum1 =
-    null;
-
-
-let hum2 =
-    null;
-
-
-let masterGain =
-    null;
-
-
-
-function startMotorSound() {
-
-
-    /*
-        Because this runs directly from
-        a switch tap, Android browsers
-        allow WebAudio to start.
-    */
-
-
-    if (
-        !audioContext
-    ) {
-
-
-        audioContext =
-            new (
-                window.AudioContext
-                ||
-                window.webkitAudioContext
-            )();
-
-    }
-
-
-    if (
-        audioContext.state ===
-        "suspended"
-    ) {
-
-
-        audioContext.resume();
-
-    }
-
-
-    if (
-        hum1
-    ) {
-
-
-        return;
-
-    }
-
-
-    masterGain =
-        audioContext.createGain();
-
-
-    masterGain.gain.value =
-        0.06;
-
-
-    hum1 =
-        audioContext.createOscillator();
-
-
-    hum1.type =
-        "sine";
-
-
-    hum1.frequency.value =
-        95;
-
-
-    hum2 =
-        audioContext.createOscillator();
-
-
-    hum2.type =
-        "triangle";
-
-
-    hum2.frequency.value =
-        190;
-
-
-    const hum2Gain =
-        audioContext.createGain();
-
-
-    hum2Gain.gain.value =
-        0.20;
-
-
-    hum1.connect(
-        masterGain
-    );
-
-
-    hum2.connect(
-        hum2Gain
-    );
-
-
-    hum2Gain.connect(
-        masterGain
-    );
-
-
-    masterGain.connect(
-        audioContext.destination
-    );
-
-
-    hum1.start();
-
-
-    hum2.start();
-
-}
-
-
-
-function stopMotorSound() {
-
-
-    if (
-        hum1
-    ) {
-
-
-        try {
-
-            hum1.stop();
-
-        } catch (error) {}
-
-
-        hum1 =
-            null;
-
-    }
-
-
-    if (
-        hum2
-    ) {
-
-
-        try {
-
-            hum2.stop();
-
-        } catch (error) {}
-
-
-        hum2 =
-            null;
-
-    }
-
-
-    if (
-        masterGain
-    ) {
-
-
-        try {
-
-            masterGain.disconnect();
-
-        } catch (error) {}
-
-
-        masterGain =
-            null;
-
-    }
-
-}
-
-
-
-/* =================================================
-   MOTOR ON
-================================================= */
-
-function startMotor() {
-
-
-    motorRunning =
-        true;
-
-
-    startMotorSound();
-
-
-    motorStatus.textContent =
-        "MOTOR RUNNING";
-
-
-    motorStatus.classList.add(
-        "running"
-    );
-
-
-    switchText.setAttribute(
-        "value",
-        "SWITCH ON"
-    );
-
-
-    switchText.setAttribute(
-        "color",
-        "#22c55e"
-    );
-
-
-    switchModel.setAttribute(
-        "rotation",
-        "0 0 -18"
-    );
-
-
-    info.textContent =
-        "✓ Motor simulation running.";
-
-}
-
-
-
-/* =================================================
-   MOTOR OFF
-================================================= */
-
-function stopMotor() {
-
-
-    motorRunning =
-        false;
-
-
-    stopMotorSound();
-
-
-    motorStatus.textContent =
-        "MOTOR OFF";
-
-
-    motorStatus.classList.remove(
-        "running"
-    );
-
-
-    switchText.setAttribute(
-        "value",
-        "READY - TAP SWITCH"
-    );
-
-
-    switchText.setAttribute(
-        "color",
-        "#f59e0b"
-    );
-
-
-    switchModel.setAttribute(
-        "rotation",
-        "0 0 0"
-    );
-
-
-    motorModel.object3D.position.set(
-        0.15,
-        0.08,
-        0
-    );
-
-
-    info.textContent =
-        "Motor simulation stopped.";
-
-}
-
-
-
-/* =================================================
-   SWITCH
-================================================= */
-
-switchHit.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        if (
-            !allConnected()
-        ) {
-
-
-            info.textContent =
-                "Complete all three simulated wire connections first.";
-
-
-            return;
-
-        }
-
-
-        if (
-            motorRunning
-        ) {
-
-
-            stopMotor();
-
-
-        } else {
-
-
-            startMotor();
-
-        }
-
-    }
-
-);
-
-
-
-/* =================================================
-   RUNNING ANIMATION
-================================================= */
-
-function animate() {
-
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    if (
-        !motorRunning
-    ) {
-
-
-        return;
-
-    }
-
-
-    vibrationTime +=
-        0.18;
-
-
-    motorModel.object3D.position.x =
-
-        0.15
-
-        +
-
-        Math.sin(
-            vibrationTime
-        )
-        *
-        0.004;
-
-
-    motorModel.object3D.position.z =
-
-        Math.cos(
-            vibrationTime * 1.2
-        )
-        *
-        0.003;
-
-}
-
-
-animate();
-
-
-
-/* =================================================
-   RESET
-================================================= */
-
-resetBtn.addEventListener(
-
-    "click",
-
-    function () {
-
-
-        stopMotorSound();
-
-
-        motorRunning =
-            false;
-
-
-        selectedWire =
-            null;
-
-
-        connected.red =
-            false;
-
-
-        connected.black =
-            false;
-
-
-        connected.green =
-            false;
-
-
-        redWire.setAttribute(
-            "visible",
-            false
-        );
-
-
-        blackWire.setAttribute(
-            "visible",
-            false
-        );
-
-
-        greenWire.setAttribute(
-            "visible",
-            false
-        );
-
-
-        redPlug.setAttribute(
-            "visible",
-            true
-        );
-
-
-        blackPlug.setAttribute(
-            "visible",
-            true
-        );
-
-
-        greenPlug.setAttribute(
-            "visible",
-            true
-        );
-
-
-        clearWireSelection();
-
-
-        switchModel.setAttribute(
-            "rotation",
-            "0 0 0"
-        );
-
-
-        switchText.setAttribute(
-            "value",
-            "SWITCH OFF"
-        );
-
-
-        switchText.setAttribute(
-            "color",
-            "#ef4444"
-        );
-
-
-        motorStatus.textContent =
-            "MOTOR OFF";
-
-
-        motorStatus.classList.remove(
-            "running"
-        );
-
-
-        progress.textContent =
-            "Connections: 0 / 3";
-
-
-        motorModel.object3D.position.set(
-            0.15,
-            0.08,
-            0
-        );
-
-
-        info.textContent =
-            "Training reset — select a loose wire.";
-
-    }
-
-);
-
-
-
-/* =================================================
-   MARKER STATUS
-================================================= */
-
-function updateMessage() {
+/* =====================================================
+   POINTER START
+===================================================== */
+
+function handlePointerDown(
+    event
+) {
 
 
     if (
         !markerVisible
     ) {
 
+        return;
 
-        info.textContent =
-            "Point the camera at the Hiro marker.";
+    }
 
+
+    const partName =
+        getTouchedPart(
+
+            event.clientX,
+
+            event.clientY
+
+        );
+
+
+    if (
+        !partName
+    ) {
 
         return;
 
@@ -2015,12 +1319,14 @@ function updateMessage() {
 
 
     if (
-        !motorLoaded
+        partData[
+            partName
+        ].completed
     ) {
 
 
         info.textContent =
-            "Marker detected — loading motor...";
+            "This part is already installed.";
 
 
         return;
@@ -2028,40 +1334,288 @@ function updateMessage() {
     }
 
 
-    if (
-        !switchLoaded
+    draggedPart =
+        partName;
+
+
+    info.textContent =
+
+        "Dragging "
+        +
+        partName.toUpperCase()
+        +
+        " — move it to the matching highlighted target.";
+
+
+    try {
+
+        canvas.setPointerCapture(
+            event.pointerId
+        );
+
+    } catch (
+        error
     ) {
+    }
 
 
-        info.textContent =
-            "Motor loaded — loading switch...";
+    event.preventDefault();
 
+}
+
+
+
+/* =====================================================
+   POINTER MOVE
+===================================================== */
+
+function handlePointerMove(
+    event
+) {
+
+
+    if (
+        !draggedPart
+    ) {
 
         return;
 
     }
 
 
+    moveDraggedPart(
+
+        event.clientX,
+
+        event.clientY
+
+    );
+
+
+    event.preventDefault();
+
+}
+
+
+
+/* =====================================================
+   POINTER END
+===================================================== */
+
+function handlePointerUp(
+    event
+) {
+
+
     if (
-        allConnected()
+        !draggedPart
+    ) {
+
+        return;
+
+    }
+
+
+    moveDraggedPart(
+
+        event.clientX,
+
+        event.clientY
+
+    );
+
+
+    finishDrag();
+
+
+    event.preventDefault();
+
+}
+
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetTraining() {
+
+
+    draggedPart =
+        null;
+
+
+    partData.shaft.completed =
+        false;
+
+
+    partData.fan.completed =
+        false;
+
+
+    partData.cover.completed =
+        false;
+
+
+    shaftPart.object3D.position.copy(
+        initialPositions.shaft
+    );
+
+
+    fanPart.object3D.position.copy(
+        initialPositions.fan
+    );
+
+
+    fanBlade1.object3D.position.copy(
+        initialPositions.fan
+    );
+
+
+    fanBlade1.object3D.position.y +=
+        0.025;
+
+
+    fanBlade2.object3D.position.copy(
+        initialPositions.fan
+    );
+
+
+    fanBlade2.object3D.position.y +=
+        0.025;
+
+
+    coverPart.object3D.position.copy(
+        initialPositions.cover
+    );
+
+
+    progress.textContent =
+        "Assembly: 0 / 3";
+
+
+    progress.classList.remove(
+        "complete"
+    );
+
+
+    if (
+        markerVisible
     ) {
 
 
         info.textContent =
-            "Circuit ready — tap the 3D switch.";
+            "Training reset — drag each part to the matching target.";
 
 
     } else {
 
 
         info.textContent =
-            "Motor detected — tap a loose wire, then tap its matching port.";
+            "Training reset — point the camera at the Hiro marker.";
 
     }
 
 }
 
 
+
+resetBtn.addEventListener(
+
+    "click",
+
+    function (
+        event
+    ) {
+
+
+        event.stopPropagation();
+
+
+        resetTraining();
+
+    }
+
+);
+
+
+
+/* =====================================================
+   SCENE READY
+===================================================== */
+
+scene.addEventListener(
+
+    "loaded",
+
+    function () {
+
+
+        canvas =
+            scene.canvas;
+
+
+        if (
+            !canvas
+        ) {
+
+            return;
+
+        }
+
+
+        canvas.style.touchAction =
+            "none";
+
+
+        canvas.addEventListener(
+
+            "pointerdown",
+
+            handlePointerDown
+
+        );
+
+
+        canvas.addEventListener(
+
+            "pointermove",
+
+            handlePointerMove
+
+        );
+
+
+        canvas.addEventListener(
+
+            "pointerup",
+
+            handlePointerUp
+
+        );
+
+
+        canvas.addEventListener(
+
+            "pointercancel",
+
+            handlePointerUp
+
+        );
+
+
+        info.textContent =
+            "AR ready — point the camera at the Hiro marker.";
+
+    }
+
+);
+
+
+
+/* =====================================================
+   MARKER EVENTS
+===================================================== */
 
 marker.addEventListener(
 
@@ -2074,7 +1628,9 @@ marker.addEventListener(
             true;
 
 
-        updateMessage();
+        info.textContent =
+
+            "Motor detected — touch and drag a loose part to its matching target.";
 
     }
 
@@ -2092,7 +1648,12 @@ marker.addEventListener(
             false;
 
 
+        draggedPart =
+            null;
+
+
         info.textContent =
+
             "Marker lost — point the camera at the Hiro marker.";
 
     }
