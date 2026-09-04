@@ -278,58 +278,56 @@
   </style>
 
   <script>
-    AFRAME.registerComponent('fit-model', {
+    AFRAME.registerComponent('normalize-local-model', {
       schema: {
-        size: {type: 'number', default: 0.36},
-        lift: {type: 'number', default: 0.015}
+        size: {type: 'number', default: 0.30},
+        lift: {type: 'number', default: 0.01}
       },
       init: function () {
         this.el.addEventListener('model-loaded', () => {
           const mesh = this.el.getObject3D('mesh');
           if (!mesh) return;
 
-          // Keep the model's authored orientation, but normalize source units.
-          mesh.scale.set(1, 1, 1);
-          mesh.position.set(0, 0, 0);
-          mesh.updateMatrixWorld(true);
+          /*
+             Measure a detached clone so marker/camera orientation cannot corrupt
+             the bounding-box calculation. Then scale/centre the MODEL ENTITY,
+             not the GLTF scene root. This prevents the giant-model bug.
+          */
+          const clone = mesh.clone(true);
+          const temp = new THREE.Group();
+          temp.add(clone);
+          clone.position.set(0, 0, 0);
+          clone.quaternion.identity();
+          temp.updateMatrixWorld(true);
 
-          let box = new THREE.Box3().setFromObject(mesh);
+          const box = new THREE.Box3().setFromObject(clone);
           const size = new THREE.Vector3();
+          const center = new THREE.Vector3();
           box.getSize(size);
+          box.getCenter(center);
 
-          const worldScale = new THREE.Vector3();
-          this.el.object3D.getWorldScale(worldScale);
-          const localSize = new THREE.Vector3(
-            size.x / Math.max(Math.abs(worldScale.x), 0.000001),
-            size.y / Math.max(Math.abs(worldScale.y), 0.000001),
-            size.z / Math.max(Math.abs(worldScale.z), 0.000001)
+          const maxDim = Math.max(size.x, size.y, size.z);
+          if (!Number.isFinite(maxDim) || maxDim <= 0.000001) {
+            console.warn('Could not normalize model', this.el.id);
+            return;
+          }
+
+          let factor = this.data.size / maxDim;
+          factor = THREE.MathUtils.clamp(factor, 0.00001, 10);
+
+          // Scale the A-Frame entity wrapper; preserve the GLTF's authored scene.
+          this.el.object3D.scale.setScalar(factor);
+
+          // Offset using the measured clone bounds.  Because the normalization
+          // entity itself has no rotation, this remains stable when the marker moves.
+          this.el.object3D.position.set(
+            -center.x * factor,
+            (-box.min.y * factor) + this.data.lift,
+            -center.z * factor
           );
 
-          const maxDim = Math.max(localSize.x, localSize.y, localSize.z);
-          if (!Number.isFinite(maxDim) || maxDim <= 0) return;
-
-          const factor = this.data.size / maxDim;
-          mesh.scale.setScalar(factor);
-          mesh.updateMatrixWorld(true);
-
-          // IMPORTANT FIX:
-          // Center only X/Z and put the BOTTOM of the downloaded model on the tray.
-          // The previous version centered Y too, which could place most of a model
-          // below the marker plane and make it look missing.
-          box = new THREE.Box3().setFromObject(mesh);
-          const centerWorld = new THREE.Vector3();
-          box.getCenter(centerWorld);
-          const minWorld = box.min.clone();
-
-          const parent = mesh.parent;
-          const centerLocal = parent.worldToLocal(centerWorld.clone());
-          const minLocal = parent.worldToLocal(minWorld.clone());
-
-          mesh.position.x -= centerLocal.x;
-          mesh.position.z -= centerLocal.z;
-          mesh.position.y -= minLocal.y;
-          mesh.position.y += this.data.lift;
-          mesh.updateMatrixWorld(true);
+          this.el.object3D.updateMatrixWorld(true);
+          console.log('Normalized', this.el.id, 'factor=', factor, 'sourceSize=', size);
         });
       }
     });
@@ -442,58 +440,58 @@
            MOTOR PART (REAL MODEL)
       ============================ -->
       <a-entity id="motorPart" position="-0.58 0.12 0.78" scale="1 1 1">
-        <a-box position="0 0.012 0" width="0.42" height="0.035" depth="0.30" color="#1e293b"></a-box>
-        <a-entity id="motorFan" position="0 0.06 0">
-          <a-entity id="motorFallback">
-            <a-cylinder rotation="0 0 90" radius="0.10" height="0.26" color="#2563eb"></a-cylinder>
-            <a-cylinder position="0.16 0 0" rotation="0 0 90" radius="0.035" height="0.10" color="#cbd5e1"></a-cylinder>
+        <a-box position="0 0.012 0" width="0.38" height="0.03" depth="0.28" color="#1e293b"></a-box>
+        <a-entity id="motorFan" position="0 0.045 0">
+          <a-entity id="motorOrientation" rotation="0 90 0">
+            <a-entity id="motorFallback">
+              <a-cylinder rotation="0 0 90" radius="0.09" height="0.24" color="#2563eb"></a-cylinder>
+              <a-cylinder position="0.15 0 0" rotation="0 0 90" radius="0.032" height="0.09" color="#cbd5e1"></a-cylinder>
+            </a-entity>
+            <a-entity id="motorRealModel" gltf-model="url(models/motor.glb)"
+                      normalize-local-model="size: 0.30; lift: 0.008"></a-entity>
           </a-entity>
-          <a-entity id="motorRealModel" gltf-model="url(models/motor.glb)"
-                    fit-model="size: 0.42; lift: 0.015"
-                    position="0 0 0"
-                    rotation="0 90 0"></a-entity>
         </a-entity>
-        <a-box id="motorHit" width="0.40" height="0.34" depth="0.40" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.29 0" scale="0.19 0.19 0.19" align="center" color="#ffffff"></a-text>
+        <a-box id="motorHit" width="0.42" height="0.36" depth="0.42" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="motorCarryLabel" value="MOTOR" position="0 0.31 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
            COUPLING PART (REAL MODEL)
       ============================ -->
       <a-entity id="couplingPart" position="0 0.12 0.78" scale="1 1 1">
-        <a-entity id="couplingVisual" position="0 0.06 0">
-          <a-entity id="couplingFallback">
-            <a-cylinder position="-0.055 0.07 0" rotation="0 0 90" radius="0.07" height="0.09" color="#f59e0b"></a-cylinder>
-            <a-cylinder position="0.055 0.07 0" rotation="0 0 90" radius="0.07" height="0.09" color="#f59e0b"></a-cylinder>
-            <a-cylinder position="0 0.07 0" rotation="0 0 90" radius="0.03" height="0.24" color="#fde68a"></a-cylinder>
+        <a-entity id="couplingVisual" position="0 0.045 0">
+          <a-entity id="couplingOrientation" rotation="0 90 0">
+            <a-entity id="couplingFallback">
+              <a-cylinder position="-0.05 0.06 0" rotation="0 0 90" radius="0.06" height="0.08" color="#f59e0b"></a-cylinder>
+              <a-cylinder position="0.05 0.06 0" rotation="0 0 90" radius="0.06" height="0.08" color="#f59e0b"></a-cylinder>
+              <a-cylinder position="0 0.06 0" rotation="0 0 90" radius="0.026" height="0.20" color="#fde68a"></a-cylinder>
+            </a-entity>
+            <a-entity id="couplingRealModel" gltf-model="url(models/coupling.glb)"
+                      normalize-local-model="size: 0.19; lift: 0.008"></a-entity>
           </a-entity>
-          <a-entity id="couplingRealModel" gltf-model="url(models/coupling.glb)"
-                    fit-model="size: 0.38; lift: 0.015"
-                    position="0 0 0"
-                    rotation="0 90 0"></a-entity>
         </a-entity>
-        <a-box id="couplingHit" width="0.34" height="0.32" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.28 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+        <a-box id="couplingHit" width="0.34" height="0.30" depth="0.34" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="couplingCarryLabel" value="COUPLING" position="0 0.27 0" scale="0.13 0.13 0.13" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
            PUMP PART (REAL MODEL)
       ============================ -->
       <a-entity id="pumpPart" position="0.58 0.12 0.78" scale="1 1 1">
-        <a-box position="0 0.012 0" width="0.42" height="0.035" depth="0.30" color="#1e293b"></a-box>
-        <a-entity id="pumpImpeller" position="0 0.07 0">
-          <a-entity id="pumpFallback">
-            <a-cylinder rotation="90 0 0" radius="0.14" height="0.18" color="#0ea5e9"></a-cylinder>
-            <a-cylinder position="-0.16 0 0" rotation="0 0 90" radius="0.05" height="0.15" color="#94a3b8"></a-cylinder>
-            <a-cylinder position="0.08 0.13 0" radius="0.05" height="0.18" color="#0ea5e9"></a-cylinder>
+        <a-box position="0 0.012 0" width="0.40" height="0.03" depth="0.28" color="#1e293b"></a-box>
+        <a-entity id="pumpImpeller" position="0 0.045 0">
+          <a-entity id="pumpOrientation" rotation="0 90 0">
+            <a-entity id="pumpFallback">
+              <a-cylinder rotation="90 0 0" radius="0.12" height="0.16" color="#0ea5e9"></a-cylinder>
+              <a-cylinder position="-0.14 0 0" rotation="0 0 90" radius="0.045" height="0.13" color="#94a3b8"></a-cylinder>
+              <a-cylinder position="0.07 0.12 0" radius="0.045" height="0.16" color="#0ea5e9"></a-cylinder>
+            </a-entity>
+            <a-entity id="pumpRealModel" gltf-model="url(models/pump.glb)"
+                      normalize-local-model="size: 0.32; lift: 0.008"></a-entity>
           </a-entity>
-          <a-entity id="pumpRealModel" gltf-model="url(models/pump.glb)"
-                    fit-model="size: 0.48; lift: 0.015"
-                    position="0 0 0"
-                    rotation="0 90 0"></a-entity>
         </a-entity>
-        <a-box id="pumpHit" width="0.42" height="0.38" depth="0.42" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
-        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.32 0" scale="0.18 0.18 0.18" align="center" color="#ffffff"></a-text>
+        <a-box id="pumpHit" width="0.44" height="0.38" depth="0.44" material="transparent: true; opacity: 0.01; depthWrite: false"></a-box>
+        <a-text id="pumpCarryLabel" value="PUMP" position="0 0.31 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       </a-entity>
 
       <!-- ===========================
@@ -633,7 +631,7 @@
     /* =====================================================
        CONFIG
     ====================================================== */
-    const MODEL_Y = 0.08;
+    const MODEL_Y = 0.10;
     const DRAG_Y = 0.22;
     const PART_SNAP_DISTANCE = 0.40;
     const ACTION_SNAP_DISTANCE = 0.40;
