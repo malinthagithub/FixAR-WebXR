@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-<title>FixAR | Marker Training</title>
+<title>FixAR Motor Wiring Training</title>
 
 
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -20,39 +20,36 @@
 
 body{
 
-    margin:0;
-    overflow:hidden;
-    font-family:Arial,sans-serif;
+margin:0;
+overflow:hidden;
+font-family:Arial,sans-serif;
 
 }
 
 
+.info{
 
-.instruction{
+position:fixed;
 
-    position:fixed;
+top:15px;
 
-    top:15px;
+left:50%;
 
-    left:50%;
+transform:translateX(-50%);
 
-    transform:translateX(-50%);
+background:rgba(0,0,0,0.8);
 
-    width:calc(100% - 40px);
+color:white;
 
-    max-width:420px;
+padding:12px;
 
-    padding:12px;
+border-radius:10px;
 
-    background:rgba(0,0,0,0.8);
+width:90%;
 
-    color:white;
+text-align:center;
 
-    border-radius:10px;
-
-    text-align:center;
-
-    z-index:20;
+z-index:20;
 
 }
 
@@ -60,53 +57,54 @@ body{
 
 .controls{
 
-    position:fixed;
+position:fixed;
 
-    bottom:20px;
+bottom:20px;
 
-    left:50%;
+left:50%;
 
-    transform:translateX(-50%);
+transform:translateX(-50%);
 
-    display:flex;
+display:flex;
 
-    gap:8px;
+flex-wrap:wrap;
 
-    flex-wrap:wrap;
+justify-content:center;
 
-    justify-content:center;
+gap:8px;
 
-    z-index:20;
-
-}
-
-
-
-.controls button{
-
-    padding:12px 15px;
-
-    border-radius:10px;
-
-    background:#111827;
-
-    color:white;
-
-    border:1px solid #38bdf8;
-
-    font-weight:bold;
+z-index:20;
 
 }
 
 
 
-.controls button.active{
+button{
 
-    background:#38bdf8;
+padding:12px;
 
-    color:black;
+border-radius:10px;
+
+border:none;
+
+background:#111827;
+
+color:white;
+
+font-weight:bold;
 
 }
+
+
+
+.active{
+
+background:#38bdf8;
+
+color:black;
+
+}
+
 
 
 </style>
@@ -119,41 +117,34 @@ body{
 <body>
 
 
+<div class="info" id="info">
 
-<div class="instruction" id="instruction">
-
-Point the camera at the Hiro marker
+Scan Hiro marker
 
 </div>
-
 
 
 
 <div class="controls">
 
 
-<button id="conveyorBtn" class="active">
-Conveyor
+<button id="redBtn">
+Red Wire
 </button>
 
 
-<button id="machineBtn">
-Water Pump
+<button id="blackBtn">
+Black Wire
 </button>
 
 
-<button id="motorBtn">
-Motor
+<button id="greenBtn">
+Ground
 </button>
 
 
-<button id="wireBtn">
-Connect Wire
-</button>
-
-
-<button id="powerBtn">
-POWER ON
+<button id="switchBtn">
+POWER OFF
 </button>
 
 
@@ -172,59 +163,11 @@ arjs="sourceType:webcam; debugUIEnabled:false;">
 
 
 
-
 <a-marker
 
-id="hiroMarker"
+id="marker"
 
 preset="hiro">
-
-
-
-
-
-<!-- Conveyor -->
-
-<a-entity
-
-id="conveyorModel"
-
-gltf-model="url(models/conveyor.glb)"
-
-position="0 0 0"
-
-rotation="0 0 0"
-
-scale="0.005 0.005 0.005"
-
-visible="true">
-
-</a-entity>
-
-
-
-
-
-
-<!-- Water Pump -->
-
-<a-entity
-
-id="machineModel"
-
-gltf-model="url(models/machine.glb)"
-
-position="0 0 0"
-
-rotation="0 0 0"
-
-scale="0.02 0.02 0.02"
-
-visible="false">
-
-</a-entity>
-
-
 
 
 
@@ -234,17 +177,13 @@ visible="false">
 
 <a-entity
 
-id="motorModel"
+id="motor"
 
 gltf-model="url(models/motor.glb)"
 
-position="0 0 0"
-
-rotation="0 0 0"
-
 scale="0.02 0.02 0.02"
 
-visible="false">
+position="0 0 0">
 
 </a-entity>
 
@@ -252,21 +191,18 @@ visible="false">
 
 
 
+<!-- Terminals -->
 
-
-<!-- Motor Terminals -->
 
 <a-sphere
 
-id="terminalL1"
+id="L1"
 
-position="0.25 0.35 0.15"
+position="0.2 0.3 0.2"
 
 radius="0.04"
 
-color="red"
-
-visible="false">
+color="red">
 
 </a-sphere>
 
@@ -274,15 +210,13 @@ visible="false">
 
 <a-sphere
 
-id="terminalL2"
+id="L2"
 
-position="0.25 0.25 0.15"
+position="0.2 0.2 0.2"
 
 radius="0.04"
 
-color="black"
-
-visible="false">
+color="black">
 
 </a-sphere>
 
@@ -290,17 +224,39 @@ visible="false">
 
 <a-sphere
 
-id="terminalGround"
+id="GND"
 
-position="0.25 0.15 0.15"
+position="0.2 0.1 0.2"
 
 radius="0.04"
 
-color="green"
-
-visible="false">
+color="green">
 
 </a-sphere>
+
+
+
+
+
+
+
+<!-- Switch -->
+
+<a-box
+
+id="switch"
+
+position="-0.5 0.3 0"
+
+depth="0.1"
+
+height="0.2"
+
+width="0.3"
+
+color="red">
+
+</a-box>
 
 
 
@@ -308,8 +264,6 @@ visible="false">
 
 
 </a-marker>
-
-
 
 
 
@@ -321,4 +275,271 @@ visible="false">
 
 
 
+
 <script>
+
+
+const info =
+document.getElementById("info");
+
+
+const motor =
+document.getElementById("motor");
+
+
+
+const redBtn =
+document.getElementById("redBtn");
+
+
+const blackBtn =
+document.getElementById("blackBtn");
+
+
+const greenBtn =
+document.getElementById("greenBtn");
+
+
+const switchBtn =
+document.getElementById("switchBtn");
+
+
+
+let selectedWire = "";
+
+let connected = {
+
+red:false,
+
+black:false,
+
+green:false
+
+};
+
+
+let running=false;
+
+
+
+
+
+redBtn.onclick=function(){
+
+selectedWire="red";
+
+info.innerHTML=
+"Red wire selected - connect to L1";
+
+}
+
+
+
+
+blackBtn.onclick=function(){
+
+selectedWire="black";
+
+info.innerHTML=
+"Black wire selected - connect to L2";
+
+}
+
+
+
+
+greenBtn.onclick=function(){
+
+selectedWire="green";
+
+info.innerHTML=
+"Ground wire selected - connect to GND";
+
+}
+
+
+
+
+
+
+
+document.getElementById("L1").onclick=function(){
+
+if(selectedWire==="red"){
+
+connected.red=true;
+
+info.innerHTML=
+"✓ Red wire connected";
+
+}
+
+else{
+
+info.innerHTML=
+"Wrong wire for L1";
+
+}
+
+}
+
+
+
+
+
+
+document.getElementById("L2").onclick=function(){
+
+if(selectedWire==="black"){
+
+connected.black=true;
+
+info.innerHTML=
+"✓ Black wire connected";
+
+}
+
+else{
+
+info.innerHTML=
+"Wrong wire for L2";
+
+}
+
+}
+
+
+
+
+
+
+
+document.getElementById("GND").onclick=function(){
+
+if(selectedWire==="green"){
+
+connected.green=true;
+
+info.innerHTML=
+"✓ Ground connected";
+
+}
+
+else{
+
+info.innerHTML=
+"Wrong wire for GND";
+
+}
+
+}
+
+
+
+
+
+
+
+switchBtn.onclick=function(){
+
+
+if(
+connected.red &&
+connected.black &&
+connected.green
+){
+
+
+running=!running;
+
+
+if(running){
+
+switchBtn.innerHTML=
+"POWER ON";
+
+
+switchBtn.classList.add("active");
+
+
+info.innerHTML=
+"Motor Running";
+
+}
+
+else{
+
+
+switchBtn.innerHTML=
+"POWER OFF";
+
+
+info.innerHTML=
+"Motor Stopped";
+
+
+}
+
+
+
+}
+
+else{
+
+
+info.innerHTML=
+"Complete all wire connections first";
+
+}
+
+
+}
+
+
+
+
+
+function animate(){
+
+
+if(running){
+
+motor.object3D.rotation.y +=0.05;
+
+}
+
+
+requestAnimationFrame(animate);
+
+
+}
+
+
+animate();
+
+
+
+
+
+
+document.getElementById("marker")
+.addEventListener(
+"markerFound",
+function(){
+
+info.innerHTML=
+"Motor Training Started";
+
+}
+
+);
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
