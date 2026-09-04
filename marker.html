@@ -415,18 +415,18 @@
       <!-- ===========================
            DROP PADS
       ============================ -->
-      <a-cylinder id="motorPad" position="-0.40 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="motorRing" position="-0.40 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="motorPad" position="-0.34 0.008 -0.18" radius="0.22" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="motorRing" position="-0.34 0.017 -0.18" rotation="-90 0 0" radius-inner="0.20" radius-outer="0.24" color="#7dd3fc" visible="false"></a-ring>
 
       <a-cylinder id="couplingPad" position="0 0.008 -0.18" radius="0.18" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
       <a-ring id="couplingRing" position="0 0.017 -0.18" rotation="-90 0 0" radius-inner="0.18" radius-outer="0.215" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-cylinder id="pumpPad" position="0.40 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="pumpRing" position="0.40 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="pumpPad" position="0.34 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="pumpRing" position="0.34 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-text id="motorSlotLabel" value="MOTOR" position="-0.40 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
+      <a-text id="motorSlotLabel" value="MOTOR" position="-0.34 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
-      <a-text id="pumpSlotLabel" value="PUMP" position="0.40 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="pumpSlotLabel" value="PUMP" position="0.34 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
       <!-- ===========================
            PARTS TRAY
@@ -459,12 +459,18 @@
            COUPLING PART (CODED MECHANICAL COUPLING)
            No external coupling.glb is required.
       ============================ -->
-      <a-entity id="couplingPart" position="0 0.12 0.78" scale="1 1 1">
-        <a-entity id="couplingVisual" position="0 0.095 0">
-          <!-- common shaft through the coupling -->
+      <a-entity id="couplingPart" position="0 0.11 0.78" scale="1 1 1">
+        <a-entity id="couplingVisual" position="0 0.080 0">
+          <!-- long common shaft so the coupling visibly connects motor and pump -->
           <a-cylinder position="0 0 0" rotation="0 0 90"
-                      radius="0.024" height="0.30" color="#cbd5e1"
-                      material="metalness: 0.75; roughness: 0.25"></a-cylinder>
+                      radius="0.018" height="0.72" color="#cbd5e1"
+                      material="metalness: 0.82; roughness: 0.18"></a-cylinder>
+          <a-cylinder position="-0.205 0 0" rotation="0 0 90"
+                      radius="0.032" height="0.10" color="#64748b"
+                      material="metalness: 0.80; roughness: 0.22"></a-cylinder>
+          <a-cylinder position="0.205 0 0" rotation="0 0 90"
+                      radius="0.032" height="0.10" color="#64748b"
+                      material="metalness: 0.80; roughness: 0.22"></a-cylinder>
 
           <!-- left hub -->
           <a-cylinder position="-0.070 0 0" rotation="0 0 90"
@@ -505,16 +511,16 @@
 
       <!-- Visible mechanical shafts connecting all three units after assembly -->
       <a-entity id="driveShafts" visible="false">
-        <a-cylinder position="-0.205 0.195 -0.18" rotation="0 0 90"
-                    radius="0.022" height="0.185" color="#94a3b8"
+        <a-cylinder position="-0.17 0.172 -0.18" rotation="0 0 90"
+                    radius="0.022" height="0.15" color="#94a3b8"
                     material="metalness: 0.85; roughness: 0.20"></a-cylinder>
-        <a-cylinder position="0.205 0.195 -0.18" rotation="0 0 90"
-                    radius="0.022" height="0.185" color="#94a3b8"
+        <a-cylinder position="0.17 0.172 -0.18" rotation="0 0 90"
+                    radius="0.022" height="0.15" color="#94a3b8"
                     material="metalness: 0.85; roughness: 0.20"></a-cylinder>
-        <a-cylinder position="-0.305 0.195 -0.18" rotation="0 0 90"
+        <a-cylinder position="-0.255 0.172 -0.18" rotation="0 0 90"
                     radius="0.032" height="0.055" color="#475569"
                     material="metalness: 0.75; roughness: 0.25"></a-cylinder>
-        <a-cylinder position="0.305 0.195 -0.18" rotation="0 0 90"
+        <a-cylinder position="0.255 0.172 -0.18" rotation="0 0 90"
                     radius="0.032" height="0.055" color="#475569"
                     material="metalness: 0.75; roughness: 0.25"></a-cylinder>
       </a-entity>
@@ -689,7 +695,7 @@
         ring: motorRing,
         carryLabel: motorCarryLabel,
         trayPos: { x: -0.58, y: MODEL_Y, z: 0.78 },
-        slotPos: { x: -0.40, y: MODEL_Y, z: -0.18 },
+        slotPos: { x: -0.34, y: MODEL_Y, z: -0.18 },
         why: "The motor provides rotational power to the pump drive.",
         placed: false
       },
@@ -713,7 +719,7 @@
         ring: pumpRing,
         carryLabel: pumpCarryLabel,
         trayPos: { x: 0.58, y: MODEL_Y, z: 0.78 },
-        slotPos: { x: 0.40, y: MODEL_Y, z: -0.18 },
+        slotPos: { x: 0.34, y: MODEL_Y, z: -0.18 },
         why: "The pump is the driven equipment that moves the fluid.",
         placed: false
       }
@@ -770,7 +776,10 @@
 
     let audioContext = null;
     let humOsc = null;
+    let humOsc2 = null;
     let humGain = null;
+    let humLfo = null;
+    let humLfoGain = null;
     let feedbackTimer = null;
 
     const worldScratch = new THREE.Vector3();
@@ -850,20 +859,52 @@
       if (!audioContext || humOsc) return;
 
       humGain = audioContext.createGain();
-      humGain.gain.value = 0.055;
+      humGain.gain.value = 0.09;
       humGain.connect(audioContext.destination);
 
       humOsc = audioContext.createOscillator();
       humOsc.type = "sawtooth";
-      humOsc.frequency.value = 92;
+      humOsc.frequency.value = 90;
+
+      humOsc2 = audioContext.createOscillator();
+      humOsc2.type = "triangle";
+      humOsc2.frequency.value = 180;
+
+      humLfo = audioContext.createOscillator();
+      humLfo.type = "sine";
+      humLfo.frequency.value = 5;
+      humLfoGain = audioContext.createGain();
+      humLfoGain.gain.value = 0.01;
+
+      humLfo.connect(humLfoGain);
+      humLfoGain.connect(humGain.gain);
+
       humOsc.connect(humGain);
+      humOsc2.connect(humGain);
+
       humOsc.start();
+      humOsc2.start();
+      humLfo.start();
+
+      setFeedback("Machine started. Motor sound is on.", "ok");
     }
 
     function stopHum() {
       if (humOsc) {
         try { humOsc.stop(); } catch (_) {}
         humOsc = null;
+      }
+      if (humOsc2) {
+        try { humOsc2.stop(); } catch (_) {}
+        humOsc2 = null;
+      }
+      if (humLfo) {
+        try { humLfo.stop(); } catch (_) {}
+        humLfo = null;
+      }
+      if (humLfoGain) {
+        try { humLfoGain.disconnect(); } catch (_) {}
+        humLfoGain = null;
       }
       if (humGain) {
         try { humGain.disconnect(); } catch (_) {}
@@ -935,7 +976,7 @@
         stepText.textContent = "Step 2 of 6 · Testing";
         progressBar.style.width = "62%";
         coachTitle.textContent = "Machine test running";
-        coachBody.textContent = "Watch the rotating drive. FixAR is checking the simulated machine response.";
+        coachBody.textContent = "Watch the rotating drive and listen to the motor sound. FixAR is checking the simulated machine response.";
         coachWhy.textContent = "The motor transfers rotation through the coupling to the pump.";
         setStatus("MACHINE RUNNING", "running");
         return;
@@ -1070,7 +1111,7 @@
       faultIntroduced = true;
 
       // Visually misalign the coupling slightly.
-      couplingVisual.object3D.position.z = 0.075;
+      couplingVisual.object3D.position.z = 0.065;
       couplingVisual.object3D.rotation.y = THREE.MathUtils.degToRad(12);
 
       setVisible(faultIndicator, true);
