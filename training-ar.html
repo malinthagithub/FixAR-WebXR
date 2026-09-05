@@ -431,9 +431,9 @@
         <div id="equipmentSelector">
 
             <button
-                id="conveyorButton"
+                id="compressorButton"
                 class="active">
-                Conveyor
+                Air Compressor
             </button>
 
             <button id="machineButton">
@@ -661,7 +661,7 @@
            MODEL TEMPLATES
         ============================== */
 
-        let conveyorTemplate =
+        let compressorTemplate =
             null;
 
 
@@ -669,7 +669,7 @@
             null;
 
 
-        let conveyorReady = // check model load ready when its load come true 
+        let compressorReady = // check model load ready when its load come true 
             false;
 
 
@@ -681,7 +681,7 @@
            PLACED MODELS
         ============================== */
 
-        let placedConveyor = // this are ue keep memoery in now real word place model 
+        let placedCompressor = // this are ue keep memoery in now real word place model 
             null;
 
 
@@ -699,7 +699,7 @@
         */
 
         let selectedEquipment =
-            "conveyor";// defult add conveyor
+            "compressor";// default add Air Compressor
 
 
         /* ==============================
@@ -758,61 +758,61 @@
            TRAINING CONTENT
         ============================== */
 
-        const conveyorInspectionSteps = [
+        const compressorInspectionSteps = [
 
             {
                 title:
-                    "1. Conveyor Frame",
+                    "1. Compressor / Motor Unit",
 
                 instruction:
-                    "Inspect the frame for visible bending, cracks, deformation, or structural damage.",
+                    "Inspect the compressor and motor housing for visible damage, loose parts, overheating marks, or blocked ventilation.",
 
                 offset: [
-                    -0.32,
-                    0.00,
-                    0.35
+                    0.28,
+                    0.28,
+                    0.38
                 ]
             },
 
             {
                 title:
-                    "2. Belt / Carrying Surface",
+                    "2. Pressure Gauge / Controls",
 
                 instruction:
-                    "Inspect the belt surface for visible wear, damage, obstruction, or obvious misalignment.",
+                    "Inspect the pressure gauge, regulator, switches, and nearby fittings for visible damage, looseness, or leakage signs.",
 
                 offset: [
-                    0.00,
-                    0.35,
-                    0.28
+                    -0.24,
+                    0.36,
+                    0.38
                 ]
             },
 
             {
                 title:
-                    "3. Drive / Pulley Area",
+                    "3. Air Receiver Tank",
 
                 instruction:
-                    "Inspect the drive and pulley area for visible looseness, obstruction, damage, or abnormal wear.",
+                    "Inspect the air receiver tank for corrosion, dents, cracks, moisture leakage, or other visible damage.",
 
                 offset: [
-                    0.34,
-                    0.05,
+                    0.00,
+                    -0.05,
+                    0.42
+                ]
+            },
+
+            {
+                title:
+                    "4. Base / Connections",
+
+                instruction:
+                    "Inspect the base, mounting points, hoses, and connections for looseness, damage, instability, or leakage signs.",
+
+                offset: [
+                    0.00,
+                    -0.38,
                     0.30
-                ]
-            },
-
-            {
-                title:
-                    "4. Base / Supports",
-
-                instruction:
-                    "Inspect the support legs and base for visible damage, instability, or loose mounting areas.",
-
-                offset: [
-                    0.00,
-                    -0.40,
-                    0.28
                 ]
             }
 
@@ -884,8 +884,8 @@
            SCALE
         ============================== */
 
-        const CONVEYOR_DEFAULT_SCALE = // this are the model size 
-    0.45;
+        const COMPRESSOR_DEFAULT_SCALE = // this are the model size 
+    0.55;
 
 
 
@@ -940,9 +940,9 @@
             );
 
 
-        const conveyorButton =
+        const compressorButton =
             document.getElementById(
-                "conveyorButton"
+                "compressorButton"
             );
 
 
@@ -1076,9 +1076,9 @@
            MODEL URLS
         ============================== */
 
-        const CONVEYOR_URL =  // this are model link 
+        const COMPRESSOR_URL =  // this are model link 
             new URL(
-                "./models/conveyor.glb",
+                "./models/air_compressor.glb",
                 window.location.href
             ).href;
 
@@ -1301,7 +1301,7 @@
 
 
                     selectedEquipment = // this are default model select
-                        "conveyor";
+                        "compressor";
 
 
                     selectedObject = 
@@ -1328,7 +1328,7 @@
                         null;
 
 
-                    conveyorButton.classList.add(  // add css class to show conveyois selecte 
+                    compressorButton.classList.add(  // add css class to show conveyois selecte 
                         "active"
                     );
 
@@ -1339,7 +1339,7 @@
 
 
                     info.textContent =
-                        "Conveyor selected - scan and tap to place";
+                        "Air Compressor selected - scan and tap to place";
 
                 }
             );
@@ -1406,13 +1406,13 @@
                         null;
 
 
-                    if (placedConveyor) {
+                    if (placedCompressor) {
 
                         scene.remove(
-                            placedConveyor
+                            placedCompressor
                         );
 
-                        placedConveyor =
+                        placedCompressor =
                             null;
                     }
 
@@ -1459,7 +1459,7 @@
                 new GLTFLoader();
 
 
-            const conveyorPromise = // say load conveyor model and return promise when load complete or error
+            const compressorPromise = // say load Air Compressor model and return promise when load complete or error
                 new Promise(
                     function (
                         resolve,
@@ -1468,20 +1468,20 @@
 
 
                         loader.load(  // say get this url file 
-                            CONVEYOR_URL,
+                            COMPRESSOR_URL,
 
                             function (gltf) { // whn model load complete this function run and get the gltf object
 
-                                conveyorTemplate =
-                                    gltf.scene;  // save the loaded model scene to conveyorTemplate
+                                compressorTemplate =
+                                    gltf.scene;  // save the loaded Air Compressor scene to compressorTemplate
 
 
                                 prepareModel(
-                                    conveyorTemplate
+                                    compressorTemplate
                                 );
 
 
-                                conveyorReady =
+                                compressorReady =
                                     true;
 
 
@@ -1539,7 +1539,7 @@
 
 
                 await Promise.all([ // say wait for both model load complete or error
-                    conveyorPromise,
+                    compressorPromise,
                     machinePromise
                 ]);
 
@@ -1587,21 +1587,99 @@
         }
 
 
+        // Create a stable AR-ready copy of the Air Compressor.
+        // The downloaded GLB may use very large or very small source units.
+        // This normalizes only the compressor and keeps the existing Water Pump unchanged.
+        function createNormalizedCompressor() {
+
+            const model =
+                compressorTemplate.clone(
+                    true
+                );
+
+            model.updateMatrixWorld(
+                true
+            );
+
+            let box =
+                new THREE.Box3().setFromObject(
+                    model
+                );
+
+            const size =
+                new THREE.Vector3();
+
+            box.getSize(
+                size
+            );
+
+            const largestDimension =
+                Math.max(
+                    size.x,
+                    size.y,
+                    size.z
+                );
+
+            if (
+                Number.isFinite(largestDimension)
+                &&
+                largestDimension > 0
+            ) {
+
+                model.scale.multiplyScalar(
+                    1 / largestDimension
+                );
+            }
+
+            model.updateMatrixWorld(
+                true
+            );
+
+            box =
+                new THREE.Box3().setFromObject(
+                    model
+                );
+
+            const center =
+                new THREE.Vector3();
+
+            box.getCenter(
+                center
+            );
+
+            model.position.x -=
+                center.x;
+
+            model.position.z -=
+                center.z;
+
+            model.position.y -=
+                box.min.y;
+
+            const wrapper =
+                new THREE.Group();
+
+            wrapper.add(
+                model
+            );
+
+            return wrapper;
+        }
+
+
         function createModel(
             type
         ) {
 
 
             if (
-                type === "conveyor"
+                type === "compressor"
                 &&
-                conveyorReady
+                compressorReady
             ) {
 
 
-                return conveyorTemplate.clone(
-                    true   // use make copy becouse orinala model cant be chngethen chngeonly place model 
-                );
+                return createNormalizedCompressor();
             }
 
 
@@ -1629,9 +1707,9 @@
 
 
             return ( // if condtion 
-                type === "conveyor"
+                type === "compressor"
                 ?
-                CONVEYOR_DEFAULT_SCALE
+                COMPRESSOR_DEFAULT_SCALE
                 :
                 PUMP_DEFAULT_SCALE
             );
@@ -1643,7 +1721,7 @@
            EQUIPMENT SELECT
         ============================== */
 
-        conveyorButton.addEventListener(
+        compressorButton.addEventListener(
             "click",  // user clike  this button run this function 
             function () {
 
@@ -1660,10 +1738,10 @@
 
 
                 selectedEquipment =
-                    "conveyor";
+                    "compressor";
 
 
-                conveyorButton.classList.add(
+                compressorButton.classList.add(
                     "active"
                 );  // css class add
 
@@ -1678,12 +1756,12 @@
 
 
                 if (
-                    placedConveyor
+                    placedCompressor
                 ) {
 
 
                     selectedObject =
-                        placedConveyor;
+                        placedCompressor;
 
 
                     placementMode =
@@ -1699,7 +1777,7 @@
 
 
                     info.textContent =
-                        "Conveyor selected - explore or inspect";
+                        "Air Compressor selected - explore or inspect";
 
 
                 } else {
@@ -1722,7 +1800,7 @@
 
 
                     info.textContent =
-                        "Conveyor selected - scan and tap to place";
+                        "Air Compressor selected - scan and tap to place";
                 }
 
             }
@@ -1754,7 +1832,7 @@
                 );
 
 
-                conveyorButton.classList.remove(
+                compressorButton.classList.remove(
                     "active"
                 );
 
@@ -1893,9 +1971,9 @@
                 info.textContent =
 
                     selectedEquipment ===
-                    "conveyor"
+                    "compressor"
 
-                    ? "Conveyor repositioned successfully"
+                    ? "Air Compressor repositioned successfully"
 
                     : "Water Pump repositioned successfully";
 
@@ -1926,7 +2004,7 @@
             }
 
 
-            const newObject = // new model create based on the selected equipment type (conveyor or machine) using the createModel function.
+            const newObject = // new model create based on the selected equipment type (Air Compressor or Water Pump) using the createModel function.
                 createModel(
                     selectedEquipment
                 );
@@ -1994,11 +2072,11 @@
 
             if (
                 selectedEquipment ===
-                "conveyor"
+                "compressor"
             ) {
 
 
-                placedConveyor =
+                placedCompressor =
                     newObject;
 
 
@@ -2033,9 +2111,9 @@
             info.textContent =
 
                 selectedEquipment ===
-                "conveyor"
+                "compressor"
 
-                ? "Conveyor placed - explore or start inspection"
+                ? "Air Compressor placed - explore or start inspection"
 
                 : "Water Pump placed - explore or start inspection";
 
@@ -2364,16 +2442,16 @@
 
                 if (
                     selectedObject ===
-                    placedConveyor
+                    placedCompressor
                 ) {
 
 
                     scene.remove(
-                        placedConveyor
+                        placedCompressor
                     );
 
 
-                    placedConveyor =
+                    placedCompressor =
                         null;
 
 
@@ -2382,10 +2460,10 @@
 
 
                     selectedEquipment =
-                        "conveyor";
+                        "compressor";
 
 
-                    conveyorButton.classList.add(
+                    compressorButton.classList.add(
                         "active"
                     );
 
@@ -2396,7 +2474,7 @@
 
 
                     info.textContent =
-                        "Conveyor removed - scan and place again";
+                        "Air Compressor removed - scan and place again";
 
 
                 } else {
@@ -2424,7 +2502,7 @@
                     );
 
 
-                    conveyorButton.classList.remove(
+                    compressorButton.classList.remove(
                         "active"
                     );
 
@@ -2466,7 +2544,7 @@
 
             if (
                 selectedEquipment ===
-                "conveyor"
+                "compressor"
                 &&
                 placedMachine
                 &&
@@ -2487,17 +2565,17 @@
                 selectedEquipment ===
                 "machine"
                 &&
-                placedConveyor
+                placedCompressor
                 &&
-                placedConveyor.visible
+                placedCompressor.visible
             ) {
 
 
                 hiddenOtherEquipment =
-                    placedConveyor;
+                    placedCompressor;
 
 
-                placedConveyor.visible =
+                placedCompressor.visible =
                     false;
             }
 
@@ -2563,16 +2641,16 @@
 
 
                 if (
-                    placedConveyor
+                    placedCompressor
                 ) {
 
 
                     scene.remove(
-                        placedConveyor
+                        placedCompressor
                     );
 
 
-                    placedConveyor =
+                    placedCompressor =
                         null;
                 }
 
@@ -2597,7 +2675,7 @@
 
 
                 selectedEquipment =
-                    "conveyor";
+                    "compressor";
 
 
                 placementMode =
@@ -2616,7 +2694,7 @@
                     "grid";
 
 
-                conveyorButton.classList.add(
+                compressorButton.classList.add(
                     "active"
                 );
 
@@ -2631,7 +2709,7 @@
 
 
                 info.textContent =
-                    "Training restarted - scan and place Conveyor";
+                    "Training restarted - scan and place Air Compressor";
 
             }
         );
@@ -2706,24 +2784,24 @@
                 info.textContent =
 
                     selectedEquipment ===
-                    "conveyor"
+                    "compressor"
 
-                    ? "Conveyor guided inspection started"
+                    ? "Air Compressor guided inspection started"
 
                     : "Water Pump guided inspection started";
 
             }
         );
 
-// use this function to get the inspection steps based on the selected equipment type (conveyor or machine). It returns the appropriate array of inspection steps for the current equipment.
+// use this function to get the inspection steps based on the selected equipment type (Air Compressor or Water Pump). It returns the appropriate array of inspection steps for the current equipment.
         function getInspectionSteps() {
 
 
             return (
                 selectedEquipment ===
-                "conveyor"
+                "compressor"
 
-                ? conveyorInspectionSteps
+                ? compressorInspectionSteps
 
                 : machineInspectionSteps
             );
@@ -3176,9 +3254,9 @@
             inspectionTitle.textContent =
 
                 selectedEquipment ===
-                "conveyor"
+                "compressor"
 
-                ? "Conveyor Inspection"
+                ? "Air Compressor Inspection"
 
                 : "Water Pump Inspection";
 
@@ -3456,9 +3534,9 @@
             info.textContent =
 
                 selectedEquipment ===
-                "conveyor"
+                "compressor"
 
-                ? "✓ Conveyor training complete — 4 areas reviewed"
+                ? "✓ Air Compressor training complete — 4 areas reviewed"
 
                 : "✓ Water Pump training complete — 4 areas reviewed";
 
@@ -3757,9 +3835,9 @@
                                 info.textContent =
 
                                     selectedEquipment ===
-                                    "conveyor"
+                                    "compressor"
 
-                                    ? "Surface detected - tap to place Conveyor"
+                                    ? "Surface detected - tap to place Air Compressor"
 
                                     : "Surface detected - tap to place Water Pump";
                             }
