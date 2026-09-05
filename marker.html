@@ -18,18 +18,24 @@
       height: 100%;
       overflow: hidden;
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      background: #061018;
       touch-action: none;
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Camera video must remain visible behind the WebGL AR canvas. */
+    /* IMPORTANT: MindAR inserts the live camera <video> behind the AR canvas.
+       An opaque body background hides that video and produces a black screen. */
+    html {
+      background: #000;
+    }
+
+    body {
+      background: transparent !important;
+    }
+
+    /* Keep the live camera above the page background and below the AR canvas. */
+    body > video,
     video {
-      position: fixed !important;
-      inset: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      object-fit: cover !important;
+      position: absolute !important;
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
@@ -47,35 +53,8 @@
     }
 
     .a-canvas {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 1 !important;
       background: transparent !important;
       background-color: transparent !important;
-    }
-
-    #startCameraBtn {
-      position: fixed;
-      left: 50%;
-      bottom: 58px;
-      transform: translateX(-50%);
-      z-index: 3000;
-      min-width: 190px;
-      min-height: 46px;
-      padding: 10px 18px;
-      border: 0;
-      border-radius: 12px;
-      background: #22c55e;
-      color: #052e16;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
-      cursor: pointer;
-    }
-
-    #startCameraBtn:disabled {
-      opacity: .65;
     }
 
     #statusBadge,
@@ -386,8 +365,7 @@
 </head>
 
 <body>
-  <button id="startCameraBtn" type="button">START CAMERA</button>
-  <div id="statusBadge">CAMERA OFF</div>
+  <div id="statusBadge">SCAN MARKER</div>
   <a id="homeBtn" href="index.html">Home</a>
   <button id="resetBtn" type="button">Restart</button>
 
@@ -427,7 +405,7 @@
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false"
     renderer="alpha: true; antialias: true; colorManagement: true; physicallyCorrectLights: false"
-    mindar-image="imageTargetSrc: ./target.mind; autoStart: false; uiScanning: no; uiLoading: no; uiError: no; filterMinCF: 0.0001; filterBeta: 0.001">
+    mindar-image="imageTargetSrc: ./target.mind; autoStart: true; uiScanning: no; uiLoading: no; filterMinCF: 0.0001; filterBeta: 0.001">
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
@@ -735,7 +713,6 @@
     const marker = document.getElementById("markerRoot");
     const contentRoot = document.getElementById("contentRoot");
 
-    const startCameraBtn = document.getElementById("startCameraBtn");
     const statusBadge = document.getElementById("statusBadge");
     const resetBtn = document.getElementById("resetBtn");
     const coachTitle = document.getElementById("coachTitle");
@@ -1801,98 +1778,33 @@
     }
 
     /* =====================================================
-       CAMERA START / DIAGNOSTICS
+       CAMERA BACKGROUND VISIBILITY
+       MindAR camera is a DOM video behind the transparent WebGL canvas.
     ====================================================== */
-    let arStarted = false;
-
-    function forceTransparentRenderer() {
-      if (!sceneEl || !sceneEl.renderer) return;
-      sceneEl.renderer.setClearColor(0x000000, 0);
-      if (sceneEl.canvas) {
-        sceneEl.canvas.style.background = "transparent";
-        sceneEl.canvas.style.backgroundColor = "transparent";
-      }
-    }
-
-    function cameraEnvironmentIsValid() {
-      const localhost = ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
-
-      if (!window.isSecureContext && !localhost) {
-        coachTitle.textContent = "HTTPS required";
-        coachBody.textContent = "Camera access is blocked on an insecure page. Open this page from GitHub Pages/HTTPS, not directly as a local HTML file.";
-        setStatus("HTTPS REQUIRED", "warning");
-        setFeedback("Use an https:// address, then allow Camera permission.", "bad");
-        return false;
-      }
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        coachTitle.textContent = "Camera unavailable";
-        coachBody.textContent = "This browser is not exposing camera access. Use Chrome on Android or Safari on iPhone and allow Camera permission.";
-        setStatus("NO CAMERA API", "warning");
-        return false;
-      }
-
-      return true;
-    }
-
-    async function startARCamera() {
-      if (arStarted) return;
-      if (!cameraEnvironmentIsValid()) return;
-
-      startCameraBtn.disabled = true;
-      startCameraBtn.textContent = "STARTING CAMERA...";
-      setStatus("STARTING CAMERA", "ready");
-      coachTitle.textContent = "Starting AR camera";
-      coachBody.textContent = "Allow camera permission when the browser asks.";
-      setFeedback("");
-
-      try {
-        if (!sceneEl.hasLoaded) {
-          await new Promise(resolve => sceneEl.addEventListener("loaded", resolve, { once: true }));
+    function keepCameraBackgroundVisible() {
+      if (sceneEl && sceneEl.renderer) {
+        sceneEl.renderer.setClearColor(0x000000, 0);
+        if (typeof sceneEl.renderer.setClearAlpha === "function") {
+          sceneEl.renderer.setClearAlpha(0);
         }
+      }
 
-        forceTransparentRenderer();
-
-        const mindarSystem = sceneEl.systems && sceneEl.systems["mindar-image-system"];
-        if (!mindarSystem || typeof mindarSystem.start !== "function") {
-          throw new Error("MindAR image system is not ready");
-        }
-
-        await mindarSystem.start();
-        arStarted = true;
-        forceTransparentRenderer();
-        startCameraBtn.style.display = "none";
-        setStatus("SCAN MARKER", "ready");
-        coachTitle.textContent = "FixAR Pump Maintenance Trainer";
-        coachBody.textContent = "Camera ready. Point it at target.png to identify Water Pump WP-01.";
-        coachWhy.textContent = "The marker identifies the equipment and anchors its maintenance training content.";
-      } catch (error) {
-        console.error("Camera/MindAR start failed:", error);
-        arStarted = false;
-        startCameraBtn.disabled = false;
-        startCameraBtn.textContent = "TRY CAMERA AGAIN";
-        coachTitle.textContent = "Camera could not start";
-        coachBody.textContent = "Allow camera permission, use an HTTPS page, then press Try Camera Again.";
-        setStatus("CAMERA ERROR", "warning");
-        setFeedback(error && error.message ? error.message : "Camera startup failed.", "bad");
+      const cameraVideo = document.querySelector("body > video") || document.querySelector("video");
+      if (cameraVideo) {
+        cameraVideo.style.setProperty("z-index", "0", "important");
+        cameraVideo.style.setProperty("display", "block", "important");
+        cameraVideo.style.setProperty("visibility", "visible", "important");
+        cameraVideo.style.setProperty("opacity", "1", "important");
       }
     }
 
-    startCameraBtn.addEventListener("click", event => {
-      event.preventDefault();
-      event.stopPropagation();
-      startARCamera();
+    sceneEl.addEventListener("renderstart", () => {
+      keepCameraBackgroundVisible();
+      setTimeout(keepCameraBackgroundVisible, 300);
+      setTimeout(keepCameraBackgroundVisible, 1000);
     });
 
-    sceneEl.addEventListener("loaded", forceTransparentRenderer);
-    sceneEl.addEventListener("renderstart", forceTransparentRenderer);
-
-    sceneEl.addEventListener("arReady", () => {
-      arStarted = true;
-      forceTransparentRenderer();
-      startCameraBtn.style.display = "none";
-      setStatus("SCAN MARKER", "ready");
-    });
+    sceneEl.addEventListener("arReady", keepCameraBackgroundVisible);
 
     /* =====================================================
        MARKER EVENTS
@@ -1931,25 +1843,15 @@
       setFeedback("Marker lost. Point the camera back at the target image.", "bad");
     });
 
-    sceneEl.addEventListener("arError", event => {
-      console.error("MindAR arError", event);
-      arStarted = false;
-      startCameraBtn.style.display = "block";
-      startCameraBtn.disabled = false;
-      startCameraBtn.textContent = "TRY CAMERA AGAIN";
+    sceneEl.addEventListener("arError", () => {
       coachTitle.textContent = "AR could not start";
-      coachBody.textContent = "Check camera permission, HTTPS, and that target.mind is beside this HTML file.";
+      coachBody.textContent = "Check that target.mind is in the same folder as this HTML file and that camera permission is allowed.";
       setStatus("AR ERROR", "warning");
-      setFeedback("Camera/MindAR startup failed. Fix permission or HTTPS, then try again.", "bad");
     });
 
     // Initial state
     resetTraining();
     if (contentRoot) contentRoot.setAttribute("visible", false);
-    setStatus("CAMERA OFF");
-    coachTitle.textContent = "Start the AR camera";
-    coachBody.textContent = "Press START CAMERA, allow camera permission, then scan target.png.";
-    coachWhy.textContent = "The marker-based trainer starts the camera only after a user action, which is more reliable on mobile browsers.";
   </script>
 </body>
 </html>
