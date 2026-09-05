@@ -451,12 +451,12 @@
       <a-cylinder id="couplingPad" position="0 0.008 -0.18" radius="0.18" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
       <a-ring id="couplingRing" position="0 0.017 -0.18" rotation="-90 0 0" radius-inner="0.18" radius-outer="0.215" color="#7dd3fc" visible="false"></a-ring>
 
-      <a-cylinder id="pumpPad" position="0.21 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
-      <a-ring id="pumpRing" position="0.21 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
+      <a-cylinder id="pumpPad" position="0.31 0.008 -0.18" radius="0.23" height="0.012" color="#38bdf8" opacity="0.34" material="transparent: true; opacity: 0.34"></a-cylinder>
+      <a-ring id="pumpRing" position="0.31 0.017 -0.18" rotation="-90 0 0" radius-inner="0.21" radius-outer="0.245" color="#7dd3fc" visible="false"></a-ring>
 
       <a-text id="motorSlotLabel" value="MOTOR" position="-0.31 0.10 -0.46" rotation="-90 0 0" scale="0.17 0.17 0.17" align="center" color="#ffffff"></a-text>
       <a-text id="couplingSlotLabel" value="COUPLING" position="0 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
-      <a-text id="pumpSlotLabel" value="PUMP" position="0.21 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
+      <a-text id="pumpSlotLabel" value="PUMP" position="0.31 0.10 -0.46" rotation="-90 0 0" scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
 
       <!-- ===========================
            PARTS TRAY
@@ -490,7 +490,7 @@
            No external coupling.glb is required.
       ============================ -->
       <a-entity id="couplingPart" position="0 0.11 0.78" scale="1 1 1">
-        <a-entity id="couplingVisual" position="0 0.185 0">
+        <a-entity id="couplingVisual" position="0 0.150 0">
           <!-- long common shaft so the coupling visibly connects motor and pump -->
           <a-cylinder position="0 0 0" rotation="0 0 90"
                       radius="0.018" height="0.72" color="#cbd5e1"
@@ -539,12 +539,12 @@
                 scale="0.14 0.14 0.14" align="center" color="#ffffff"></a-text>
       </a-entity>
 
-      <!-- FINAL ASSEMBLED CONNECTOR: tight motor-coupling-pump connection -->
+      <!-- FINAL ASSEMBLED CONNECTOR: aligned motor-coupling-pump shaft line -->
       <a-entity id="assembledConnector" visible="false">
 
-        <!-- Shared shaft axis, lowered to match the visible shaft exits of the downloaded models. -->
+        <!-- Shared shaft axis aligned with the visible pump/motor drive centre while preserving the original horizontal gap. -->
         <a-cylinder id="mainDriveShaft"
-                    position="0 0.285 -0.18"
+                    position="0 0.250 -0.18"
                     rotation="0 0 90"
                     radius="0.016"
                     height="0.50"
@@ -553,7 +553,7 @@
         </a-cylinder>
 
         <!-- Sleeves overlap the real motor/pump shaft areas so there is no visible floating gap. -->
-        <a-cylinder position="-0.205 0.285 -0.18"
+        <a-cylinder position="-0.205 0.250 -0.18"
                     rotation="0 0 90"
                     radius="0.030"
                     height="0.095"
@@ -561,26 +561,16 @@
                     material="metalness: 0.86; roughness: 0.18">
         </a-cylinder>
 
-        <a-cylinder id="pumpConnectionSleeve" position="0.165 0.285 -0.18"
+        <a-cylinder position="0.205 0.250 -0.18"
                     rotation="0 0 90"
-                    radius="0.028"
-                    height="0.150"
+                    radius="0.030"
+                    height="0.095"
                     color="#64748b"
                     material="metalness: 0.86; roughness: 0.18">
         </a-cylinder>
 
-        <!-- Pump-side overlap shaft: deliberately extends into the pump shaft area so there is no floating gap. -->
-        <a-cylinder id="pumpOverlapShaft"
-                    position="0.235 0.285 -0.18"
-                    rotation="0 0 90"
-                    radius="0.020"
-                    height="0.115"
-                    color="#cbd5e1"
-                    material="metalness: 0.92; roughness: 0.14">
-        </a-cylinder>
-
         <!-- Rotating flexible coupling exactly on the same shaft axis. -->
-        <a-entity id="couplingRotor" position="0 0.285 -0.18">
+        <a-entity id="couplingRotor" position="0 0.250 -0.18">
 
           <!-- motor-side hub -->
           <a-cylinder position="-0.058 0 0"
@@ -807,8 +797,8 @@
     const ASSEMBLY_Z = -0.18;
     const MOTOR_SLOT_X = -0.26;
     const COUPLING_SLOT_X = 0.00;
-    const PUMP_SLOT_X = 0.21;
-    const SHAFT_AXIS_Y = 0.285;
+    const PUMP_SLOT_X = 0.26;
+    const SHAFT_AXIS_Y = 0.250;
     const PART_SNAP_DISTANCE = 0.40;
     const ACTION_SNAP_DISTANCE = 0.40;
     const GRAB_PIXELS = 230;
@@ -1178,7 +1168,7 @@
         stepText.textContent = "Step 2 of 6 · Test";
         progressBar.style.width = "55%";
         coachTitle.textContent = "Machine assembled";
-        coachBody.textContent = "Motor, coupling and pump are tightly connected on one visible shaft line. Press Start machine test.";
+        coachBody.textContent = "Motor, coupling and pump are connected on one visible shaft line. Press Start machine test.";
         coachWhy.textContent = "The visible shafts and coupling show how torque is transmitted from the motor to the pump.";
         setStatus("READY TO TEST", "ready");
         controlArea.classList.add("visible");
@@ -1767,9 +1757,9 @@
         setVisible(action.el, false);
       });
 
-      couplingVisual.object3D.position.set(0, 0.185, 0);
+      couplingVisual.object3D.position.set(0, SHAFT_AXIS_Y - MODEL_Y, 0);
       couplingVisual.object3D.rotation.set(0, 0, 0);
-      couplingRotor.object3D.position.set(0, 0.285, -0.18);
+      couplingRotor.object3D.position.set(0, SHAFT_AXIS_Y, ASSEMBLY_Z);
       couplingRotor.object3D.rotation.set(0, 0, 0);
       setVisible(assembledConnector, false);
       setVisible(driveShafts, false);
